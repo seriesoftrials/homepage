@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Approved ribbon modules copied verbatim from the serial repo.
+    "lib/ribbon/**",
   ]),
 ]);
 
