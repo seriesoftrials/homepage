@@ -7,7 +7,6 @@ import { T } from "@/components/i18n/T";
 import { members, membersPage } from "@/content/site";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { MemberProfile } from "./MemberProfile";
-import { asset } from "@/lib/asset";
 
 // Vertical distance between members, as a share of the viewport height.
 const GAP_SVH = 0.42;
@@ -144,15 +143,8 @@ export function MemberThread() {
                 onClick={() => open(i)}
                 className="thread-node group relative flex flex-col items-center gap-3 text-center outline-none"
               >
-                <span className="relative block aspect-square w-[clamp(104px,12vw,168px)] overflow-hidden rounded-full bg-[radial-gradient(ellipse_at_50%_18%,#57595e,#303237_48%,#17191c)] shadow-[0_0_0_1px_rgb(255_255_255/0.12)] transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:shadow-[0_0_0_2px_#fafafa]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={asset(`/people/${member.slug}-cutout.webp`)}
-                    alt=""
-                    draggable={false}
-                    className="absolute inset-x-0 bottom-0 h-[92%] w-full object-contain object-bottom grayscale"
-                  />
-                </span>
+                {/* Photos are being retaken; the circle shows only its backdrop for now. */}
+                <span className="relative block aspect-square w-[clamp(104px,12vw,168px)] overflow-hidden rounded-full bg-[radial-gradient(ellipse_at_50%_18%,#57595e,#303237_48%,#17191c)] shadow-[0_0_0_1px_rgb(255_255_255/0.12)] transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:shadow-[0_0_0_2px_#fafafa]" />
                 <span
                   aria-hidden="true"
                   className="thread-hint pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-2 text-[12px] whitespace-nowrap opacity-0 transition-all duration-300 group-hover:-top-14 group-hover:opacity-100"
