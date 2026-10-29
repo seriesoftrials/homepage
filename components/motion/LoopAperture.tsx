@@ -21,20 +21,17 @@ type Props = {
 };
 
 // The site's one repeated transition. The section slides over the last screen of
-// the previous one and rises from the bottom centre as an arch whose top is the
-// upper half of the ribbon's loose loop, widening until it fills the viewport.
-// Themes alternate, so each rise turns the page to its other face, paper to ink
-// and back. Values are viewport units, so the timeline never needs invalidating
-// on refresh (which would drop the hidden start state of later tweens).
-export const ARCH_FROM = { "--y": "100svh", "--x": "26vw", "--rx": "24vw", "--ry": "36svh" };
-export const ARCH_TO = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0svh" };
-// On a portrait screen any arch narrower than the screen reads as a tall
-// bullet. There it starts wider than the screen instead, so only a broad dome
-// shows, its sides running off the edges (as casadisolare.com does on phones).
-export const ARCH_FROM_PORTRAIT = { "--y": "100svh", "--x": "-22vw", "--rx": "72vw", "--ry": "56vw" };
-export const ARCH_TO_PORTRAIT = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0vw" };
+// the previous one and rises from the bottom as a broad dome, widening until it
+// fills the viewport. It starts wider than the screen, so its sides run off the
+// edges (as casadisolare.com does on phones); every size is in vw, so the dome
+// has the same shape on any screen. Themes alternate, so each rise turns the
+// page to its other face, paper to ink and back. Values are viewport units, so
+// the timeline never needs invalidating on refresh (which would drop the hidden
+// start state of later tweens).
+export const ARCH_FROM = { "--y": "100svh", "--x": "-22vw", "--rx": "72vw", "--ry": "56vw" };
+export const ARCH_TO = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0vw" };
 export const ARCH_CLIP =
-  "inset(var(--y, 100svh) var(--x, 26vw) 0 var(--x, 26vw) round var(--rx, 24vw) var(--rx, 24vw) 0 0 / var(--ry, 36svh) var(--ry, 36svh) 0 0)";
+  "inset(var(--y, 100svh) var(--x, -22vw) 0 var(--x, -22vw) round var(--rx, 72vw) var(--rx, 72vw) 0 0 / var(--ry, 56vw) var(--ry, 56vw) 0 0)";
 
 export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: Props) {
   const stage = useRef<HTMLDivElement>(null);
@@ -44,11 +41,8 @@ export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: P
     () => {
       const win = windowRef.current;
       if (!stage.current || !win) return;
-      const portrait = innerWidth < innerHeight;
-      const from = portrait ? ARCH_FROM_PORTRAIT : ARCH_FROM;
-      const to = portrait ? ARCH_TO_PORTRAIT : ARCH_TO;
       if (prefersReducedMotion()) {
-        gsap.set(win, to);
+        gsap.set(win, ARCH_TO);
         return;
       }
       const tl = gsap.timeline({
@@ -59,12 +53,12 @@ export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: P
       // pixels of scroll (or a page that ends on this section) never leave a
       // sliver of the previous colour at the edges.
       const rise = 0.85;
-      tl.fromTo(win, { "--y": from["--y"] }, { "--y": to["--y"], duration: rise, ease: "power1.out" }, 0)
-        .fromTo(win, { "--x": from["--x"] }, { "--x": to["--x"], duration: rise, ease: "power2.in" }, 0)
+      tl.fromTo(win, { "--y": ARCH_FROM["--y"] }, { "--y": ARCH_TO["--y"], duration: rise, ease: "power1.out" }, 0)
+        .fromTo(win, { "--x": ARCH_FROM["--x"] }, { "--x": ARCH_TO["--x"], duration: rise, ease: "power2.in" }, 0)
         .fromTo(
           win,
-          { "--rx": from["--rx"], "--ry": from["--ry"] },
-          { "--rx": to["--rx"], "--ry": to["--ry"], duration: rise, ease: "power2.in" },
+          { "--rx": ARCH_FROM["--rx"], "--ry": ARCH_FROM["--ry"] },
+          { "--rx": ARCH_TO["--rx"], "--ry": ARCH_TO["--ry"], duration: rise, ease: "power2.in" },
           0,
         );
       // Pieces marked data-defer are left for `extend` to reveal during the hold.
