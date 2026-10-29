@@ -4,7 +4,6 @@ import { ActivitiesSection, ValuesSection } from "@/components/home/ListSections
 import { ProblemSection } from "@/components/home/ProblemSection";
 import { RevealSection } from "@/components/home/RevealSection";
 import { PageTransition } from "@/components/site/PageTransition";
-import { SiteFooter } from "@/components/site/SiteFooter";
 
 // The hero dives into the ribbon's black band, which becomes the problem
 // statement's background; every section after that rises as an arch,
@@ -18,8 +17,8 @@ export default function Home() {
         <RevealSection />
         <ValuesSection />
         <ActivitiesSection />
+        {/* Join carries the footer inside, so the page ends on that one screen. */}
         <JoinSection />
-        <SiteFooter />
       </main>
     </PageTransition>
   );

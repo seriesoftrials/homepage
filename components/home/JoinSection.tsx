@@ -5,6 +5,7 @@ import { T } from "@/components/i18n/T";
 import { LoopAperture } from "@/components/motion/LoopAperture";
 import { SectionCover } from "@/components/motion/SectionCover";
 import { RibbonCanvas } from "@/components/ribbon/RibbonCanvas";
+import { SiteFooter } from "@/components/site/SiteFooter";
 import { join } from "@/content/site";
 
 // The last arch rises onto the S still turning: the loop the page began with,
@@ -26,6 +27,7 @@ export function JoinSection() {
           >
             <T value={join.cta} />
           </Link>
+          <SiteFooter inline />
         </div>
       }
     />
