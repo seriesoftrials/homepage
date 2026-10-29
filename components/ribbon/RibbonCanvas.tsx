@@ -14,6 +14,10 @@ type Props = {
   className?: string;
   // Plays the endless rest-and-turn loop on its own clock instead of scroll.
   autoplay?: boolean;
+  // Turns the formed S continuously on its own clock, with no rests.
+  spin?: boolean;
+  // A slow sway so the ribbon never looks frozen while the page is still.
+  idle?: boolean;
   initialProgress?: number;
   // The poster is the finished S; turn it off where the ribbon starts as a loop.
   poster?: boolean;
@@ -30,6 +34,8 @@ type Props = {
 const HALF = 1.54; // half-height of the ribbon frame in world units (serial repo)
 const TILT_X = 0.16;
 const TILT_Y = 0.22;
+// One continuous turn for `spin`; slower than the 3 s study turn, since it never rests.
+const SPIN_SECONDS = 5;
 
 // Renders the approved ribbon (lib/ribbon, ported from the serial repo) only
 // when something changes, so a still page costs no frames.
@@ -37,6 +43,8 @@ export function RibbonCanvas({
   ref,
   className = "",
   autoplay = false,
+  spin = false,
+  idle = false,
   initialProgress = 0,
   poster = true,
   material = "glass",
@@ -75,7 +83,11 @@ export function RibbonCanvas({
     let cleanup = () => {};
 
     (async () => {
-      const [THREE, { createSequence, SEQUENCE_DURATION }, { createGlassMaterial, createGlassEnvironment }] =
+      const [
+        THREE,
+        { createSequence, SEQUENCE_DURATION, ROTATION_START },
+        { createGlassMaterial, createGlassEnvironment },
+      ] =
         await Promise.all([import("three"), import("@/lib/ribbon/sequence.js"), import("@/lib/ribbon/glass.js")]);
       if (disposed || !holder.current || !canvas.current) return;
       const el = holder.current;
@@ -135,13 +147,22 @@ export function RibbonCanvas({
       let half = HALF;
       let aspect = 1;
       const tilt = { x: 0, y: 0, tx: 0, ty: 0 };
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const swaying = idle && !reduced;
+      const turnStart = ROTATION_START / SEQUENCE_DURATION;
+      let clock = 0;
 
       const draw = (now: number) => {
         raf = 0;
         if (disposed || lost || !visible || document.hidden) return;
         const dt = Math.min(0.05, (now - last) / 1000);
         last = now;
-        if (autoplay) {
+        clock += dt;
+        if (spin) {
+          // The first turn (turnStart → 1) starts and ends on the settled S, so
+          // looping it alone gives one unbroken rotation.
+          progress.current = turnStart + ((clock % SPIN_SECONDS) / SPIN_SECONDS) * (1 - turnStart);
+        } else if (autoplay) {
           elapsed += dt;
           progress.current = elapsed / SEQUENCE_DURATION;
         }
@@ -151,8 +172,11 @@ export function RibbonCanvas({
         tilt.y += (tilt.ty - tilt.y) * k;
         const settling = Math.abs(tilt.tx - tilt.x) + Math.abs(tilt.ty - tilt.y) > 0.0005;
         const { zoom, x, y } = view.current;
-        // Tilt fades as the camera zooms in, so the zoom target never slides away.
-        pivot.rotation.set(tilt.x / zoom, tilt.y / zoom, 0);
+        const swayX = swaying ? 0.07 * Math.sin(clock * 0.5) : 0;
+        const swayY = swaying ? 0.16 * Math.sin(clock * 0.37) : 0;
+        // Tilt and sway fade as the camera zooms in, so the zoom target never slides away.
+        pivot.rotation.set((tilt.x + swayX) / zoom, (tilt.y + swayY) / zoom, 0);
+        pivot.position.y = swaying ? (0.03 * Math.sin(clock * 0.8)) / zoom : 0;
 
         camera.zoom = zoom;
         camera.position.set(x, y, 6);
@@ -169,7 +193,7 @@ export function RibbonCanvas({
           el.classList.add("is-ready");
           readyCallback.current?.();
         }
-        if (autoplay || settling) schedule();
+        if (autoplay || spin || swaying || settling) schedule();
       };
       const schedule = () => {
         if (!raf) raf = requestAnimationFrame(draw);
@@ -211,7 +235,6 @@ export function RibbonCanvas({
         lost = false;
         schedule();
       };
-      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const resizeObserver = new ResizeObserver(resize);
       resizeObserver.observe(el);
       const intersection = new IntersectionObserver(([entry]) => {
@@ -247,7 +270,7 @@ export function RibbonCanvas({
       disposed = true;
       cleanup();
     };
-  }, [autoplay, initialProgress, material, interactive]);
+  }, [autoplay, spin, idle, initialProgress, material, interactive]);
 
   return (
     <div ref={holder} className={`ribbon ${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} ${className}`}>

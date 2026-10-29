@@ -40,6 +40,7 @@ export function HomeHero() {
   const ring = useRef<SVGEllipseElement>(null);
   const percent = useRef<HTMLSpanElement>(null);
   const inkFade = useRef<HTMLDivElement>(null);
+  const ribbonWrap = useRef<HTMLDivElement>(null);
   const ribbon = useRef<RibbonHandle>(null);
   const ribbonIsReady = useRef(false);
   const resolveRibbon = useRef<(() => void) | null>(null);
@@ -116,6 +117,7 @@ export function HomeHero() {
       const circumference = ring.current!.getTotalLength();
       ring.current!.style.strokeDasharray = `${circumference}`;
       gsap.set(titleItems, TWIST_FROM);
+      gsap.set(ribbonWrap.current, { opacity: 0 });
       gsap.set(items("[data-hero-eyebrow], [data-scroll-cue]"), { opacity: 0 });
 
       const load = { value: 0 };
@@ -148,11 +150,18 @@ export function HomeHero() {
             },
           })
           .to(load, { value: 1, duration: 0.5, ease: "power2.inOut", onUpdate: showLoad })
-          .fromTo(win, { "--rx": "0px", "--ry": "0px" }, { "--rx": `${rx}px`, "--ry": `${ry}px`, duration: 0.7, ease: "expo.out" })
-          .to(items("[data-loader-label]"), { opacity: 0, duration: 0.3 }, "<")
-          .to(ring.current, { opacity: 0, duration: 0.4 }, "<0.3")
-          .addLabel("open", "+=0.15")
-          .to(win, { "--rx": `${full}px`, "--ry": `${full * LOOP_RATIO}px`, duration: 1.6, ease: "expo.inOut" }, "open")
+          .to(items("[data-loader-label]"), { opacity: 0, duration: 0.3 })
+          .addLabel("open", "+=0.1")
+          // The finished ring itself opens: paper grows from the ring's exact
+          // size to the full screen. The ribbon waits, so no loop sits inside it.
+          .fromTo(
+            win,
+            { "--rx": `${rx}px`, "--ry": `${ry}px` },
+            { "--rx": `${full}px`, "--ry": `${full * LOOP_RATIO}px`, duration: 1.6, ease: "expo.inOut", immediateRender: false },
+            "open",
+          )
+          .to(ring.current, { opacity: 0, duration: 0.5 }, "open+=0.15")
+          .fromTo(ribbonWrap.current, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 1.4, ease: "power2.out" }, "open+=1.1")
           .call(() => document.documentElement.classList.remove("is-intro"), [], "open+=0.9")
           .fromTo(titleItems, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.9 }, "open+=0.7")
           .to(items("[data-hero-eyebrow]"), { opacity: 1, duration: 0.8 }, "open+=0.9")
@@ -176,15 +185,18 @@ export function HomeHero() {
           className="hero-window theme-paper absolute inset-0"
           style={{ clipPath: "ellipse(var(--rx, 0px) var(--ry, 0px) at 50% 50%)" }}
         >
-          <RibbonCanvas
-            ref={ribbon}
-            poster={false}
-            material="satin"
-            interactive
-            frame={ribbonBox}
-            onReady={onRibbonReady}
-            className="absolute inset-0"
-          />
+          <div ref={ribbonWrap} className="absolute inset-0">
+            <RibbonCanvas
+              ref={ribbon}
+              idle
+              poster={false}
+              material="satin"
+              interactive
+              frame={ribbonBox}
+              onReady={onRibbonReady}
+              className="absolute inset-0"
+            />
+          </div>
 
           <div className="pointer-events-none absolute inset-x-0 top-[10svh] flex flex-col items-center px-6 text-center">
             <p data-hero-eyebrow className="mb-3 text-xs tracking-[0.2em] text-muted-paper uppercase">
