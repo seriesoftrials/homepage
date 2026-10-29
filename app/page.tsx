@@ -1,15 +1,14 @@
 import { HomeHero } from "@/components/home/HomeHero";
 import { JoinSection } from "@/components/home/JoinSection";
 import { ActivitiesSection, ValuesSection } from "@/components/home/ListSections";
-import { PeopleSection } from "@/components/home/PeopleSection";
 import { ProblemSection } from "@/components/home/ProblemSection";
 import { RevealSection } from "@/components/home/RevealSection";
-import { TalentSection } from "@/components/home/TalentSection";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
-// Each section after the hero opens through the loop aperture, alternating
-// paper and ink: Trial 01 to Trial 07.
+// The hero dives into the ribbon's black band, which becomes the problem
+// statement's background; every section after that rises as an arch,
+// alternating paper and ink, and the page ends on "Join us".
 export default function Home() {
   return (
     <PageTransition>
@@ -19,8 +18,6 @@ export default function Home() {
         <RevealSection />
         <ValuesSection />
         <ActivitiesSection />
-        <PeopleSection />
-        <TalentSection />
         <JoinSection />
         <SiteFooter />
       </main>

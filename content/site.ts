@@ -22,48 +22,29 @@ export const nav: { href: string; label: L }[] = [
   { href: "/join", label: { ko: "함께하기", en: "Join Us" } },
 ];
 
-export const loader = {
-  label: "Trial 00",
-};
-
 // Each caption covers one stage of the ribbon forming: loose loop, crossing, twist, S.
 export const hero = {
   eyebrow: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
   title: "Series of Trials",
-  scroll: { ko: "스크롤해서 시작하기", en: "Scroll to begin" } as L,
+  scroll: { ko: "아래로 스크롤", en: "Scroll down" } as L,
   stages: [
-    { tag: "01 / Loose loop", text: { ko: "열망은 흩어져 있었습니다.", en: "Ambition was scattered." } },
-    { tag: "02 / Crossing", text: { ko: "서로를 발견하고,", en: "We find each other," } },
-    { tag: "03 / Twist", text: { ko: "생각을 행동으로 뒤집어,", en: "turn thought into action," } },
-    { tag: "04 / Serial", text: { ko: "이어지는 시도가 됩니다.", en: "and become a series of trials." } },
-  ] as { tag: string; text: L }[],
-};
-
-export const problem = {
-  trial: "Trial 01",
-  title: { ko: ["서로를 발견할", "구조가 필요합니다"], en: ["We need a way", "to find each other"] } as Lines,
-  lead: {
-    ko: "중앙대학교에는 불확실성에 도전할 의지가 있는 사람들이 분명히 존재합니다. 다만 서로를 발견할 구조가 부족합니다.",
-    en: "Chung-Ang has people who want to take on uncertainty. What it lacks is a way for them to find each other.",
-  } as L,
-  points: [
-    {
-      ko: "뜻이 있어도 함께 시작할 동료와 먼저 걸어간 선배를 찾기 어렵습니다. 시작의 어려움은 개인의 몫으로 남습니다.",
-      en: "Even with the will, it is hard to find peers to start with or seniors who went first. Starting stays a solitary problem.",
-    },
-    {
-      ko: "다른 대학에는 학교를 구심점으로 한 창업 학회가 있습니다. SNUSV, VERY, NEXT, INSIDERS처럼요.",
-      en: "Other universities have startup societies at their center: SNUSV, VERY, NEXT, INSIDERS.",
-    },
-    {
-      ko: "어느 학교에 다니는지가 도전의 가능성을 결정할 이유는 없습니다.",
-      en: "Which school you attend should not decide what you can attempt.",
-    },
+    { ko: "열망은 흩어져 있었습니다.", en: "Ambition was scattered." },
+    { ko: "서로를 발견하고,", en: "We find each other," },
+    { ko: "생각을 행동으로 뒤집어,", en: "turn thought into action," },
+    { ko: "이어지는 시도가 됩니다.", en: "and become a series of trials." },
   ] as L[],
 };
 
+// Read in place: the words darken one by one while the section is pinned.
+export const problem = {
+  eyebrow: { ko: "서로를 발견할 구조가 필요합니다", en: "We need a way to find each other" } as L,
+  statement: {
+    ko: "중앙대학교에는 불확실성에 도전할 의지가 있는 사람들이 분명히 존재합니다. 다만 서로를 발견할 구조가 부족합니다. 어느 학교에 다니는지가 도전의 가능성을 결정할 이유는 없습니다.",
+    en: "Chung-Ang has people who want to take on uncertainty. What it lacks is a way for them to find each other. Which school you attend should not decide what you can attempt.",
+  } as L,
+};
+
 export const reveal = {
-  trial: "Trial 02",
   // SER·IAL expand into SERies of trIALs.
   parts: [
     { text: "SER", keep: true },
@@ -80,7 +61,6 @@ export const reveal = {
 };
 
 export const values = {
-  trial: "Trial 03",
   title: { ko: ["우리가 존재하는 이유"], en: ["Why we exist"] } as Lines,
   items: [
     {
@@ -115,7 +95,6 @@ export const values = {
 };
 
 export const activities = {
-  trial: "Trial 04",
   title: { ko: ["함께 시도하는", "환경을 만듭니다"], en: ["We build a place", "to try together"] } as Lines,
   items: [
     {
@@ -149,45 +128,7 @@ export const activities = {
   ] as { name: L; text: L }[],
 };
 
-export const people = {
-  trial: "Trial 05",
-  title: { ko: ["먼저 시작한", "사람들"], en: ["The people", "who started first"] } as Lines,
-  cta: { ko: "멤버 모두 보기", en: "Meet everyone" } as L,
-};
-
-export const talent = {
-  trial: "Trial 06",
-  title: { ko: ["이런 사람과", "함께하고 싶습니다"], en: ["Who we are", "looking for"] } as Lines,
-  pursue: {
-    label: { ko: "추구", en: "We value" } as L,
-    items: [
-      { ko: "의지, 에너지, 희망적인 자세", en: "Will, energy and a hopeful stance" },
-      { ko: "성장을 추구하고 빠르게 배우기", en: "Pursuing growth and learning fast" },
-      { ko: "아쉬워할 줄 아는 갈망", en: "The hunger to want more" },
-    ] as L[],
-  },
-  avoid: {
-    label: { ko: "지양", en: "We avoid" } as L,
-    items: [
-      { ko: "염세주의, 비관주의, 냉소주의", en: "Pessimism and cynicism" },
-      { ko: "안주하는 태도", en: "Complacency" },
-    ] as L[],
-  },
-  questionsLabel: { ko: "우리가 묻는 질문", en: "Questions we ask" } as L,
-  questions: [
-    {
-      ko: "남들이 대부분 동의하는데 당신은 그렇지 않았던 적이 있나요?",
-      en: "Have you ever disagreed when almost everyone else agreed?",
-    },
-    {
-      ko: "어떤 문제를 왜 해결하려 했고, 그 노력에는 어떤 한계가 있었나요?",
-      en: "What problem did you try to solve, why, and where did your effort hit its limits?",
-    },
-  ] as L[],
-};
-
 export const join = {
-  trial: "Trial 07",
   title: { ko: ["함께해요."], en: ["Join us."] } as Lines,
   text: {
     ko: "SERIAL은 매 학기 새로운 학회원을 모집합니다. 다음 시도를 함께 만들어요.",

@@ -101,6 +101,24 @@ html.is-intro .site-header {
   }
 }
 
+/* Cards are a shade off their section, so they read as objects on a surface. */
+.theme-ink .card-tab,
+.theme-ink .card-body {
+  background: #1b1b1b;
+  box-shadow: 0 0 0 1px #262626;
+}
+
+.theme-paper .card-tab,
+.theme-paper .card-body {
+  background: #fff;
+  box-shadow: 0 0 0 1px #e6e6e1;
+}
+
+.card-tab {
+  clip-path: inset(-1px -1px 0 -1px);
+  color: var(--muted);
+}
+
 .twist-host {
   perspective: 100vw;
 }
