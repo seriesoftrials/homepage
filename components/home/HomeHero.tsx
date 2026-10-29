@@ -29,13 +29,29 @@ const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
 const LOOP_FIT = 0.92;
 
 // While the page rests at the top, the loose loop slowly leans into a twist and
-// eases back, once to the right and once to the left, as if trying it out: a
-// hint that scrolling will form it. Depth is sequence progress (0.14 narrows the
-// loop ~12% before any crossing, measured from lib/ribbon). The ribbon is
-// mirrored between leans, at the moment the loop is straight and symmetric, so
-// the change of side is invisible.
-const TEASE_DEPTH = 0.14;
-const TEASE_SECONDS = 5; // one lean out and back
+// eases back, rolling a little right and then left, as if trying it out: a hint
+// that scrolling will form it. The twist is driven in shape space, not progress:
+// the formation eases with smootherstep and ignores the first stretch of
+// progress, so a sine on progress would sit still for half of each cycle and
+// then jump. Here the visible amount follows the sine and is mapped back.
+const TEASE_AMOUNT = 0.17; // formation amount at the deepest point
+const TEASE_SECONDS = 6; // one twist in and out
+const TEASE_ROLL = 0.07; // radians; one roll cycle spans two twists
+
+// Inverse of lib/ribbon/sequence.js for the forming stretch: formation amount
+// (smootherstep of x) → sequence progress. Constants mirror sequence.js:
+// loose hold 0.5 s, then x runs 0→1 over 1.4 s, of a 6.4 s sequence.
+function progressForAmount(amount: number) {
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 24; i++) {
+    const x = (lo + hi) / 2;
+    const eased = x * x * x * (x * (x * 6 - 15) + 10);
+    if (eased < amount) lo = x;
+    else hi = x;
+  }
+  return (0.5 + 1.4 * lo) / 6.4;
+}
 
 // The loader only plays on the first full load; client navigation back home
 // opens straight onto the hero.
@@ -100,18 +116,19 @@ export function HomeHero() {
         const startedAt = gsap.ticker.time;
         const teaseTick = (time: number) => {
           const t = Math.max(0, time - startedAt) / TEASE_SECONDS;
-          const pulse = Math.sin(Math.PI * t) ** 2;
-          const next = TEASE_DEPTH * pulse * Math.max(0, 1 - state.form * 6);
-          // Odd leans go left; unmirror as soon as the loop is straight again.
-          ribbon.current?.setMirror(Math.floor(t) % 2 === 1 && next > 0.002);
-          if (Math.abs(next - tease) < 1e-4) return;
+          const fade = Math.max(0, 1 - state.form * 6);
+          const wave = (1 - Math.cos(2 * Math.PI * t)) / 2;
+          // Rolls right during one twist and left during the next.
+          ribbon.current?.setLean(TEASE_ROLL * Math.sin(Math.PI * t) * fade);
+          const next = wave > 0.0005 ? progressForAmount(TEASE_AMOUNT * wave) * fade : 0;
+          if (Math.abs(next - tease) < 1e-5) return;
           tease = next;
           apply();
         };
         gsap.ticker.add(teaseTick);
         stopTease = () => {
           gsap.ticker.remove(teaseTick);
-          ribbon.current?.setMirror(false);
+          ribbon.current?.setLean(0);
         };
         return tl;
       };
