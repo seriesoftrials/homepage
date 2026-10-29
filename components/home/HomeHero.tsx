@@ -49,9 +49,14 @@ function progressForAmount(amount: number) {
   return (0.5 + 1.4 * lo) / 6.4;
 }
 
-// The loader only plays on the first full load; client navigation back home
-// opens straight onto the hero.
-let introPlayed = false;
+// The loader plays only when "/" itself was loaded by the browser (first visit
+// or refresh); LocaleScript flags that before first paint. Arriving at home by
+// clicking a link opens straight onto the hero.
+declare global {
+  interface Window {
+    __serialIntro?: boolean;
+  }
+}
 const MIN_LOADER_SECONDS = 1.4;
 
 export function HomeHero() {
@@ -134,11 +139,10 @@ export function HomeHero() {
         gsap.set(win, { "--rx": "200vmax", "--ry": "300vmax" });
         gsap.set(loaderRef.current, { display: "none" });
         gsap.set(captions.at(-1)!, { opacity: 1 });
-        introPlayed = true;
         return;
       }
 
-      if (introPlayed) {
+      if (!window.__serialIntro) {
         gsap.set(win, { "--rx": "200vmax", "--ry": "300vmax" });
         gsap.set(loaderRef.current, { display: "none" });
         twistIn(gsap.timeline(), titleItems, 0.1, 0.04);
@@ -200,7 +204,7 @@ export function HomeHero() {
         gsap
           .timeline({
             onComplete: () => {
-              introPlayed = true;
+              window.__serialIntro = false;
               win.style.clipPath = "none";
               gsap.set(loaderRef.current, { display: "none" });
               lockScroll(false);

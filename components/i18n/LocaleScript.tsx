@@ -1,8 +1,10 @@
 export const LOCALE_KEY = "serial-locale";
 
-// Also marks the first load of "/" as the intro, so the header is hidden from
-// the first frame instead of fading out once React hydrates.
-const script = `try{var d=document.documentElement,l=localStorage.getItem("${LOCALE_KEY}");if(l==="en"||l==="ko")d.lang=l;if(location.pathname==="/"&&!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("is-intro")}catch(e){}`;
+// Also marks a full load of "/" (first visit or refresh) as the intro: the
+// header is hidden from the first frame, and window.__serialIntro tells the
+// hero to play the loader. Client-side navigation never runs this script, so
+// clicking Home within the site skips the loader.
+const script = `try{var d=document.documentElement,l=localStorage.getItem("${LOCALE_KEY}");if(l==="en"||l==="ko")d.lang=l;if(location.pathname==="/"&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("is-intro");window.__serialIntro=true}}catch(e){}`;
 
 // Runs while the HTML is parsed, before first paint, so the stored language
 // is applied without a flash (see Next.js "Preventing flash before hydration").
