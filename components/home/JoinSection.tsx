@@ -15,7 +15,8 @@ export function JoinSection() {
     <LoopAperture
       theme="ink"
       cover={
-        <div className="flex flex-col items-center">
+        // Raised on phones to leave room for the footer row below.
+        <div className="flex flex-col items-center pb-24 sm:pb-0">
           <RibbonCanvas spin className="mb-4 h-[min(34svh,60vw)] w-[min(34svh,60vw)]" />
           <SectionCover title={join.title} />
           <p className="mt-6 max-w-md text-center text-[15px] leading-[1.7] text-(--muted)">
