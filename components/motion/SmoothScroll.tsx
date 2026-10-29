@@ -12,7 +12,9 @@ export function SmoothScroll() {
 
   useEffect(() => {
     if (prefersReducedMotion()) return;
-    const lenis = new Lenis({ lerp: 0.1, autoRaf: false });
+    // A wheel notch travels about 0.6× its native distance, as on casadisolare.com
+    // (0.55× on Windows), so content moves at reading pace.
+    const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.6, autoRaf: false });
     const raf = (time: number) => lenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(raf);

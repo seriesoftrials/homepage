@@ -25,6 +25,13 @@
 
 html {
   background: var(--ink);
+  /* No visible scrollbar, as on casadisolare.com. It also keeps the layout
+     width constant when the loader locks and then releases scrolling. */
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
