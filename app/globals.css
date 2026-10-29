@@ -222,6 +222,36 @@ html[lang="en"] .locale-toggle__option--en {
   }
 }
 
+/* Back to top: the same frosted glass as the language switch. */
+.back-to-top {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.05));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.22),
+    inset 0 1px 0 rgb(255 255 255 / 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.6s var(--ease-loop),
+    visibility 0s linear 0.45s,
+    background-color 0.3s ease;
+}
+
+.back-to-top.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.45s ease,
+    transform 0.6s var(--ease-loop),
+    visibility 0s;
+}
+
+.back-to-top:hover {
+  background-color: rgb(255 255 255 / 0.12);
+}
+
 /* Sub-page scroll cue: arrives after the page settles, leaves on scroll. */
 .page-scroll-cue {
   animation: page-cue-in 0.8s ease 1.1s both;

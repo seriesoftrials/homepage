@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { LocaleScript } from "@/components/i18n/LocaleScript";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Ambient } from "@/components/site/Ambient";
+import { BackToTop } from "@/components/site/BackToTop";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import "./globals.css";
 
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SmoothScroll />
         <SiteHeader />
         {children}
+        <BackToTop />
         <Ambient />
       </body>
     </html>
