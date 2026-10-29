@@ -37,10 +37,6 @@ export const LOOP_RATIO = 1.46;
 export const LOOSE_LOOP_RX = 0.846 / 1.54 / 2; // × canvas size
 export const LOOSE_LOOP_RY = 1.238 / 1.54 / 2;
 
-// A LOOP_RATIO oval with this x-radius covers any viewport: the corner needs
-// hypot(w/2, h/2/1.46) ≤ hypot(0.5, 0.342) vmax ≈ 0.606 vmax.
-export const COVER_VMAX = 62;
-
 // Radius (x) of a LOOP_RATIO oval that just covers a w × h viewport.
 export function coverRadius(w: number, h: number) {
   return Math.hypot(w / 2, h / 2 / LOOP_RATIO) * 1.02;

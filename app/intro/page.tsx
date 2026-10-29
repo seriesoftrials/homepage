@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { T } from "@/components/i18n/T";
 import { LoopAperture } from "@/components/motion/LoopAperture";
-import { TrialCover } from "@/components/motion/TrialCover";
+import { SectionCover } from "@/components/motion/SectionCover";
 import { TwistText } from "@/components/motion/TwistText";
 import { PageTitle } from "@/components/site/PageTitle";
 import { PageTransition } from "@/components/site/PageTransition";
@@ -10,7 +10,7 @@ import { introPage } from "@/content/site";
 
 export const metadata: Metadata = { title: "소개 · SERIAL" };
 
-// The founding essay, one chapter per oval.
+// The founding essay, one chapter per rising arch.
 export default function IntroPage() {
   return (
     <PageTransition>
@@ -22,7 +22,7 @@ export default function IntroPage() {
           <LoopAperture
             key={i}
             theme={i % 2 === 0 ? "ink" : "paper"}
-            cover={<TrialCover trial={`Chapter ${String(i + 1).padStart(2, "0")}`} title={chapter.title} />}
+            cover={<SectionCover title={chapter.title} />}
           >
             <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 pt-6 pb-[45svh] sm:px-8">
               {chapter.body.map((paragraph, j) => (

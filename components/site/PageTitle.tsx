@@ -7,7 +7,7 @@ import { TwistText, twistIn } from "@/components/motion/TwistText";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 
 // Sub-page titles are on screen from the start, so they flip in on arrival
-// (after the page's oval has opened) rather than on scroll.
+// (after the page's arch has risen) rather than on scroll.
 export function PageTitle({ title, eyebrow }: { title: Localized; eyebrow?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 

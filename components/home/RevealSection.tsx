@@ -27,7 +27,6 @@ export function RevealSection() {
 function Cover() {
   return (
     <div className="flex w-full flex-col items-center text-center">
-      <p className="mb-10 font-mono text-[11px] tracking-[0.22em] text-(--muted) uppercase">{reveal.trial}</p>
       <h2
         data-wordmark
         aria-label="SERIAL: Series of Trials"
