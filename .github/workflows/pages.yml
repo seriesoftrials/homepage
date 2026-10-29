@@ -1,0 +1,50 @@
+name: Deploy preview to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+        env:
+          GITHUB_PAGES: "true"
+      # The export writes route prefetch data as `__next.<route>/<file>`, but
+      # the client asks for `__next.<route>.<file>`; copy each one to that name.
+      - name: Add flat names for prefetch data
+        run: |
+          find out -type f -path '*/__next.*/*' | while read -r f; do
+            dir="$(dirname "$f")"
+            cp "$f" "$(dirname "$dir")/$(basename "$dir").$(basename "$f")"
+          done
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
