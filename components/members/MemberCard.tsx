@@ -16,7 +16,7 @@ export function MemberCard({ member, className = "" }: { member: Member; classNa
       </div>
       <figcaption className="mt-4 flex items-baseline justify-between gap-3">
         <span className="text-lg font-semibold tracking-[-0.02em]">{member.name}</span>
-        <span className="font-mono text-[11px] tracking-[0.14em] text-(--muted) uppercase">{member.role}</span>
+        <span className="label text-(--muted)">{member.role}</span>
       </figcaption>
       <p className="mt-1 text-[13px] text-(--muted)">
         <T value={member.major} />

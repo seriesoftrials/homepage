@@ -22,7 +22,7 @@ export function PageTitle({ title, eyebrow }: { title: Localized; eyebrow?: stri
   return (
     <div ref={ref} className="px-5 pt-[24svh] pb-16 sm:px-8">
       {eyebrow ? (
-        <p className="mb-5 font-mono text-[11px] tracking-[0.22em] text-(--muted) uppercase">{eyebrow}</p>
+        <p className="mb-5 label text-(--muted)">{eyebrow}</p>
       ) : null}
       <TwistText
         as="h1"

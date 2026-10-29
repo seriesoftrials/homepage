@@ -38,7 +38,7 @@ export function CardStack({ items }: { items: Item[] }) {
             <article data-card className="relative origin-top">
               <div data-veil aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 bg-(--bg) opacity-0" />
               <div className="flex">
-                <span className="card-tab rounded-t-2xl px-5 pt-3 pb-2 font-mono text-[11px] tracking-[0.18em] uppercase">
+                <span className="card-tab rounded-t-2xl px-5 pt-3 pb-2 label">
                   {number}
                 </span>
               </div>

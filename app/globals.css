@@ -23,6 +23,15 @@
   --font-wide: var(--font-zalando), var(--font-pretendard), Arial, sans-serif;
 }
 
+/* Small labels (card numbers, roles, loader count) in the wordmark's face. */
+@utility label {
+  font-family: var(--font-wide);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 html {
   background: var(--ink);
   /* No visible scrollbar, as on casadisolare.com. It also keeps the layout

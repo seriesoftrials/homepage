@@ -33,7 +33,7 @@ export default function IntroPage() {
                   <blockquote className="font-serif text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.45] text-(--muted) italic">
                     <T value={introPage.quote} />
                   </blockquote>
-                  <figcaption className="mt-8 flex justify-between font-mono text-[11px] tracking-[0.18em] text-(--muted)">
+                  <figcaption className="mt-8 flex justify-between label text-(--muted)">
                     <T value={introPage.signature.name} />
                     <span>{introPage.signature.date}</span>
                   </figcaption>
