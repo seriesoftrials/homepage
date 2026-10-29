@@ -7,6 +7,8 @@ export type RibbonHandle = {
   setProgress: (progress: number) => void;
   // Orthographic zoom toward a point in ribbon space (1 = framed as usual).
   setCamera: (zoom: number, x: number, y: number) => void;
+  // Mirrors the ribbon left to right, so a twist can lean either way.
+  setMirror: (mirrored: boolean) => void;
 };
 
 type Props = {
@@ -56,6 +58,7 @@ export function RibbonCanvas({
   const canvas = useRef<HTMLCanvasElement>(null);
   const progress = useRef(initialProgress);
   const view = useRef({ zoom: 1, x: 0, y: 0 });
+  const mirror = useRef(false);
   const render = useRef<() => void>(() => {});
   const readyCallback = useRef(onReady);
   const frameRef = useRef(frame);
@@ -74,6 +77,11 @@ export function RibbonCanvas({
       const v = view.current;
       if (v.zoom === zoom && v.x === x && v.y === y) return;
       view.current = { zoom, x, y };
+      render.current();
+    },
+    setMirror(mirrored) {
+      if (mirror.current === mirrored) return;
+      mirror.current = mirrored;
       render.current();
     },
   }));
@@ -177,6 +185,7 @@ export function RibbonCanvas({
         // Tilt and sway fade as the camera zooms in, so the zoom target never slides away.
         pivot.rotation.set((tilt.x + swayX) / zoom, (tilt.y + swayY) / zoom, 0);
         pivot.position.y = swaying ? (0.03 * Math.sin(clock * 0.8)) / zoom : 0;
+        pivot.scale.x = mirror.current ? -1 : 1;
 
         camera.zoom = zoom;
         camera.position.set(x, y, 6);

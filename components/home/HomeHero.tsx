@@ -28,13 +28,14 @@ const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
 // lib/ribbon: the band spans 0.913–0.929 of the outer ellipse at its thinnest).
 const LOOP_FIT = 0.92;
 
-// While the page rests at the top, the loose loop keeps starting to twist
-// toward the S and easing back: a hint that scrolling will form it. Depth is
-// sequence progress: at 0.15 the loop narrows ~15% as it starts to twist in
-// depth, short of the crossing (measured from lib/ribbon).
-const TEASE_DEPTH = 0.15;
-const TEASE_PERIOD = 3.6;
-const TEASE_ACTIVE = 0.55; // share of each period spent bending and returning
+// While the page rests at the top, the loose loop slowly leans into a twist and
+// eases back, once to the right and once to the left, as if trying it out: a
+// hint that scrolling will form it. Depth is sequence progress (0.14 narrows the
+// loop ~12% before any crossing, measured from lib/ribbon). The ribbon is
+// mirrored between leans, at the moment the loop is straight and symmetric, so
+// the change of side is invisible.
+const TEASE_DEPTH = 0.14;
+const TEASE_SECONDS = 5; // one lean out and back
 
 // The loader only plays on the first full load; client navigation back home
 // opens straight onto the hero.
@@ -98,15 +99,20 @@ export function HomeHero() {
         // The hint fades out over the first stretch of scroll.
         const startedAt = gsap.ticker.time;
         const teaseTick = (time: number) => {
-          const phase = (((time - startedAt + 0.8) % TEASE_PERIOD) + TEASE_PERIOD) % TEASE_PERIOD / TEASE_PERIOD;
-          const pulse = phase < TEASE_ACTIVE ? Math.sin((Math.PI * phase) / TEASE_ACTIVE) ** 2 : 0;
+          const t = Math.max(0, time - startedAt) / TEASE_SECONDS;
+          const pulse = Math.sin(Math.PI * t) ** 2;
           const next = TEASE_DEPTH * pulse * Math.max(0, 1 - state.form * 6);
+          // Odd leans go left; unmirror as soon as the loop is straight again.
+          ribbon.current?.setMirror(Math.floor(t) % 2 === 1 && next > 0.002);
           if (Math.abs(next - tease) < 1e-4) return;
           tease = next;
           apply();
         };
         gsap.ticker.add(teaseTick);
-        stopTease = () => gsap.ticker.remove(teaseTick);
+        stopTease = () => {
+          gsap.ticker.remove(teaseTick);
+          ribbon.current?.setMirror(false);
+        };
         return tl;
       };
 
