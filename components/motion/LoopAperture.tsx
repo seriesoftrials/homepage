@@ -47,23 +47,25 @@ export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: P
         defaults: { ease: "none" },
         scrollTrigger: { trigger: stage.current, start: "top top", end: "bottom bottom", scrub: 0.6 },
       });
-      tl.fromTo(win, { "--y": ARCH_FROM["--y"] }, { "--y": ARCH_TO["--y"], duration: 1, ease: "power1.out" }, 0)
-        .fromTo(win, { "--x": ARCH_FROM["--x"] }, { "--x": ARCH_TO["--x"], duration: 1, ease: "power2.in" }, 0)
+      // The arch fills the screen a little before the pin ends, so the last few
+      // pixels of scroll (or a page that ends on this section) never leave a
+      // sliver of the previous colour at the edges.
+      const rise = 0.85;
+      tl.fromTo(win, { "--y": ARCH_FROM["--y"] }, { "--y": ARCH_TO["--y"], duration: rise, ease: "power1.out" }, 0)
+        .fromTo(win, { "--x": ARCH_FROM["--x"] }, { "--x": ARCH_TO["--x"], duration: rise, ease: "power2.in" }, 0)
         .fromTo(
           win,
           { "--rx": ARCH_FROM["--rx"], "--ry": ARCH_FROM["--ry"] },
-          { "--rx": ARCH_TO["--rx"], "--ry": ARCH_TO["--ry"], duration: 1, ease: "power2.in" },
+          { "--rx": ARCH_TO["--rx"], "--ry": ARCH_TO["--ry"], duration: rise, ease: "power2.in" },
           0,
         );
       // Pieces marked data-defer are left for `extend` to reveal during the hold.
       const coverItems = Array.from(win.querySelectorAll("[data-cover] [data-twist-item]")).filter(
         (el) => !el.closest("[data-defer]"),
       );
-      twistIn(tl, coverItems, 0.35, 0.05);
-      if (hold > 0) {
-        extend?.(tl, win);
-        tl.set({}, {}, 1 + hold / 100);
-      }
+      twistIn(tl, coverItems, 0.3, 0.05);
+      if (hold > 0) extend?.(tl, win);
+      tl.set({}, {}, 1 + hold / 100);
     },
     { scope: stage },
   );
