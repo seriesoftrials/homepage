@@ -38,6 +38,8 @@ const TILT_X = 0.16;
 const TILT_Y = 0.22;
 // One continuous turn for `spin`; slower than the 3 s study turn, since it never rests.
 const SPIN_SECONDS = 5;
+// Most pixels a ribbon canvas renders (a 2560×1440 frame); see setPixelRatio.
+const MAX_PIXELS = 2560 * 1440;
 
 // Renders the approved ribbon (lib/ribbon, ported from the serial repo) only
 // when something changes, so a still page costs no frames.
@@ -212,9 +214,11 @@ export function RibbonCanvas({
         const { width, height } = el.getBoundingClientRect();
         const w = Math.max(1, width);
         const h = Math.max(1, height);
-        // 1.5× keeps the ribbon crisp; 2× on a full-screen canvas costs ~1.8×
-        // the pixels for little visible gain.
-        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5, 2560 / Math.max(w, h)));
+        // Full device resolution up to a pixel budget. A fixed 1.5× cap left
+        // phones (3×) drawing half their pixels, so the ribbon looked soft; a
+        // budget lets small screens stay sharp while a large full-screen
+        // canvas still renders about a 2560×1440 frame at most.
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, Math.sqrt(MAX_PIXELS / (w * h))));
         renderer.setSize(w, h, false);
         const box = frameRef.current?.(w, h) ?? Math.min(w, h);
         half = (HALF * h) / box;
