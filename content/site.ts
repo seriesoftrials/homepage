@@ -27,7 +27,7 @@ export const nav: { href: string; label: L }[] = [
 export const hero = {
   eyebrow: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
   title: "Series of Trials",
-  scroll: { ko: "아래로 스크롤", en: "Scroll down" } as L,
+  scroll: { ko: "Scroll to discover", en: "Scroll to discover" } as L,
   stages: [
     { ko: "열망은 흩어져 있었습니다.", en: "Ambition was scattered." },
     { ko: "서로를 발견하고,", en: "We find each other," },
