@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { T } from "@/components/i18n/T";
 import { MemberThread } from "@/components/members/MemberThread";
+import { PageScrollCue } from "@/components/site/PageScrollCue";
 import { PageTitle } from "@/components/site/PageTitle";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -16,13 +17,12 @@ export default function MembersPage() {
         <PageTitle title={membersPage.title} eyebrow="Founding members" />
         <p className="-mt-6 px-5 text-[15px] text-(--muted) sm:px-8">
           <T value={membersPage.lead} />
-          <span className="mx-2 opacity-40">·</span>
-          <T value={membersPage.hint} />
         </p>
         <div className="pt-[12svh] pb-[20svh]">
           <MemberThread />
         </div>
         <SiteFooter />
+        <PageScrollCue />
       </main>
     </PageTransition>
   );
