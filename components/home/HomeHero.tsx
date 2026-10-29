@@ -16,12 +16,17 @@ const FORM_END = 0.5;
 const HOLD_END = 0.66;
 const ZOOM_END = 0.97;
 // Widest point of the settled band (measured from lib/ribbon: inscribed radius
-// 0.104 at the centre), and a zoom that lets it cover any viewport (a tall phone
-// needs about 43×).
+// 0.104 at the centre), and a zoom that lets it cover any viewport (a wide
+// 1920 × 910 window needs about 69×).
 const FOCUS = { x: -0.013, y: 0.013 };
-const MAX_ZOOM = 60;
-// The ribbon is framed in the same square the loader ring is sized from.
-const ribbonBox = (w: number, h: number) => Math.min(w * 0.82, h * 0.84);
+const MAX_ZOOM = 90;
+// The ribbon is framed in the same square the loader ring is sized from, small
+// enough to sit between the title and the captions without touching either.
+const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
+// The loader's paper oval is drawn at this fraction of the loop's outer edge,
+// which keeps its rim inside the black band at every angle (measured from
+// lib/ribbon: the band spans 0.913–0.929 of the outer ellipse at its thinnest).
+const LOOP_FIT = 0.92;
 
 // The loader only plays on the first full load; client navigation back home
 // opens straight onto the hero.
@@ -104,8 +109,8 @@ export function HomeHero() {
       document.documentElement.classList.add("is-intro");
       lockScroll(true);
       const box = ribbonBox(innerWidth, innerHeight);
-      const rx = box * LOOSE_LOOP_RX;
-      const ry = box * LOOSE_LOOP_RY;
+      const rx = box * LOOSE_LOOP_RX * LOOP_FIT;
+      const ry = box * LOOSE_LOOP_RY * LOOP_FIT;
       gsap.set(ring.current, { attr: { rx, ry } });
       // Dash values in real path units; GSAP rounds px, so a 0–1 pathLength would step.
       const circumference = ring.current!.getTotalLength();
@@ -181,11 +186,11 @@ export function HomeHero() {
             className="absolute inset-0"
           />
 
-          <div className="pointer-events-none absolute inset-x-0 top-[13svh] flex flex-col items-center px-6 text-center">
+          <div className="pointer-events-none absolute inset-x-0 top-[10svh] flex flex-col items-center px-6 text-center">
             <p data-hero-eyebrow className="mb-3 text-xs tracking-[0.2em] text-muted-paper uppercase">
               <T value={hero.eyebrow} />
             </p>
-            <h1 data-hero-title className="twist-host font-serif text-[clamp(2.75rem,8.5vw,8.5rem)] leading-none tracking-[-0.03em]">
+            <h1 data-hero-title className="twist-host font-serif text-[clamp(2.5rem,min(6vw,9svh),5.75rem)] leading-none tracking-[-0.03em]">
               <span aria-hidden="true">
                 {Array.from(hero.title).map((char, i) => (
                   <span key={i} data-twist-item>
@@ -197,7 +202,7 @@ export function HomeHero() {
             </h1>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-[12svh] grid place-items-center px-6 text-center">
+          <div className="pointer-events-none absolute inset-x-0 bottom-[13svh] grid place-items-center px-6 text-center">
             {hero.stages.map((stage, i) => (
               <div key={i} data-stage className="col-start-1 row-start-1 opacity-0">
                 <TwistText text={stage} split="word" mode="manual" className="text-[clamp(1.25rem,2.6vw,2.25rem)] font-medium tracking-[-0.02em]" />
@@ -217,7 +222,7 @@ export function HomeHero() {
           <svg className="absolute inset-0 h-full w-full overflow-visible">
             <ellipse ref={ring} cx="50%" cy="50%" rx="0" ry="0" fill="none" stroke="currentColor" strokeWidth="1.25" />
           </svg>
-          <div data-loader-label className="absolute inset-x-0 bottom-8 flex justify-between px-6 font-mono text-[11px] tracking-[0.18em] uppercase">
+          <div data-loader-label className="absolute inset-x-0 bottom-8 flex justify-between px-6 label">
             <span>{brand.name}</span>
             <span ref={percent}>000</span>
           </div>

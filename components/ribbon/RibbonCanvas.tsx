@@ -189,7 +189,8 @@ export function RibbonCanvas({
         schedule();
       };
       const onPointer = (event: PointerEvent) => {
-        if (event.pointerType === "touch") return;
+        // Hold still during the intro, where the loader's oval must match the loop.
+        if (event.pointerType === "touch" || document.documentElement.classList.contains("is-intro")) return;
         tilt.ty = ((event.clientX / innerWidth) * 2 - 1) * TILT_Y;
         tilt.tx = ((event.clientY / innerHeight) * 2 - 1) * TILT_X;
         last = performance.now();
