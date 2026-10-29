@@ -105,8 +105,8 @@ export function HomeHero() {
         return;
       }
 
-      // Loader: the ring is drawn by load progress, fills with paper exactly where
-      // the 3D loose loop sits, then opens onto the whole hero.
+      // Loader: the ring is drawn by load progress at the 3D loose loop's size,
+      // then paper grows out from inside it onto the whole hero.
       document.documentElement.classList.add("is-intro");
       lockScroll(true);
       const box = ribbonBox(innerWidth, innerHeight);
@@ -152,15 +152,17 @@ export function HomeHero() {
           .to(load, { value: 1, duration: 0.5, ease: "power2.inOut", onUpdate: showLoad })
           .to(items("[data-loader-label]"), { opacity: 0, duration: 0.3 })
           .addLabel("open", "+=0.1")
-          // The finished ring itself opens: paper grows from the ring's exact
-          // size to the full screen. The ribbon waits, so no loop sits inside it.
+          // Paper grows from the centre of the finished ring in one continuous
+          // motion: it fills the ring, the ring dissolves as the paper crosses it
+          // (about 0.7 s in, at ~19% of the full radius), and it keeps opening to
+          // the full screen. The ribbon waits, so no loop sits inside the ring.
           .fromTo(
             win,
-            { "--rx": `${rx}px`, "--ry": `${ry}px` },
-            { "--rx": `${full}px`, "--ry": `${full * LOOP_RATIO}px`, duration: 1.6, ease: "expo.inOut", immediateRender: false },
+            { "--rx": "0px", "--ry": "0px" },
+            { "--rx": `${full}px`, "--ry": `${full * LOOP_RATIO}px`, duration: 2, ease: "power3.inOut", immediateRender: false },
             "open",
           )
-          .to(ring.current, { opacity: 0, duration: 0.5 }, "open+=0.15")
+          .to(ring.current, { opacity: 0, duration: 0.35 }, "open+=0.55")
           .fromTo(ribbonWrap.current, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 1.4, ease: "power2.out" }, "open+=1.1")
           .call(() => document.documentElement.classList.remove("is-intro"), [], "open+=0.9")
           .fromTo(titleItems, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.9 }, "open+=0.7")
