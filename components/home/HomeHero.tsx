@@ -303,7 +303,9 @@ export function HomeHero() {
           </p>
           <div data-loader-label className="absolute inset-x-0 bottom-8 flex justify-between px-6 label">
             <span>{brand.name}</span>
-            <span ref={percent}>000</span>
+            <span>
+              <span ref={percent}>000</span>%
+            </span>
           </div>
         </div>
       </div>
