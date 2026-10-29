@@ -1,25 +1,55 @@
-import { LoopAperture } from "@/components/motion/LoopAperture";
-import { TrialCover } from "@/components/motion/TrialCover";
-import { TwistText } from "@/components/motion/TwistText";
-import { problem } from "@/content/site";
+"use client";
 
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
+import { T } from "@/components/i18n/T";
+import { problem } from "@/content/site";
+import { gsap, prefersReducedMotion } from "@/lib/motion";
+
+// Follows the hero's dive into the black band, so it opens already in ink.
+// The statement stays pinned while its words darken one by one: the page is
+// read in place instead of scrolling past.
 export function ProblemSection() {
+  const root = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !root.current) return;
+      const words = root.current.querySelectorAll("[data-word]");
+      gsap
+        .timeline({
+          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.6 },
+        })
+        .fromTo(root.current.querySelectorAll("[data-eyebrow]"), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.08 }, 0)
+        .fromTo(words, { opacity: 0.14 }, { opacity: 1, stagger: 0.7 / words.length, duration: 0.08, ease: "none" }, 0.06);
+    },
+    { scope: root },
+  );
+
+  const words = (text: string) =>
+    text.split(" ").map((word, i) => (
+      <span key={i} data-word>
+        {word}{" "}
+      </span>
+    ));
+
   return (
-    <LoopAperture theme="ink" cover={<TrialCover trial={problem.trial} title={problem.title} />}>
-      <div className="mx-auto max-w-6xl px-5 pt-10 pb-[40svh] sm:px-8">
-        <TwistText
-          text={problem.lead}
-          className="max-w-4xl font-serif text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.25] tracking-[-0.01em]"
-        />
-        <div className="mt-24 grid gap-10 border-t border-(--line) pt-10 sm:grid-cols-3">
-          {problem.points.map((point, i) => (
-            <div key={i} className="flex flex-col gap-4">
-              <span className="font-mono text-[11px] tracking-[0.18em] text-(--muted)">0{i + 1}</span>
-              <TwistText soft text={point} className="text-[15px] leading-[1.75] text-(--muted)" />
-            </div>
-          ))}
+    <section ref={root} className="theme-ink relative h-[280svh]">
+      <div className="sticky top-0 flex h-svh flex-col justify-center px-5 sm:px-8">
+        <div className="mx-auto w-full max-w-5xl">
+          <p data-eyebrow className="mb-8 text-sm text-(--muted)">
+            <T value={problem.eyebrow} />
+          </p>
+          <p className="text-[clamp(1.75rem,4.2vw,3.75rem)] leading-[1.25] font-medium tracking-[-0.03em]">
+            <span lang="ko" className="i18n-ko">
+              {words(problem.statement.ko)}
+            </span>
+            <span lang="en" className="i18n-en">
+              {words(problem.statement.en)}
+            </span>
+          </p>
         </div>
       </div>
-    </LoopAperture>
+    </section>
   );
 }

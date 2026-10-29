@@ -74,6 +74,33 @@ html.is-intro .site-header {
   background: #fafafa radial-gradient(ellipse at 50% 38%, #f4f5f7 0%, #fafafa 36%, #fff 72%);
 }
 
+.scroll-cue__chevron {
+  animation: scroll-cue 1.6s ease-in-out infinite;
+}
+
+.scroll-cue__chevron + .scroll-cue__chevron {
+  animation-delay: 0.2s;
+}
+
+@keyframes scroll-cue {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(-2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue__chevron {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
 .twist-host {
   perspective: 100vw;
 }
