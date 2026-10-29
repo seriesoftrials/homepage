@@ -60,7 +60,7 @@ export function BackToTop() {
 
   return (
     <div ref={wrap} className="pointer-events-none fixed right-5 bottom-6 z-40 mix-blend-difference sm:right-8 sm:bottom-8">
-      <button ref={ref} type="button" hidden onClick={toTop} className="back-to-top pointer-events-auto grid size-11 place-items-center rounded-full text-white">
+      <button ref={ref} type="button" hidden onClick={toTop} className="back-to-top pointer-events-auto grid cursor-pointer size-11 place-items-center rounded-full text-white">
         <span className="sr-only">
           <T value={{ ko: "맨 위로", en: "Back to top" }} />
         </span>
