@@ -33,7 +33,6 @@ const zalando = localFont({
 export const metadata: Metadata = {
   title: "SERIAL: 중앙대학교 실전창업학회",
   description: "Series of Trials. 함께 시도하고 경험을 나누며 다음 도전으로 이어가는 중앙대학교 실전창업학회입니다.",
-  icons: { icon: "/serial-mark.svg" },
 };
 
 export const viewport: Viewport = {
