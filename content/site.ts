@@ -137,7 +137,18 @@ export const join = {
   cta: { ko: "함께하기", en: "Join us" } as L,
 };
 
-export type Member = { slug: string; name: string; role: string; major: L };
+export type MemberLink = { label: string; href: string };
+
+// `quote` and `links` are filled in by each member; the profile shows a
+// placeholder until a quote exists and simply omits missing links.
+export type Member = {
+  slug: string;
+  name: string;
+  role: string;
+  major: L;
+  quote?: L;
+  links?: MemberLink[];
+};
 
 // Names stay in Korean in both languages until members confirm their own romanization.
 export const members: Member[] = [
@@ -153,6 +164,9 @@ export const members: Member[] = [
 export const membersPage = {
   title: { ko: "멤버", en: "Members" } as L,
   lead: { ko: "SERIAL을 처음 시작한 창립 멤버입니다.", en: "The founding members who started SERIAL." } as L,
+  hint: { ko: "멤버를 눌러 프로필 보기", en: "Select a member to see their profile" } as L,
+  quotePlaceholder: { ko: "한마디를 준비하고 있어요.", en: "A few words, coming soon." } as L,
+  close: { ko: "닫기", en: "Close" } as L,
 };
 
 export const introPage = {
