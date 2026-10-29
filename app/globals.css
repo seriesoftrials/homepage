@@ -52,6 +52,12 @@ body {
   overflow-x: clip;
 }
 
+/* The page's own background shows behind a page transition, so a dark page
+   is entered through dark, not a flash of white. */
+body:has(> main.theme-ink) {
+  background: var(--ink);
+}
+
 /* Both languages are rendered; the inline script sets <html lang> before paint. */
 html:not([lang="en"]) .i18n-en,
 html[lang="en"] .i18n-ko {
@@ -84,6 +90,13 @@ html[lang="en"] .i18n-ko {
 html.is-intro .site-header {
   opacity: 0;
   pointer-events: none;
+}
+
+/* Hidden only while the intro loader runs (it then sets its own eye-shaped
+   clip); otherwise the hero is open from the first frame, with no black flash
+   when returning home. */
+html.is-intro .hero-window {
+  clip-path: ellipse(0 0 at 50% 50%);
 }
 
 .hero-window {
@@ -325,13 +338,33 @@ html.member-hint-seen .thread-hint {
   }
 }
 
-/* Keep the header above both page snapshots, still blending with them. */
+/* Behind the pages, show the destination's background straight away (no
+   cross-fade from the old page's colour). */
+::view-transition-old(root) {
+  display: none;
+}
+
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* The header is shared by every page and never re-renders; keep it as one
+   steady layer above both page snapshots, still blending with them, instead
+   of cross-fading two copies of it. */
 .site-header {
   view-transition-name: site-header;
 }
 
 ::view-transition-group(site-header) {
   mix-blend-mode: difference;
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
   animation: none;
 }
 

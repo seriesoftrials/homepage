@@ -136,14 +136,12 @@ export function HomeHero() {
 
       if (prefersReducedMotion()) {
         ribbon.current?.setProgress(S_SETTLED);
-        gsap.set(win, { "--rx": "200vmax", "--ry": "300vmax" });
         gsap.set(loaderRef.current, { display: "none" });
         gsap.set(captions.at(-1)!, { opacity: 1 });
         return;
       }
 
       if (!window.__serialIntro) {
-        gsap.set(win, { "--rx": "200vmax", "--ry": "300vmax" });
         gsap.set(loaderRef.current, { display: "none" });
         twistIn(gsap.timeline(), titleItems, 0.1, 0.04);
         scrollStory();
@@ -249,7 +247,6 @@ export function HomeHero() {
         <div
           ref={windowRef}
           className="hero-window theme-paper absolute inset-0"
-          style={{ clipPath: "ellipse(var(--rx, 0px) var(--ry, 0px) at 50% 50%)" }}
         >
           <div ref={ribbonWrap} className="absolute inset-0">
             <RibbonCanvas
