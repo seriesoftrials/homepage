@@ -7,7 +7,7 @@ import { ScrollCue } from "@/components/motion/ScrollCue";
 import { TWIST_FROM, TWIST_TO, TwistText, twistIn } from "@/components/motion/TwistText";
 import { RibbonCanvas, type RibbonHandle } from "@/components/ribbon/RibbonCanvas";
 import { brand, hero } from "@/content/site";
-import { coverRadius, gsap, LOOP_RATIO, LOOSE_LOOP_RX, LOOSE_LOOP_RY, lockScroll, prefersReducedMotion } from "@/lib/motion";
+import { gsap, lockScroll, prefersReducedMotion } from "@/lib/motion";
 
 // Ribbon sequence keyframe (lib/ribbon/sequence.js KEYFRAMES.s): the S settles.
 const S_SETTLED = 0.297;
@@ -20,13 +20,9 @@ const ZOOM_END = 0.97;
 // 1920 × 910 window needs about 69×).
 const FOCUS = { x: -0.013, y: 0.013 };
 const MAX_ZOOM = 90;
-// The ribbon is framed in the same square the loader ring is sized from, small
-// enough to sit between the title and the captions without touching either.
+// The ribbon's frame: small enough to sit between the title and the captions
+// without touching either.
 const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
-// The loader's paper oval is drawn at this fraction of the loop's outer edge,
-// which keeps its rim inside the black band at every angle (measured from
-// lib/ribbon: the band spans 0.913–0.929 of the outer ellipse at its thinnest).
-const LOOP_FIT = 0.92;
 
 // While the page rests at the top, the loose loop slowly leans into a twist and
 // eases back, rolling a little right and then left, as if trying it out: a hint
@@ -62,7 +58,7 @@ export function HomeHero() {
   const root = useRef<HTMLElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
-  const ring = useRef<SVGEllipseElement>(null);
+  const line = useRef<HTMLDivElement>(null);
   const percent = useRef<HTMLSpanElement>(null);
   const inkFade = useRef<HTMLDivElement>(null);
   const ribbonWrap = useRef<HTMLDivElement>(null);
@@ -150,24 +146,43 @@ export function HomeHero() {
         return () => stopTease();
       }
 
-      // Loader: the ring is drawn by load progress at the 3D loose loop's size,
-      // then paper grows out from inside it onto the whole hero.
+      // Loader, "See the real": a hairline grows across the centre like a
+      // closed eyelid, by load progress. At 100% the lid flickers, opens into an
+      // eye with "See the real." inside, and the eye widens until the hero fills
+      // the screen.
       document.documentElement.classList.add("is-intro");
       lockScroll(true);
-      const box = ribbonBox(innerWidth, innerHeight);
-      const rx = box * LOOSE_LOOP_RX * LOOP_FIT;
-      const ry = box * LOOSE_LOOP_RY * LOOP_FIT;
-      gsap.set(ring.current, { attr: { rx, ry } });
-      // Dash values in real path units; GSAP rounds px, so a 0–1 pathLength would step.
-      const circumference = ring.current!.getTotalLength();
-      ring.current!.style.strokeDasharray = `${circumference}`;
+      const W = innerWidth;
+      const H = innerHeight;
+      const eyeWidth = Math.min(W * 0.62, 760);
+      const eyeOpen = eyeWidth * 0.42; // lid separation at full opening
       gsap.set(titleItems, TWIST_FROM);
       gsap.set(ribbonWrap.current, { opacity: 0 });
       gsap.set(items("[data-hero-eyebrow], [data-scroll-cue]"), { opacity: 0 });
 
+      // The eye is two quadratic curves meeting at the corners; `open` is the
+      // distance between the lids at the centre, `scale` grows the whole eye.
+      const eye = { open: 0, scale: 1 };
+      const drawEye = () => {
+        const a = (eyeWidth / 2) * eye.scale;
+        const c = eye.open * eye.scale; // control offset; the lid apex sits at c / 2
+        const cx = W / 2;
+        const cy = H / 2;
+        win.style.clipPath = `path("M ${cx - a} ${cy} Q ${cx} ${cy - c} ${cx + a} ${cy} Q ${cx} ${cy + c} ${cx - a} ${cy} Z")`;
+      };
+      // Smallest scale at which the eye covers the viewport's corners: the lid
+      // at x is c/2 · (1 − (x/a)²) above the centre.
+      let coverScale = 1;
+      while (
+        coverScale < 60 &&
+        ((eyeOpen * coverScale) / 2) * (1 - (W / (eyeWidth * coverScale)) ** 2) < H / 2
+      ) {
+        coverScale *= 1.05;
+      }
+
       const load = { value: 0 };
       const showLoad = () => {
-        ring.current!.style.strokeDashoffset = `${circumference * (1 - load.value)}`;
+        gsap.set(line.current, { width: eyeWidth * load.value });
         if (percent.current) percent.current.textContent = String(Math.round(load.value * 100)).padStart(3, "0");
       };
       // Creeps toward 90% while waiting, then completes once everything is ready.
@@ -182,13 +197,11 @@ export function HomeHero() {
       Promise.all([ribbonLoaded, document.fonts.ready, minimum]).then(() => {
         if (cancelled) return;
         creep.kill();
-        const full = coverRadius(innerWidth, innerHeight);
         gsap
           .timeline({
             onComplete: () => {
               introPlayed = true;
-              // Hold the window open regardless of later resizes.
-              gsap.set(win, { "--rx": "200vmax", "--ry": "300vmax" });
+              win.style.clipPath = "none";
               gsap.set(loaderRef.current, { display: "none" });
               lockScroll(false);
               scrollStory();
@@ -196,23 +209,24 @@ export function HomeHero() {
           })
           .to(load, { value: 1, duration: 0.5, ease: "power2.inOut", onUpdate: showLoad })
           .to(items("[data-loader-label]"), { opacity: 0, duration: 0.3 })
-          .addLabel("open", "+=0.1")
-          // Paper grows from the centre of the finished ring in one continuous
-          // motion: it fills the ring, the ring dissolves as the paper crosses it
-          // (about 0.7 s in, at ~19% of the full radius), and it keeps opening to
-          // the full screen. The ribbon waits, so no loop sits inside the ring.
-          .fromTo(
-            win,
-            { "--rx": "0px", "--ry": "0px" },
-            { "--rx": `${full}px`, "--ry": `${full * LOOP_RATIO}px`, duration: 2, ease: "power3.inOut", immediateRender: false },
-            "open",
-          )
-          .to(ring.current, { opacity: 0, duration: 0.35 }, "open+=0.55")
-          .fromTo(ribbonWrap.current, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 1.4, ease: "power2.out" }, "open+=1.1")
-          .call(() => document.documentElement.classList.remove("is-intro"), [], "open+=0.9")
-          .fromTo(titleItems, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.9 }, "open+=0.7")
-          .to(items("[data-hero-eyebrow]"), { opacity: 1, duration: 0.8 }, "open+=0.9")
-          .to(items("[data-scroll-cue]"), { opacity: 1, duration: 0.6 }, "open+=1.3");
+          .call(drawEye)
+          .to(line.current, { opacity: 0, duration: 0.15 }, "+=0.1")
+          // A flicker of the lid...
+          .to(eye, { open: eyeOpen * 0.08, duration: 0.14, ease: "power2.out", onUpdate: drawEye }, "<")
+          .to(eye, { open: 0, duration: 0.16, ease: "power2.in", onUpdate: drawEye })
+          // ...then the eye opens, and the phrase surfaces inside it.
+          .addLabel("open", "+=0.2")
+          .to(eye, { open: eyeOpen, duration: 1.1, ease: "expo.out", onUpdate: drawEye }, "open")
+          .fromTo(items("[data-eye-text]"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "open+=0.25")
+          // The eye widens until the hero fills the screen.
+          .addLabel("widen", "open+=1.7")
+          .to(items("[data-eye-text]"), { opacity: 0, duration: 0.4 }, "widen")
+          .to(eye, { scale: coverScale * 1.05, duration: 1.6, ease: "power3.inOut", onUpdate: drawEye }, "widen")
+          .fromTo(ribbonWrap.current, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 1.4, ease: "power2.out" }, "widen+=0.9")
+          .call(() => document.documentElement.classList.remove("is-intro"), [], "widen+=0.9")
+          .fromTo(titleItems, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.9 }, "widen+=0.7")
+          .to(items("[data-hero-eyebrow]"), { opacity: 1, duration: 0.8 }, "widen+=0.9")
+          .to(items("[data-scroll-cue]"), { opacity: 1, duration: 0.6 }, "widen+=1.3");
       });
 
       return () => {
@@ -279,9 +293,13 @@ export function HomeHero() {
         </div>
 
         <div ref={loaderRef} className="pointer-events-none absolute inset-0 text-paper" aria-hidden="true">
-          <svg className="absolute inset-0 h-full w-full overflow-visible">
-            <ellipse ref={ring} cx="50%" cy="50%" rx="0" ry="0" fill="none" stroke="currentColor" strokeWidth="1.25" />
-          </svg>
+          <div ref={line} className="absolute top-1/2 left-1/2 h-px w-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper" />
+          <p
+            data-eye-text
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-serif text-[clamp(1.6rem,3.2vw,2.75rem)] text-ink italic opacity-0"
+          >
+            See the real.
+          </p>
           <div data-loader-label className="absolute inset-x-0 bottom-8 flex justify-between px-6 label">
             <span>{brand.name}</span>
             <span ref={percent}>000</span>
