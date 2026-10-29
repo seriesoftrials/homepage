@@ -28,6 +28,10 @@ type Props = {
 // on refresh (which would drop the hidden start state of later tweens).
 export const ARCH_FROM = { "--y": "100svh", "--x": "26vw", "--rx": "24vw", "--ry": "36svh" };
 export const ARCH_TO = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0svh" };
+// On a portrait screen the same proportions make a narrow, tall bullet, so the
+// arch starts wider and its curve is sized by the width, keeping a round top.
+export const ARCH_FROM_PORTRAIT = { "--y": "100svh", "--x": "14vw", "--rx": "36vw", "--ry": "40vw" };
+export const ARCH_TO_PORTRAIT = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0vw" };
 export const ARCH_CLIP =
   "inset(var(--y, 100svh) var(--x, 26vw) 0 var(--x, 26vw) round var(--rx, 24vw) var(--rx, 24vw) 0 0 / var(--ry, 36svh) var(--ry, 36svh) 0 0)";
 
@@ -39,8 +43,11 @@ export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: P
     () => {
       const win = windowRef.current;
       if (!stage.current || !win) return;
+      const portrait = innerWidth < innerHeight;
+      const from = portrait ? ARCH_FROM_PORTRAIT : ARCH_FROM;
+      const to = portrait ? ARCH_TO_PORTRAIT : ARCH_TO;
       if (prefersReducedMotion()) {
-        gsap.set(win, ARCH_TO);
+        gsap.set(win, to);
         return;
       }
       const tl = gsap.timeline({
@@ -51,12 +58,12 @@ export function LoopAperture({ theme, cover, children, id, hold = 0, extend }: P
       // pixels of scroll (or a page that ends on this section) never leave a
       // sliver of the previous colour at the edges.
       const rise = 0.85;
-      tl.fromTo(win, { "--y": ARCH_FROM["--y"] }, { "--y": ARCH_TO["--y"], duration: rise, ease: "power1.out" }, 0)
-        .fromTo(win, { "--x": ARCH_FROM["--x"] }, { "--x": ARCH_TO["--x"], duration: rise, ease: "power2.in" }, 0)
+      tl.fromTo(win, { "--y": from["--y"] }, { "--y": to["--y"], duration: rise, ease: "power1.out" }, 0)
+        .fromTo(win, { "--x": from["--x"] }, { "--x": to["--x"], duration: rise, ease: "power2.in" }, 0)
         .fromTo(
           win,
-          { "--rx": ARCH_FROM["--rx"], "--ry": ARCH_FROM["--ry"] },
-          { "--rx": ARCH_TO["--rx"], "--ry": ARCH_TO["--ry"], duration: rise, ease: "power2.in" },
+          { "--rx": from["--rx"], "--ry": from["--ry"] },
+          { "--rx": to["--rx"], "--ry": to["--ry"], duration: rise, ease: "power2.in" },
           0,
         );
       // Pieces marked data-defer are left for `extend` to reveal during the hold.
