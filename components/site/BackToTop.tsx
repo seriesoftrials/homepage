@@ -5,18 +5,30 @@ import { useEffect, useRef } from "react";
 import { T } from "@/components/i18n/T";
 import { getLenis, prefersReducedMotion } from "@/lib/motion";
 
-// Appears near the end of any page that scrolls, at the bottom right above the
-// footer's coordinates, and glides back to the top. Out of range it is removed
+// Appears near the end of any page that scrolls, at the bottom right, and glides
+// back to the top. Once the footer scrolls in, it rides up to stay clear of it. Out of range it is removed
 // with `hidden` (not only faded by CSS), so it can never linger at the top of a
 // page or over the intro loader.
+// Space kept between the button and the footer's top edge.
+const FOOTER_GAP = 16;
+
 export function BackToTop() {
+  const wrap = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    const box = wrap.current;
+    if (!el || !box) return;
+    const footer = document.querySelector("footer");
+    let lift = 0;
     const update = () => {
+      if (footer) {
+        const base = innerHeight - box.getBoundingClientRect().bottom - lift;
+        lift = Math.max(0, innerHeight - base - (footer.getBoundingClientRect().top - FOOTER_GAP));
+        box.style.transform = lift ? `translateY(${-lift}px)` : "";
+      }
       const max = document.documentElement.scrollHeight - innerHeight;
       const show =
         !document.documentElement.classList.contains("is-intro") &&
@@ -47,7 +59,7 @@ export function BackToTop() {
   };
 
   return (
-    <div className="pointer-events-none fixed right-5 bottom-28 z-40 mix-blend-difference sm:right-8 sm:bottom-24">
+    <div ref={wrap} className="pointer-events-none fixed right-5 bottom-6 z-40 mix-blend-difference sm:right-8 sm:bottom-8">
       <button ref={ref} type="button" hidden onClick={toTop} className="back-to-top pointer-events-auto grid size-11 place-items-center rounded-full text-white">
         <span className="sr-only">
           <T value={{ ko: "맨 위로", en: "Back to top" }} />
