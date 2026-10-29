@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
+import { asset } from "@/lib/asset";
 
 export type RibbonHandle = {
   // Sequence progress: 0 = loose loop, ~0.3 = finished S, 1 = end of the first turn.
@@ -288,7 +289,7 @@ export function RibbonCanvas({
       {poster ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src="/ribbon/poster.png"
+          src={asset("/ribbon/poster.png")}
           alt=""
           aria-hidden="true"
           className="ribbon__poster absolute inset-0 h-full w-full object-contain"

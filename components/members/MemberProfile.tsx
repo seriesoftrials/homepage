@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { T } from "@/components/i18n/T";
 import { membersPage, type Member } from "@/content/site";
 import { lockScroll } from "@/lib/motion";
+import { asset } from "@/lib/asset";
 
 // A flat card over a dimmed page: role, name, major, quote and links.
 // Closes on the backdrop, the close button or Esc.
@@ -33,7 +34,7 @@ export function MemberProfile({ member, onClose }: { member: Member; onClose: ()
         <span className="relative block aspect-square w-28 overflow-hidden rounded-full bg-[radial-gradient(ellipse_at_50%_18%,#57595e,#303237_48%,#17191c)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/people/${member.slug}-cutout.webp`}
+            src={asset(`/people/${member.slug}-cutout.webp`)}
             alt=""
             className="absolute inset-x-0 bottom-0 h-[92%] w-full object-contain object-bottom grayscale"
           />
