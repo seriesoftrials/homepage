@@ -37,7 +37,6 @@ export const hero = {
 
 // Read in place: the words darken one by one while the section is pinned.
 export const problem = {
-  eyebrow: { ko: "서로를 발견할 구조가 필요합니다", en: "We need a way to find each other" } as L,
   statement: {
     ko: "중앙대학교에는 불확실성에 도전할 의지가 있는 사람들이 분명히 존재합니다. 다만 서로를 발견할 구조가 부족합니다. 어느 학교에 다니는지가 도전의 가능성을 결정할 이유는 없습니다.",
     en: "Chung-Ang has people who want to take on uncertainty. What it lacks is a way for them to find each other. Which school you attend should not decide what you can attempt.",
