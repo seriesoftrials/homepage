@@ -11,7 +11,8 @@ export const brand = {
   society: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
   established: "EST 2026 09",
   coordinates: "37.50439° N, 126.95676° E",
-  mapUrl: "https://maps.google.com/?q=37.50439,126.95676",
+  // Opens the campus place page on Google Maps.
+  mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("중앙대학교 서울캠퍼스")}`,
 };
 
 export const nav: { href: string; label: L }[] = [
