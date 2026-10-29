@@ -31,7 +31,7 @@ export function SiteHeader() {
               <T value={item.label} />
             </Link>
           ))}
-          <LocaleToggle className="text-[12px]" />
+          <LocaleToggle />
         </nav>
         <button
           type="button"
