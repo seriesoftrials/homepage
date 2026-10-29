@@ -4,8 +4,9 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 
-// Film grain over everything, and a faint light that trails the pointer.
-// Difference blending lets the same light read on paper and on ink.
+// Film grain over everything, and a faint light that trails the pointer. The
+// light is plain white without a blend mode (a large blended layer that moves
+// every frame is costly), so it reads on ink and disappears into paper.
 export function Ambient() {
   const glow = useRef<HTMLDivElement>(null);
 
@@ -28,7 +29,7 @@ export function Ambient() {
       <div
         ref={glow}
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 left-0 z-30 h-[46vmax] w-[46vmax] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 mix-blend-difference transition-opacity duration-700"
+        className="pointer-events-none fixed top-0 left-0 z-30 h-[46vmax] w-[46vmax] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 transition-opacity duration-700 will-change-transform"
         style={{ background: "radial-gradient(circle, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 38%, transparent 70%)" }}
       />
       <div aria-hidden="true" className="grain pointer-events-none fixed inset-0 z-[60]" />

@@ -212,7 +212,9 @@ export function RibbonCanvas({
         const { width, height } = el.getBoundingClientRect();
         const w = Math.max(1, width);
         const h = Math.max(1, height);
-        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2, 2560 / Math.max(w, h)));
+        // 1.5× keeps the ribbon crisp; 2× on a full-screen canvas costs ~1.8×
+        // the pixels for little visible gain.
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5, 2560 / Math.max(w, h)));
         renderer.setSize(w, h, false);
         const box = frameRef.current?.(w, h) ?? Math.min(w, h);
         half = (HALF * h) / box;
