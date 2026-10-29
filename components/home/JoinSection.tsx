@@ -16,7 +16,7 @@ export function JoinSection() {
       theme="ink"
       cover={
         <div className="flex flex-col items-center">
-          <RibbonCanvas autoplay interactive initialProgress={0.3} className="mb-4 h-[min(34svh,60vw)] w-[min(34svh,60vw)]" />
+          <RibbonCanvas spin className="mb-4 h-[min(34svh,60vw)] w-[min(34svh,60vw)]" />
           <SectionCover title={join.title} />
           <p className="mt-6 max-w-md text-center text-[15px] leading-[1.7] text-(--muted)">
             <T value={join.text} />
