@@ -30,7 +30,7 @@ function Cover() {
       <h2
         data-wordmark
         aria-label="SERIAL: Series of Trials"
-        className="twist-host font-wide text-[clamp(1.6rem,5.6vw,5.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
+        className="twist-host font-wide text-[clamp(1rem,5.6vw,5.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
       >
         {reveal.parts.map((part) =>
           part.keep ? (

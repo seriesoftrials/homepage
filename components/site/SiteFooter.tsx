@@ -14,13 +14,13 @@ export function SiteFooter({ inline = false }: { inline?: boolean }) {
           : "theme-ink relative flex-col py-10 sm:flex-row sm:items-end sm:justify-between"
       }`}
     >
-      <div>
+      <div className="min-w-0">
         <p className="font-wide text-base font-semibold text-paper">{brand.name}</p>
         <p className="mt-1">
           <T value={brand.society} />
         </p>
       </div>
-      <div className={`flex flex-col gap-1 label sm:items-end ${inline ? "items-end text-right" : ""}`}>
+      <div className={`flex flex-col gap-1 label whitespace-nowrap sm:items-end ${inline ? "items-end text-right max-sm:text-[10px]" : ""}`}>
         <a href={brand.mapUrl} target="_blank" rel="noreferrer" className="hover:text-paper">
           {brand.coordinates}
         </a>
