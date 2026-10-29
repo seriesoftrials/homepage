@@ -28,9 +28,10 @@ type Props = {
 // on refresh (which would drop the hidden start state of later tweens).
 export const ARCH_FROM = { "--y": "100svh", "--x": "26vw", "--rx": "24vw", "--ry": "36svh" };
 export const ARCH_TO = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0svh" };
-// On a portrait screen the same proportions make a narrow, tall bullet, so the
-// arch starts wider and its curve is sized by the width, keeping a round top.
-export const ARCH_FROM_PORTRAIT = { "--y": "100svh", "--x": "14vw", "--rx": "36vw", "--ry": "40vw" };
+// On a portrait screen any arch narrower than the screen reads as a tall
+// bullet. There it starts wider than the screen instead, so only a broad dome
+// shows, its sides running off the edges (as casadisolare.com does on phones).
+export const ARCH_FROM_PORTRAIT = { "--y": "100svh", "--x": "-22vw", "--rx": "72vw", "--ry": "56vw" };
 export const ARCH_TO_PORTRAIT = { "--y": "0svh", "--x": "0vw", "--rx": "0vw", "--ry": "0vw" };
 export const ARCH_CLIP =
   "inset(var(--y, 100svh) var(--x, 26vw) 0 var(--x, 26vw) round var(--rx, 24vw) var(--rx, 24vw) 0 0 / var(--ry, 36svh) var(--ry, 36svh) 0 0)";
