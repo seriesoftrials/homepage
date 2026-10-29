@@ -53,8 +53,10 @@ body {
 }
 
 /* The page's own background shows behind a page transition, so a dark page
-   is entered through dark, not a flash of white. */
-body:has(> main.theme-ink) {
+   is entered through dark, not a flash of white. Next keeps pages already
+   visited in the DOM, hidden with an inline display:none, so only the page
+   on screen may count; otherwise leaving the members page kept it dark. */
+body:has(> main.theme-ink:not([style*="display: none"])) {
   background: var(--ink);
 }
 
@@ -348,7 +350,9 @@ html.member-hint-seen .thread-hint {
 /* The new page waits until the old one has nearly gone, so a dark page and a
    light one never cross-fade into grey. */
 ::view-transition-old(.page-exit) {
-  animation: page-leave 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+  /* Steep, so the blended header crosses the grey midpoint of a paper/ink
+     change in an instant instead of fading out with it. */
+  animation: page-leave 0.35s cubic-bezier(0.7, 0, 1, 0.5) both;
 }
 
 ::view-transition-new(.page-enter) {
@@ -379,24 +383,35 @@ html.member-hint-seen .thread-hint {
   animation: none;
 }
 
-/* The header is shared by every page and never re-renders; keep it as one
-   steady layer above both page snapshots, still blending with them, instead
-   of cross-fading two copies of it. */
+/* The header's difference blend only works in a transition while a page
+   snapshot lies under it; over the bare background it turned white on white
+   and back. So during a transition it stops blending and is snapshotted in
+   its final colour instead: inverted (dark) over a light page, as is (white)
+   over a dark one. Each snapshot is taken in its own page's state, so between
+   two pages of the same colour the old and new header are identical, and
+   otherwise the header turns once, with the page. */
 .site-header {
   view-transition-name: site-header;
 }
 
+html:active-view-transition .site-header {
+  mix-blend-mode: normal;
+  filter: invert(1);
+}
+
+html:active-view-transition body:has(> main.theme-ink:not([style*="display: none"])) .site-header {
+  filter: none;
+}
+
+/* Groups stack in paint order, which put the arriving page above the header:
+   its opaque background hid the header until the transition ended. */
 ::view-transition-group(site-header) {
-  mix-blend-mode: difference;
-  animation: none;
+  z-index: 1;
 }
 
-::view-transition-old(site-header) {
-  display: none;
-}
-
+::view-transition-old(site-header),
 ::view-transition-new(site-header) {
-  animation: none;
+  animation-duration: 0.35s;
 }
 
 @media (prefers-reduced-motion: reduce) {
