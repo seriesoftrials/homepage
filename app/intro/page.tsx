@@ -3,6 +3,7 @@ import { T } from "@/components/i18n/T";
 import { LoopAperture } from "@/components/motion/LoopAperture";
 import { SectionCover } from "@/components/motion/SectionCover";
 import { TwistText } from "@/components/motion/TwistText";
+import { PageScrollCue } from "@/components/site/PageScrollCue";
 import { PageTitle } from "@/components/site/PageTitle";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -43,6 +44,7 @@ export default function IntroPage() {
           </LoopAperture>
         ))}
         <SiteFooter />
+        <PageScrollCue />
       </main>
     </PageTransition>
   );
