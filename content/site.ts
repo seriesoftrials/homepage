@@ -165,6 +165,7 @@ export const membersPage = {
   title: { ko: "멤버", en: "Members" } as L,
   lead: { ko: "SERIAL을 처음 시작한 창립 멤버입니다.", en: "The founding members who started SERIAL." } as L,
   hint: { ko: "멤버를 눌러 프로필 보기", en: "Select a member to see their profile" } as L,
+  next: { ko: "다음은 당신", en: "You, next" } as L,
   quotePlaceholder: { ko: "한마디를 준비하고 있어요.", en: "A few words, coming soon." } as L,
   close: { ko: "닫기", en: "Close" } as L,
 };

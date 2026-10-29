@@ -1,18 +1,28 @@
 import type { Metadata } from "next";
-import { MemberOrbit } from "@/components/members/MemberOrbit";
+import { T } from "@/components/i18n/T";
+import { MemberThread } from "@/components/members/MemberThread";
+import { PageTitle } from "@/components/site/PageTitle";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { membersPage } from "@/content/site";
 
 export const metadata: Metadata = { title: "멤버 · SERIAL" };
 
-// One full screen: the founding members revolve on the loop, and selecting
-// one opens their profile in the centre.
+// The founding members, linked in turn by one line that is drawn as you scroll.
 export default function MembersPage() {
   return (
     <PageTransition>
-      <main className="theme-ink relative">
-        <MemberOrbit />
-        <SiteFooter inline="desktop" />
+      <main className="theme-ink">
+        <PageTitle title={membersPage.title} eyebrow="Founding members" />
+        <p className="-mt-6 px-5 text-[15px] text-(--muted) sm:px-8">
+          <T value={membersPage.lead} />
+          <span className="mx-2 opacity-40">·</span>
+          <T value={membersPage.hint} />
+        </p>
+        <div className="pt-[12svh] pb-[20svh]">
+          <MemberThread />
+        </div>
+        <SiteFooter />
       </main>
     </PageTransition>
   );
