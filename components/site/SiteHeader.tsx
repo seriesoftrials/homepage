@@ -46,6 +46,7 @@ export function SiteHeader() {
           <span aria-hidden="true" className="menu-icon__bars">
             <span />
             <span />
+            <span />
           </span>
         </button>
       </header>

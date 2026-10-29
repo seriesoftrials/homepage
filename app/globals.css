@@ -159,45 +159,56 @@ html.is-intro .hero-window {
   opacity: 0.045;
 }
 
-/* Mobile menu: two bars that cross into an X, and a panel that slides in
-   from the right with its links following. */
+/* Mobile menu: three hairlines, the weight of the logo's thin stroke, with
+   the middle one shorter. The outer two cross into an X and the middle one
+   draws away; the panel slides in from the right with its links following.
+   Every line shares one box and is moved by transform, so all three round to
+   the same pixels and keep one weight; the 8px step stays on whole device
+   pixels at 125% and 150% display scaling as well. */
 .menu-icon__bars {
   position: relative;
   display: block;
   width: 22px;
-  height: 10px;
+  height: 17px;
 }
 
 .menu-icon__bars > span {
   position: absolute;
-  left: 0;
+  top: 0;
+  right: 0;
   width: 100%;
-  height: 1.5px;
-  border-radius: 1px;
+  height: 1px;
   background: currentColor;
   transition:
     transform 0.5s var(--ease-loop),
-    top 0.5s var(--ease-loop);
+    width 0.4s var(--ease-loop),
+    opacity 0.3s ease;
 }
 
-.menu-icon__bars > span:first-child {
-  top: 0;
+.menu-icon__bars > span:nth-child(2) {
+  width: 64%;
+  transform: translateY(8px);
 }
 
-.menu-icon__bars > span:last-child {
-  top: calc(100% - 1.5px);
+.menu-icon__bars > span:nth-child(3) {
+  transform: translateY(16px);
 }
 
-.menu-icon.is-open .menu-icon__bars > span {
-  top: calc(50% - 0.75px);
+.menu-icon:hover .menu-icon__bars > span:nth-child(2) {
+  width: 100%;
 }
 
-.menu-icon.is-open .menu-icon__bars > span:first-child {
-  transform: rotate(45deg);
+.menu-icon.is-open .menu-icon__bars > span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
 }
 
-.menu-icon.is-open .menu-icon__bars > span:last-child {
-  transform: rotate(-45deg);
+.menu-icon.is-open .menu-icon__bars > span:nth-child(2) {
+  width: 0;
+  opacity: 0;
+}
+
+.menu-icon.is-open .menu-icon__bars > span:nth-child(3) {
+  transform: translateY(8px) rotate(-45deg);
 }
 
 .mobile-menu {
