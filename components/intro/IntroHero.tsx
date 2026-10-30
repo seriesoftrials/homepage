@@ -49,9 +49,9 @@ function progressForAmount(amount: number) {
   return (0.5 + 1.4 * lo) / 6.4;
 }
 
-// The intro page's opening: the loose loop forms into the S as you scroll, and
-// the camera dives into its black band, which becomes the problem statement's
-// background.
+// The intro page's opening: the loose loop forms into the S as you scroll, its
+// captions telling what each stage means, and the camera dives into its black
+// band, which becomes the background of the page's contents.
 export function IntroHero() {
   const root = useRef<HTMLElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);

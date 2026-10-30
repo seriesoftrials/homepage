@@ -29,7 +29,8 @@ export const homeHero = {
   intro: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
 };
 
-// Each caption covers one stage of the ribbon forming: loose loop, crossing, twist, S.
+// The intro page's ribbon hero (each caption covers one stage of the ribbon
+// forming: loose loop, crossing, twist, S); the society line also heads home.
 export const hero = {
   eyebrow: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
   title: "Series of Trials",
@@ -42,7 +43,6 @@ export const hero = {
   ] as L[],
 };
 
-// Read in place: the words darken one by one while the section is pinned.
 export const problem = {
   statement: {
     ko: "중앙대학교에는 불확실성에 도전할 의지가 있는 사람들이 분명히 존재합니다. 다만 서로를 발견할 구조가 부족합니다. 어느 학교에 다니는지가 도전의 가능성을 결정할 이유는 없습니다.",
@@ -174,6 +174,39 @@ export const membersPage = {
   next: { ko: "다음은 당신", en: "You, next" } as L,
   quotePlaceholder: { ko: "한마디를 준비하고 있어요.", en: "A few words, coming soon." } as L,
   close: { ko: "닫기", en: "Close" } as L,
+};
+
+// The intro page, "About SERIAL": after the ribbon hero, a contents list, then
+// one section per entry, in this order. `id` is the section's anchor.
+export const introPage = {
+  title: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
+  lead: { ko: "네 가지로 알아보는 SERIAL", en: "SERIAL in four parts" } as L,
+  sections: [
+    {
+      id: "problem",
+      label: { ko: "문제의식", en: "The problem" },
+      line: { ko: "우리가 모인 이유", en: "Why we came together" },
+      title: { ko: ["서로를 발견할", "구조가 필요합니다"], en: ["We need a way", "to find each other"] },
+    },
+    {
+      id: "name",
+      label: { ko: "이름", en: "The name" },
+      line: { ko: "Series of Trials에 담은 뜻", en: "What Series of Trials means" },
+      title: { ko: ["이름에 담은 것"], en: ["What the name holds"] },
+    },
+    {
+      id: "values",
+      label: { ko: "존재 이유", en: "Why we exist" },
+      line: { ko: "우리가 지키는 네 가지", en: "Four things we hold to" },
+      title: values.title,
+    },
+    {
+      id: "activities",
+      label: { ko: "하는 일", en: "What we do" },
+      line: { ko: "함께 시도하는 방법", en: "How we try together" },
+      title: activities.title,
+    },
+  ] as { id: string; label: L; line: L; title: Lines }[],
 };
 
 export const placeholderPages = {

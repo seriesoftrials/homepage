@@ -22,3 +22,21 @@ export function T({ value, as: Tag = "span", className }: Props) {
     </>
   );
 }
+
+// Copy written as separate lines (a title broken where it should break): each
+// line is its own block, in both languages.
+export function TLines({ value }: { value: Localized<string[]> }) {
+  return (
+    <>
+      {(["ko", "en"] as const).map((lang) => (
+        <span key={lang} lang={lang} className={`i18n-${lang}`}>
+          {value[lang].map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </span>
+      ))}
+    </>
+  );
+}

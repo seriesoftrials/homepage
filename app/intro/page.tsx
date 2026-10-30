@@ -1,28 +1,22 @@
 import type { Metadata } from "next";
 import { IntroHero } from "@/components/intro/IntroHero";
-import { JoinSection } from "@/components/intro/JoinSection";
-import { ActivitiesSection, ValuesSection } from "@/components/intro/ListSections";
-import { NameSection } from "@/components/intro/NameSection";
-import { ProblemSection } from "@/components/intro/ProblemSection";
+import { IntroBody, IntroTop } from "@/components/intro/IntroSections";
 import { PageTransition } from "@/components/site/PageTransition";
+import { SiteFooter } from "@/components/site/SiteFooter";
 
 export const metadata: Metadata = { title: "소개 · SERIAL" };
 
-// SERIAL's story in one run: the ribbon forms into the S and dives into its
-// black band, which carries the problem; the name answers it; then why we
-// exist, what we do, and an invitation to join. After the problem, each
-// section rises as an arch, alternating paper and ink.
+// "About SERIAL": the ribbon forms the S as its meaning is told, dives into
+// the band, and lands on the four parts listed at a glance; they are then read
+// in that order down a plain page that keeps what has been read in place.
 export default function IntroPage() {
   return (
     <PageTransition>
-      <main>
+      <main className="theme-paper">
         <IntroHero />
-        <ProblemSection />
-        <NameSection />
-        <ValuesSection />
-        <ActivitiesSection />
-        {/* Join carries the footer inside, so the page ends on that one screen. */}
-        <JoinSection />
+        <IntroTop />
+        <IntroBody />
+        <SiteFooter />
       </main>
     </PageTransition>
   );
