@@ -9,7 +9,7 @@ import { hero, reveal } from "@/content/site";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 
 // Size of SERIAL alone before it unfolds, relative to the full wordmark.
-const MARK_START = 1.9;
+const MARK_START = 1.35;
 
 // The home page's first screen, played on its own (no scrolling needed):
 // SERIAL flips in large (as the loader's eye opens, on a first visit), then
@@ -60,7 +60,7 @@ export function HomeReveal() {
           <h1
             data-mark
             aria-label="SERIAL: Series of Trials"
-            className="twist-host font-wide text-[clamp(1rem,5.6vw,5.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
+            className="twist-host font-wide text-[clamp(1rem,7vw,6.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
           >
             {reveal.parts.map((part) =>
               part.keep ? (
