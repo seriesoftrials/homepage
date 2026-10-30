@@ -26,7 +26,7 @@ export const nav: { href: string; label: L }[] = [
 
 // The home page: SERIAL unfolding into Series of Trials, and where to go next.
 export const homeHero = {
-  tagline: "See the real. Run the trial.",
+  tagline: "Keep it serial.",
   intro: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
 };
 
