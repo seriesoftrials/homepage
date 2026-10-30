@@ -23,6 +23,12 @@ export const nav: { href: string; label: L }[] = [
   { href: "/join", label: { ko: "함께하기", en: "Join Us" } },
 ];
 
+// The home page: SERIAL unfolding into Series of Trials, and where to go next.
+export const homeHero = {
+  tagline: "See the real. Run the trial.",
+  intro: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
+};
+
 // Each caption covers one stage of the ribbon forming: loose loop, crossing, twist, S.
 export const hero = {
   eyebrow: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
