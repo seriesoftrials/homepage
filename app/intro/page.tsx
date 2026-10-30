@@ -1,50 +1,20 @@
 import type { Metadata } from "next";
-import { T } from "@/components/i18n/T";
-import { LoopAperture } from "@/components/motion/LoopAperture";
-import { SectionCover } from "@/components/motion/SectionCover";
-import { TwistText } from "@/components/motion/TwistText";
-import { PageScrollCue } from "@/components/site/PageScrollCue";
-import { PageTitle } from "@/components/site/PageTitle";
+import { IntroHero } from "@/components/intro/IntroHero";
+import { ProblemSection } from "@/components/intro/ProblemSection";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { introPage } from "@/content/site";
 
 export const metadata: Metadata = { title: "소개 · SERIAL" };
 
-// The founding essay, one chapter per rising arch.
+// The ribbon forms into the S and dives into its black band, which becomes the
+// background of the problem SERIAL exists to solve.
 export default function IntroPage() {
   return (
     <PageTransition>
       <main>
-        <section className="theme-paper min-h-svh pb-[30svh]">
-          <PageTitle title={introPage.title} eyebrow="Series of Trials" />
-        </section>
-        {introPage.chapters.map((chapter, i) => (
-          <LoopAperture
-            key={i}
-            theme={i % 2 === 0 ? "ink" : "paper"}
-            cover={<SectionCover title={chapter.title} />}
-          >
-            <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 pt-6 pb-[45svh] sm:px-8">
-              {chapter.body.map((paragraph, j) => (
-                <TwistText key={j} soft as="p" text={paragraph} className="text-[17px] leading-[1.9]" />
-              ))}
-              {i === introPage.chapters.length - 1 ? (
-                <figure className="mt-16 border-t border-(--line) pt-10">
-                  <blockquote className="font-serif text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.45] text-(--muted) italic">
-                    <T value={introPage.quote} />
-                  </blockquote>
-                  <figcaption className="mt-8 flex justify-between label text-(--muted)">
-                    <T value={introPage.signature.name} />
-                    <span>{introPage.signature.date}</span>
-                  </figcaption>
-                </figure>
-              ) : null}
-            </div>
-          </LoopAperture>
-        ))}
+        <IntroHero />
+        <ProblemSection />
         <SiteFooter />
-        <PageScrollCue />
       </main>
     </PageTransition>
   );

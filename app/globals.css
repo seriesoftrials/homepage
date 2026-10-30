@@ -94,9 +94,10 @@ html.is-intro .site-header {
   pointer-events: none;
 }
 
-/* Hidden only while the intro loader runs (it then sets its own eye-shaped
-   clip); otherwise the hero is open from the first frame, with no black flash
-   when returning home. */
+/* A first screen (the home page's, or the intro page's hero) on a soft paper
+   light. Hidden only while the loader runs (it then sets its own eye-shaped
+   clip); otherwise it is open from the first frame, with no black flash when
+   returning home. */
 html.is-intro .hero-window {
   clip-path: ellipse(0 0 at 50% 50%);
 }
