@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
-import { T, TLines, type Localized } from "@/components/i18n/T";
+import { T, TLines } from "@/components/i18n/T";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { activities, introPage, problem, reveal, values } from "@/content/site";
+import { introPage, perks, problem, program, reveal } from "@/content/site";
 import { IntroContents } from "./IntroContents";
-import { NameMark } from "./NameMark";
 import { RibbonStory } from "./RibbonStory";
+
+const number = (i: number) => String(i + 1).padStart(2, "0");
 
 // One part of the page, under its number, label and title. It stays where it
 // is as the page scrolls; its heading fades in once on arrival.
@@ -14,7 +15,7 @@ function Section({ index, children }: { index: number; children: ReactNode }) {
     <section id={id} className="scroll-mt-24 border-t border-(--line) py-16 sm:py-24">
       <FadeIn>
         <p className="label text-(--muted)">
-          {String(index + 1).padStart(2, "0")} · <T value={label} />
+          {number(index)} · <T value={label} />
         </p>
         <h2 className="mt-4 text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.15] font-semibold tracking-[-0.03em]">
           <TLines value={title} />
@@ -25,24 +26,94 @@ function Section({ index, children }: { index: number; children: ReactNode }) {
   );
 }
 
-// Numbered cards, all in view at once.
-function CardGrid({ items }: { items: { name: Localized | string; text: Localized }[] }) {
+// The problem, and what students are missing because of it.
+function Problem() {
   return (
-    <FadeIn stagger className="grid gap-4 sm:grid-cols-2">
-      {items.map((item, i) => {
-        const name = typeof item.name === "string" ? { ko: item.name, en: item.name } : item.name;
-        return (
-          <article key={i} className="card-body flex flex-col gap-3 rounded-[1.5rem] p-6 sm:gap-5 sm:p-8">
-            <span className="font-serif text-4xl leading-none italic opacity-25 sm:text-5xl">{String(i + 1).padStart(2, "0")}</span>
-            <h3 className="font-wide text-[clamp(1.1rem,1.5vw,1.35rem)] leading-[1.15] font-semibold">
-              <T value={name} />
+    <>
+      <FadeIn>
+        <p className="max-w-4xl text-[clamp(1.25rem,2.1vw,1.75rem)] leading-[1.6] font-medium tracking-[-0.02em]">
+          <T value={problem.statement} />
+        </p>
+      </FadeIn>
+      <FadeIn stagger className="mt-12 grid gap-4 sm:grid-cols-3">
+        {problem.needs.map((need) => (
+          <article key={need.name.en} className="card-body flex flex-col gap-3 rounded-[1.5rem] p-6 sm:p-7">
+            <h3 className="text-lg font-semibold">
+              <T value={need.name} />
             </h3>
             <p className="text-[15px] leading-[1.7] text-(--muted)">
-              <T value={item.text} />
+              <T value={need.text} />
             </p>
           </article>
-        );
-      })}
+        ))}
+      </FadeIn>
+    </>
+  );
+}
+
+// The ribbon takes the problem on: scattered ambition forms into the S, and
+// the Möbius lines say what the shape stands for.
+function Logo() {
+  return (
+    <>
+      <RibbonStory />
+      <FadeIn>
+        <p className="mt-12 text-[15px] leading-[1.8] text-(--muted)">
+          <TLines value={reveal.mobius} />
+        </p>
+      </FadeIn>
+    </>
+  );
+}
+
+// The semester at a glance: one row per step, its weeks on the left, the
+// three trials marked.
+function Program() {
+  return (
+    <>
+      <FadeIn>
+        <p className="max-w-2xl text-[15px] leading-[1.7] text-(--muted)">
+          <T value={program.lead} />
+        </p>
+      </FadeIn>
+      <FadeIn stagger className="mt-10 border-t border-(--line)">
+        {program.steps.map((step) => (
+          <div
+            key={step.name}
+            className="grid gap-2 border-b border-(--line) py-5 sm:grid-cols-[8rem_minmax(0,16rem)_minmax(0,1fr)] sm:items-baseline sm:gap-6"
+          >
+            <span className="label text-(--muted)">{step.week}</span>
+            <span className="flex items-center gap-3">
+              <span className="font-wide text-[1.05rem] leading-tight font-semibold">{step.name}</span>
+              {step.trial ? (
+                <span className="label rounded-full px-2.5 py-1 text-(--muted) shadow-[inset_0_0_0_1px_var(--line)]">
+                  <T value={{ ko: `시도 ${step.trial}`, en: `Trial ${step.trial}` }} />
+                </span>
+              ) : null}
+            </span>
+            <p className="text-[15px] leading-[1.7] text-(--muted)">
+              <T value={step.text} />
+            </p>
+          </div>
+        ))}
+      </FadeIn>
+    </>
+  );
+}
+
+// What a member comes away with, all at once.
+function Perks() {
+  return (
+    <FadeIn stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {perks.items.map((item, i) => (
+        <article key={item.name} className="card-body flex flex-col gap-3 rounded-[1.5rem] p-6 sm:gap-5 sm:p-7">
+          <span className="font-serif text-4xl leading-none italic opacity-25">{number(i)}</span>
+          <h3 className="font-wide text-[1.15rem] leading-tight font-semibold">{item.name}</h3>
+          <p className="text-[15px] leading-[1.7] text-(--muted)">
+            <T value={item.text} />
+          </p>
+        </article>
+      ))}
     </FadeIn>
   );
 }
@@ -64,36 +135,16 @@ export function IntroBody() {
         </FadeIn>
 
         <Section index={0}>
-          <RibbonStory />
+          <Problem />
         </Section>
-
         <Section index={1}>
-          <FadeIn>
-            <p className="max-w-4xl text-[clamp(1.25rem,2.1vw,1.75rem)] leading-[1.6] font-medium tracking-[-0.02em]">
-              <T value={problem.statement} />
-            </p>
-          </FadeIn>
+          <Logo />
         </Section>
-
         <Section index={2}>
-          <NameMark />
-          <FadeIn>
-            <p className="mt-10 font-serif text-[clamp(2rem,3.6vw,3.25rem)] leading-none italic">{reveal.slogan}</p>
-            <p className="mt-3 text-sm text-(--muted)">
-              <T value={reveal.sloganSub} />
-            </p>
-            <p className="mt-8 text-[15px] leading-[1.8] text-(--muted)">
-              <TLines value={reveal.mobius} />
-            </p>
-          </FadeIn>
+          <Program />
         </Section>
-
         <Section index={3}>
-          <CardGrid items={values.items} />
-        </Section>
-
-        <Section index={4}>
-          <CardGrid items={activities.items} />
+          <Perks />
         </Section>
       </div>
     </div>
