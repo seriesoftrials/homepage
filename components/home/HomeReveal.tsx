@@ -8,55 +8,57 @@ import { TWIST_FROM, TWIST_TO, TwistText, twistIn } from "@/components/motion/Tw
 import { hero, reveal } from "@/content/site";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 
-// The home page's first screen. SERIAL flips in (as the loader's eye opens, on
-// a first visit); scrolling then unfolds the hidden letters between them,
-// SER·IAL becoming SERies of trIALs, and the slogan and the Möbius story
-// follow. The wordmark keeps its size throughout: scaling type renders it soft.
-// The next section rises over it as an arch.
+// Size of SERIAL alone before it unfolds, relative to the full wordmark.
+const MARK_START = 1.9;
+
+// The home page's first screen, played on its own (no scrolling needed):
+// SERIAL flips in large (as the loader's eye opens, on a first visit), then
+// shrinks as the hidden letters unfold between them, SER·IAL becoming
+// SERies of trIALs, and the slogan and the Möbius story follow. It shrinks by
+// font size, not scale: scaled type renders soft. Scrolling raises the next
+// section over it as an arch.
 export function HomeReveal() {
   const root = useRef<HTMLElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
   const all = (selector: string) => root.current!.querySelectorAll(selector);
   const enter = (tl: gsap.core.Timeline, at: gsap.Position) => {
-    twistIn(tl, all("[data-kept] [data-twist-item]"), at, 0.05);
-    tl.to(all("[data-cue]"), { opacity: 1, duration: 0.6 }, typeof at === "string" ? `${at}+=0.6` : Number(at) + 0.6);
+    const mark = root.current!.querySelector<HTMLElement>("[data-mark]")!;
+    tl.addLabel("reveal", at);
+    twistIn(tl, all("[data-kept] [data-twist-item]"), "reveal", 0.05);
+    tl.to(mark, { fontSize: mark.dataset.base, duration: 1.2, ease: "power2.inOut", clearProps: "fontSize" }, "reveal+=1.1")
+      .to(all("[data-expander]"), { width: "auto", duration: 1.2, ease: "power2.inOut" }, "reveal+=1.1")
+      .to(all("[data-expander] [data-twist-item]"), { ...TWIST_TO, stagger: 0.03, duration: 0.6 }, "reveal+=1.3")
+      .to(all("[data-after] [data-twist-item]"), { ...TWIST_TO, stagger: 0.08, duration: 0.6 }, "reveal+=2.2")
+      .to(all("[data-cue]"), { opacity: 1, duration: 0.6 }, "reveal+=2.9");
   };
 
   useGSAP(
     () => {
       if (prefersReducedMotion()) return;
-      const expanders = all("[data-expander]");
-      gsap.set(expanders, { width: 0 });
-      gsap
-        .timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.6 },
-        })
-        .to(all("[data-cue]"), { opacity: 0, duration: 0.05 }, 0)
-        .to(expanders, { width: "auto", duration: 0.4, ease: "power2.inOut" }, 0.05)
-        .fromTo(all("[data-expander] [data-twist-item]"), TWIST_FROM, { ...TWIST_TO, stagger: 0.02, duration: 0.2 }, 0.15)
-        .fromTo(all("[data-after] [data-twist-item]"), TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.2 }, 0.55)
-        .set({}, {}, 1);
+      const mark = root.current!.querySelector<HTMLElement>("[data-mark]")!;
+      // Start from SERIAL alone, large; the entrance plays the rest.
+      mark.dataset.base = getComputedStyle(mark).fontSize;
+      gsap.set(mark, { fontSize: parseFloat(mark.dataset.base) * MARK_START });
+      gsap.set(all("[data-expander]"), { width: 0 });
+      gsap.set(all("[data-expander] [data-twist-item], [data-after] [data-twist-item]"), TWIST_FROM);
+      gsap.set(all("[data-cue]"), { opacity: 0 });
 
       // On a first visit the loader plays the entrance as its eye opens.
-      if (introPending()) {
-        gsap.set(all("[data-kept] [data-twist-item]"), TWIST_FROM);
-        gsap.set(all("[data-cue]"), { opacity: 0 });
-      } else {
-        enter(gsap.timeline(), 0.1);
-      }
+      if (introPending()) gsap.set(all("[data-kept] [data-twist-item]"), TWIST_FROM);
+      else enter(gsap.timeline(), 0.1);
     },
     { scope: root },
   );
 
   return (
-    <section ref={root} className="relative h-[260svh]" aria-label="SERIAL">
-      <div className="sticky top-0 h-svh overflow-hidden bg-ink">
+    <section ref={root} className="relative h-svh" aria-label="SERIAL">
+      <div className="absolute inset-0 overflow-hidden bg-ink">
         <div
           ref={windowRef}
           className="hero-window theme-paper absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
         >
           <h1
+            data-mark
             aria-label="SERIAL: Series of Trials"
             className="twist-host font-wide text-[clamp(1rem,5.6vw,5.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
           >
