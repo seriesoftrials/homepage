@@ -8,25 +8,19 @@ import { TWIST_FROM, TWIST_TO, TwistText, twistIn } from "@/components/motion/Tw
 import { hero, reveal } from "@/content/site";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 
-// Size of SERIAL alone before it unfolds, relative to the full wordmark.
-const MARK_START = 1.35;
-
 // The home page's first screen, played on its own (no scrolling needed):
-// SERIAL flips in large (as the loader's eye opens, on a first visit), then
-// shrinks as the hidden letters unfold between them, SER·IAL becoming
-// SERies of trIALs, and the slogan and the Möbius story follow. It shrinks by
-// font size, not scale: scaled type renders soft. Scrolling raises the next
-// section over it as an arch.
+// SERIAL flips in (as the loader's eye opens, on a first visit), then the
+// hidden letters unfold between them, SER·IAL widening into SERies of trIALs
+// at the size it settles at, and the slogan and the Möbius story follow.
+// Scrolling raises the next section over it as an arch.
 export function HomeReveal() {
   const root = useRef<HTMLElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
   const all = (selector: string) => root.current!.querySelectorAll(selector);
   const enter = (tl: gsap.core.Timeline, at: gsap.Position) => {
-    const mark = root.current!.querySelector<HTMLElement>("[data-mark]")!;
     tl.addLabel("reveal", at);
     twistIn(tl, all("[data-kept] [data-twist-item]"), "reveal", 0.05);
-    tl.to(mark, { fontSize: mark.dataset.base, duration: 1.2, ease: "power2.inOut", clearProps: "fontSize" }, "reveal+=1.1")
-      .to(all("[data-expander]"), { width: "auto", duration: 1.2, ease: "power2.inOut" }, "reveal+=1.1")
+    tl.to(all("[data-expander]"), { width: "auto", duration: 1.2, ease: "power2.inOut" }, "reveal+=1.1")
       .to(all("[data-expander] [data-twist-item]"), { ...TWIST_TO, stagger: 0.03, duration: 0.6 }, "reveal+=1.3")
       .to(all("[data-after] [data-twist-item]"), { ...TWIST_TO, stagger: 0.08, duration: 0.6 }, "reveal+=2.2")
       .to(all("[data-cue]"), { opacity: 1, duration: 0.6 }, "reveal+=2.9");
@@ -35,10 +29,7 @@ export function HomeReveal() {
   useGSAP(
     () => {
       if (prefersReducedMotion()) return;
-      const mark = root.current!.querySelector<HTMLElement>("[data-mark]")!;
-      // Start from SERIAL alone, large; the entrance plays the rest.
-      mark.dataset.base = getComputedStyle(mark).fontSize;
-      gsap.set(mark, { fontSize: parseFloat(mark.dataset.base) * MARK_START });
+      // Start from SERIAL alone; the entrance plays the rest.
       gsap.set(all("[data-expander]"), { width: 0 });
       gsap.set(all("[data-expander] [data-twist-item], [data-after] [data-twist-item]"), TWIST_FROM);
       gsap.set(all("[data-cue]"), { opacity: 0 });
@@ -58,7 +49,6 @@ export function HomeReveal() {
           className="hero-window theme-paper absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
         >
           <h1
-            data-mark
             aria-label="SERIAL: Series of Trials"
             className="twist-host font-wide text-[clamp(1rem,7vw,6.5rem)] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap"
           >
