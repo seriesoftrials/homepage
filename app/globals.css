@@ -352,6 +352,23 @@ html[lang="en"] .locale-toggle__option--en {
   }
 }
 
+/* The intro page's ribbon story: lines ahead are faint; a line lights up as it
+   is reached and stays lit once read. */
+.story-step {
+  opacity: 0.25;
+  transition: opacity 0.6s ease;
+}
+
+.story-step.is-read {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-step {
+    opacity: 1;
+  }
+}
+
 /* Hover hint on member photos, until any profile has been opened once. */
 .thread-hint {
   background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.07));

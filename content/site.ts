@@ -29,11 +29,10 @@ export const homeHero = {
   intro: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
 };
 
-// The intro page's ribbon hero (each caption covers one stage of the ribbon
-// forming: loose loop, crossing, twist, S); the society line also heads home.
+// The society line heads the home page. Each stage line goes with one stage of
+// the ribbon forming on the intro page: loose loop, crossing, twist, S.
 export const hero = {
   eyebrow: { ko: "중앙대학교 실전창업학회", en: "Chung-Ang University Startup Society" } as L,
-  title: "Series of Trials",
   scroll: { ko: "Scroll to discover", en: "Scroll to discover" } as L,
   stages: [
     { ko: "열망은 흩어져 있었습니다.", en: "Ambition was scattered." },
@@ -176,37 +175,29 @@ export const membersPage = {
   close: { ko: "닫기", en: "Close" } as L,
 };
 
-// The intro page, "About SERIAL": after the ribbon hero, a contents list, then
-// one section per entry, in this order. `id` is the section's anchor.
+// The intro page, "About SERIAL": one section per entry, in this order, with
+// the entries listed beside them on wide screens. `id` is the section's anchor.
 export const introPage = {
   title: { ko: "SERIAL 알아보기", en: "About SERIAL" } as L,
-  lead: { ko: "네 가지로 알아보는 SERIAL", en: "SERIAL in four parts" } as L,
   sections: [
+    {
+      id: "story",
+      label: { ko: "이야기", en: "The story" },
+      title: { ko: ["흩어진 열망이", "이어지는 시도가 되기까지"], en: ["From scattered ambition", "to a series of trials"] },
+    },
     {
       id: "problem",
       label: { ko: "문제의식", en: "The problem" },
-      line: { ko: "우리가 모인 이유", en: "Why we came together" },
       title: { ko: ["서로를 발견할", "구조가 필요합니다"], en: ["We need a way", "to find each other"] },
     },
     {
       id: "name",
       label: { ko: "이름", en: "The name" },
-      line: { ko: "Series of Trials에 담은 뜻", en: "What Series of Trials means" },
       title: { ko: ["이름에 담은 것"], en: ["What the name holds"] },
     },
-    {
-      id: "values",
-      label: { ko: "존재 이유", en: "Why we exist" },
-      line: { ko: "우리가 지키는 네 가지", en: "Four things we hold to" },
-      title: values.title,
-    },
-    {
-      id: "activities",
-      label: { ko: "하는 일", en: "What we do" },
-      line: { ko: "함께 시도하는 방법", en: "How we try together" },
-      title: activities.title,
-    },
-  ] as { id: string; label: L; line: L; title: Lines }[],
+    { id: "values", label: { ko: "존재 이유", en: "Why we exist" }, title: values.title },
+    { id: "activities", label: { ko: "하는 일", en: "What we do" }, title: activities.title },
+  ] as { id: string; label: L; title: Lines }[],
 };
 
 export const placeholderPages = {
