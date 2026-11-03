@@ -9,6 +9,8 @@ export type RibbonHandle = {
   setCamera: (zoom: number, x: number, y: number) => void;
   // Rolls the whole ribbon in the screen plane (radians), e.g. to lean it.
   setLean: (radians: number) => void;
+  // Turns the whole ribbon about its vertical axis (radians), e.g. to spin it.
+  setSpin: (radians: number) => void;
 };
 
 type Props = {
@@ -61,6 +63,7 @@ export function RibbonCanvas({
   const progress = useRef(initialProgress);
   const view = useRef({ zoom: 1, x: 0, y: 0 });
   const lean = useRef(0);
+  const spinAngle = useRef(0);
   const render = useRef<() => void>(() => {});
   const readyCallback = useRef(onReady);
   const frameRef = useRef(frame);
@@ -84,6 +87,11 @@ export function RibbonCanvas({
     setLean(radians) {
       if (lean.current === radians) return;
       lean.current = radians;
+      render.current();
+    },
+    setSpin(radians) {
+      if (spinAngle.current === radians) return;
+      spinAngle.current = radians;
       render.current();
     },
   }));
@@ -185,7 +193,7 @@ export function RibbonCanvas({
         const swayX = swaying ? 0.07 * Math.sin(clock * 0.5) : 0;
         const swayY = swaying ? 0.16 * Math.sin(clock * 0.37) : 0;
         // Tilt and sway fade as the camera zooms in, so the zoom target never slides away.
-        pivot.rotation.set((tilt.x + swayX) / zoom, (tilt.y + swayY) / zoom, lean.current / zoom);
+        pivot.rotation.set((tilt.x + swayX) / zoom, (tilt.y + swayY) / zoom + spinAngle.current, lean.current / zoom);
         pivot.position.y = swaying ? (0.03 * Math.sin(clock * 0.8)) / zoom : 0;
 
         camera.zoom = zoom;

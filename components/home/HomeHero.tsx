@@ -23,11 +23,12 @@ const STAGE_AT = [0.1, 0.34, 0.6, 0.92];
 // the next one arrives.
 const CAPTION_IN = 0.1;
 const CAPTION_OUT = 0.08;
-// Seconds the S rests with its caption, the unwinding back into the loop
-// (a quick whirl: one full roll on screen as it untwists), and the pause
-// before the story starts again.
+// Seconds the S rests with its caption, the unwinding back into the loop,
+// and the pause before the story starts again. The unwinding is one quick
+// spin about the vertical axis as it untwists, landing a touch past a full
+// turn and springing back into place.
 const HOLD_SECONDS = 3;
-const UNWIND_SECONDS = 1.4;
+const SPIN_SECONDS = 1.3;
 const REST_SECONDS = 0.8;
 // The ribbon's frame: small enough to sit between the title and the captions
 // without touching either. A phone's screen is tall and narrow, so there it
@@ -69,12 +70,12 @@ export function HomeHero() {
 
       // The hero holds still on one screen while the loose loop crosses, twists
       // and settles into the S on its own, each caption with its shape. The S
-      // rests, its caption leaves, the ribbon whirls back into the loop, and
+      // rests, its caption leaves, the ribbon spins back into the loop, and
       // the story plays again.
       const formStory = () => {
-        const state = { form: 0, roll: 0 };
+        const state = { form: 0, spin: 0 };
         const apply = () => ribbon.current?.setProgress(state.form * S_SETTLED);
-        const roll = () => ribbon.current?.setLean(state.roll);
+        const spin = () => ribbon.current?.setSpin(state.spin);
         const tl = gsap.timeline({ delay: 0.3, repeat: -1, repeatDelay: REST_SECONDS });
         tl.to(state, { form: 1, duration: FORM_SECONDS, ease: "none", onUpdate: apply }, 0);
         captions.forEach((caption, i) => {
@@ -88,10 +89,10 @@ export function HomeHero() {
             .set(caption, { opacity: 0 }, end);
         });
         const unwind = FORM_SECONDS + HOLD_SECONDS;
-        tl.to(state, { form: 0, duration: UNWIND_SECONDS, ease: "power2.inOut", onUpdate: apply }, unwind)
-          .fromTo(state, { roll: 0 }, { roll: -Math.PI * 2, duration: UNWIND_SECONDS, ease: "power3.inOut", onUpdate: roll }, unwind)
-          // A full turn is where it started; reset so the next round rolls from 0.
-          .set(state, { roll: 0, onComplete: roll });
+        tl.to(state, { form: 0, duration: SPIN_SECONDS * 0.7, ease: "power2.out", onUpdate: apply }, unwind)
+          .fromTo(state, { spin: 0 }, { spin: Math.PI * 2, duration: SPIN_SECONDS, ease: "back.out(1.6)", onUpdate: spin }, unwind)
+          // A whole turn ends where it began; reset so the next round spins from 0.
+          .set(state, { spin: 0, onComplete: spin });
         story = tl;
       };
 
@@ -195,7 +196,7 @@ export function HomeHero() {
       return () => {
         cancelled = true;
         story?.kill();
-        ribbon.current?.setLean(0);
+        ribbon.current?.setSpin(0);
         document.documentElement.classList.remove("is-intro");
         lockScroll(false);
       };
@@ -224,7 +225,7 @@ export function HomeHero() {
           </div>
 
           <div className="pointer-events-none absolute inset-x-0 top-[10svh] flex flex-col items-center px-6 text-center">
-            <p data-hero-eyebrow className="mb-3 text-xs tracking-[0.2em] text-muted-paper uppercase">
+            <p data-hero-eyebrow className="mb-3 text-[15px] tracking-[0.2em] text-muted-paper uppercase sm:text-base">
               <T value={hero.eyebrow} />
             </p>
             <h1 data-hero-title className="twist-host font-serif text-[clamp(3rem,14vw,4rem)] sm:text-[clamp(2.5rem,min(6vw,9svh),5.75rem)] leading-none tracking-[-0.03em]">
