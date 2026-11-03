@@ -20,7 +20,7 @@ export default function MembersPage() {
             <T value={membersPage.lead} />
           </p>
           {/* Placeholder until the group photo is taken. */}
-          <div className="mt-10 grid aspect-[16/9] w-full place-items-center rounded-[2rem] border border-dashed border-(--line) bg-[#161616] sm:aspect-[21/9]">
+          <div className="mx-auto mt-10 grid aspect-[16/9] w-full max-w-3xl place-items-center rounded-[1.75rem] border border-dashed border-(--line) bg-[#161616] sm:aspect-[5/2]">
             <span className="label text-(--muted)">
               <T value={membersPage.groupPhoto} />
             </span>
