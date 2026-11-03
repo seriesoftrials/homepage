@@ -23,14 +23,16 @@ const STAGE_AT = [0.1, 0.34, 0.6, 0.92];
 // the next one arrives.
 const CAPTION_IN = 0.1;
 const CAPTION_OUT = 0.08;
-// Seconds the S rests with its caption, the unwinding back into the loop,
-// and the pause before the story starts again.
+// Seconds the S rests with its caption, the unwinding back into the loop
+// (a quick whirl: one full roll on screen as it untwists), and the pause
+// before the story starts again.
 const HOLD_SECONDS = 3;
-const UNWIND_SECONDS = 1.8;
+const UNWIND_SECONDS = 1.4;
 const REST_SECONDS = 0.8;
 // The ribbon's frame: small enough to sit between the title and the captions
-// without touching either.
-const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
+// without touching either. A phone's screen is tall and narrow, so there it
+// takes nearly the full width to fill the space between them.
+const ribbonBox = (w: number, h: number) => (w < 640 ? Math.min(w * 0.95, h * 0.5) : Math.min(w * 0.7, h * 0.56));
 
 // The loader plays only when "/" itself was loaded by the browser (first visit
 // or refresh); LocaleScript flags that before first paint. Arriving at home by
@@ -67,11 +69,12 @@ export function HomeHero() {
 
       // The hero holds still on one screen while the loose loop crosses, twists
       // and settles into the S on its own, each caption with its shape. The S
-      // rests, its caption leaves, the ribbon unwinds into the loop, and the
-      // story plays again.
+      // rests, its caption leaves, the ribbon whirls back into the loop, and
+      // the story plays again.
       const formStory = () => {
-        const state = { form: 0 };
+        const state = { form: 0, roll: 0 };
         const apply = () => ribbon.current?.setProgress(state.form * S_SETTLED);
+        const roll = () => ribbon.current?.setLean(state.roll);
         const tl = gsap.timeline({ delay: 0.3, repeat: -1, repeatDelay: REST_SECONDS });
         tl.to(state, { form: 1, duration: FORM_SECONDS, ease: "none", onUpdate: apply }, 0);
         captions.forEach((caption, i) => {
@@ -84,7 +87,11 @@ export function HomeHero() {
             .to(parts, { rotationX: 100, yPercent: -35, opacity: 0, stagger: 0.03, duration: out }, end - out)
             .set(caption, { opacity: 0 }, end);
         });
-        tl.to(state, { form: 0, duration: UNWIND_SECONDS, ease: "power2.inOut", onUpdate: apply }, FORM_SECONDS + HOLD_SECONDS);
+        const unwind = FORM_SECONDS + HOLD_SECONDS;
+        tl.to(state, { form: 0, duration: UNWIND_SECONDS, ease: "power2.inOut", onUpdate: apply }, unwind)
+          .fromTo(state, { roll: 0 }, { roll: -Math.PI * 2, duration: UNWIND_SECONDS, ease: "power3.inOut", onUpdate: roll }, unwind)
+          // A full turn is where it started; reset so the next round rolls from 0.
+          .set(state, { roll: 0, onComplete: roll });
         story = tl;
       };
 
@@ -188,6 +195,7 @@ export function HomeHero() {
       return () => {
         cancelled = true;
         story?.kill();
+        ribbon.current?.setLean(0);
         document.documentElement.classList.remove("is-intro");
         lockScroll(false);
       };
@@ -219,7 +227,7 @@ export function HomeHero() {
             <p data-hero-eyebrow className="mb-3 text-xs tracking-[0.2em] text-muted-paper uppercase">
               <T value={hero.eyebrow} />
             </p>
-            <h1 data-hero-title className="twist-host font-serif text-[clamp(2.5rem,min(6vw,9svh),5.75rem)] leading-none tracking-[-0.03em]">
+            <h1 data-hero-title className="twist-host font-serif text-[clamp(3rem,14vw,4rem)] sm:text-[clamp(2.5rem,min(6vw,9svh),5.75rem)] leading-none tracking-[-0.03em]">
               <span aria-hidden="true">
                 {Array.from(hero.title).map((char, i) => (
                   <span key={i} data-twist-item>
@@ -234,7 +242,7 @@ export function HomeHero() {
           <div className="pointer-events-none absolute inset-x-0 bottom-[13svh] grid place-items-center px-6 text-center">
             {hero.stages.map((stage, i) => (
               <div key={i} data-stage className="col-start-1 row-start-1 opacity-0">
-                <TwistText text={stage} split="word" mode="manual" className="text-[clamp(1.25rem,2.6vw,2.25rem)] font-medium tracking-[-0.02em]" />
+                <TwistText text={stage} split="word" mode="manual" className="text-[1.625rem] leading-[1.25] font-medium tracking-[-0.02em] sm:text-[clamp(1.25rem,2.6vw,2.25rem)] sm:leading-normal" />
               </div>
             ))}
           </div>
