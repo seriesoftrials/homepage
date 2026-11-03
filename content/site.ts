@@ -36,15 +36,30 @@ export const hero = {
   ] as L[],
 };
 
-// Read in place: the words darken one by one while the section is pinned.
-export const problem = {
-  statement: {
-    ko: "중앙대학교에는 불확실성에 도전할 의지가 있는 사람들이 분명히 존재합니다. 다만 서로를 발견할 구조가 부족합니다. 어느 학교에 다니는지가 도전의 가능성을 결정할 이유는 없습니다.",
-    en: "Chung-Ang has people who want to take on uncertainty. What it lacks is a way for them to find each other. Which school you attend should not decide what you can attempt.",
+// The home page's step between the hero and what SERIAL does: who we are,
+// what we hold to, and three numbers.
+export const about = {
+  label: { ko: "SERIAL은", en: "SERIAL is" } as L,
+  title: {
+    ko: ["중앙대학교의 첫", "실전창업학회입니다."],
+    en: ["Chung-Ang University's first", "hands-on startup society."],
+  } as Lines,
+  line: {
+    ko: "생각에서 멈추지 않고 직접 시도합니다. 그리고 한 사람의 경험이 다음 사람의 출발점이 되도록 잇습니다.",
+    en: "We don't stop at ideas; we try them for real. And we pass on what we learn, so one person's experience becomes the next one's starting point.",
   } as L,
+  // Numbers shown large on glass cards. `projects` is a placeholder until
+  // there is a count to show.
+  facts: [
+    { value: "2026", unit: { ko: "년", en: "" }, label: { ko: "중앙대학교에서 창립", en: "Founded at Chung-Ang" } },
+    { value: "7", unit: { ko: "명", en: "" }, label: { ko: "함께 시작한 창립 멤버", en: "Founding members" } },
+    { value: "00", unit: { ko: "개", en: "" }, label: { ko: "직접 실행한 프로젝트", en: "Projects run" } },
+  ] as { value: string; unit: L; label: L }[],
 };
 
 export const reveal = {
+  label: { ko: "이름", en: "The name" } as L,
+  title: { ko: ["SERIAL은", "Series of Trials입니다"], en: ["SERIAL stands for", "Series of Trials"] } as Lines,
   // SER·IAL expand into SERies of trIALs.
   parts: [
     { text: "SER", keep: true },
@@ -61,6 +76,7 @@ export const reveal = {
 };
 
 export const values = {
+  label: { ko: "가치", en: "Values" } as L,
   title: { ko: ["우리가 존재하는 이유"], en: ["Why we exist"] } as Lines,
   items: [
     {
@@ -99,6 +115,7 @@ export const activities = {
   items: [
     {
       name: { ko: "커리큘럼", en: "Curriculum" },
+      point: { ko: "작게 만들고, 시장에 검증받기", en: "Build small, test with the market" },
       text: {
         ko: "10만원 프로젝트와 Validation. 작게 만들고 시장에 검증받는 기초 근력을 기릅니다.",
         en: "The ₩100k project and validation sprints. Build small, test with real users, and grow the core muscle.",
@@ -106,6 +123,7 @@ export const activities = {
     },
     {
       name: { ko: "세미나", en: "Seminars" },
+      point: { ko: "창업자와 VC에게 직접 듣기", en: "Hear it from founders and VCs" },
       text: {
         ko: "창업자와 VC를 초청해 경험과 관점을 나누고, 데이터 분석·프로덕트 디자인·AI 활용을 주제별로 다룹니다.",
         en: "Founders and VCs share their experience and views, plus topic sessions on data, product design and AI.",
@@ -113,6 +131,7 @@ export const activities = {
     },
     {
       name: { ko: "자원", en: "Resources" },
+      point: { ko: "만드는 데 필요한 것 지원", en: "What you need to build" },
       text: {
         ko: "만드는 데 필요한 것을 지원합니다. 개발을 위한 AI 크레딧과 플랜을 제공합니다.",
         en: "We back the building. AI credits and plans for whatever you are making.",
@@ -120,12 +139,105 @@ export const activities = {
     },
     {
       name: { ko: "네트워크", en: "Network" },
+      point: { ko: "대학과 창업 현장을 잇기", en: "Campus, linked to the startup scene" },
       text: {
         ko: "네트워킹 행사와 타 학회 공동 주최로 대학과 창업 현장을 잇습니다.",
         en: "Networking events and co-hosted sessions with other societies connect campus and the startup scene.",
       },
     },
-  ] as { name: L; text: L }[],
+  ] as { name: L; point: L; text: L }[],
+};
+
+// One semester, from the deck's "Curriculum" pages: three trials, then DEMO DAY.
+export const program = {
+  label: { ko: "커리큘럼", en: "Curriculum" } as L,
+  title: { ko: ["Theory < Execution"], en: ["Theory < Execution"] } as Lines,
+  lead: {
+    ko: "이론보다 실행. 16주 동안 세 가지 프로젝트를 경험하고, DEMO DAY에서 결과를 공유합니다.",
+    en: "Execution over theory. Over 16 weeks you run three projects and share the results at DEMO DAY.",
+  } as L,
+  steps: [
+    {
+      week: "Week 1",
+      name: "OT",
+      text: { ko: "기수 목표와 일정, 수료 기준과 규칙을 나누고 서로를 소개합니다.", en: "Cohort goals and schedule, completion rules, and introductions." },
+    },
+    {
+      week: "Week 2–4",
+      name: "100,000 Project",
+      trial: 1,
+      text: {
+        ko: "팀별 10만 원으로 2~3주 동안 아이디어를 실행하고 고객 반응을 확인합니다. 손실이 나도 팀원이 메우지 않습니다.",
+        en: "Each team gets ₩100,000 to run an idea for 2–3 weeks and see how customers respond. No one covers a loss out of pocket.",
+      },
+    },
+    {
+      week: "Week 5",
+      name: "MT",
+      text: { ko: "첫 프로젝트의 결과와 배운 점을 나누고, 기수끼리 가까워집니다.", en: "Results and lessons from the first project, and time together as a cohort." },
+    },
+    {
+      week: "Week 6–12",
+      name: "Theory + Validation",
+      trial: 2,
+      text: {
+        ko: "창업 사례와 Y Combinator Startup School 중심의 최소한의 이론을 배우고, 연사 강연과 멘토 피드백으로 가설을 검증합니다.",
+        en: "Case studies and a minimum of theory built on Y Combinator's Startup School; speakers and mentor feedback to test each hypothesis.",
+      },
+    },
+    {
+      week: "Week 13",
+      name: "Short-term Project",
+      trial: 3,
+      text: { ko: "무박 2일 또는 2박 3일의 아이디어톤·해커톤. 활동마다 새 팀을 꾸립니다.", en: "A one- or two-night ideathon or hackathon, with a new team each time." },
+    },
+    {
+      week: "Week 14",
+      name: "DEMO DAY",
+      text: {
+        ko: "심사역과 선배 창업가 앞에서 결과를 발표합니다. 결과물의 권리는 팀원에게 있습니다.",
+        en: "Teams pitch their results to VCs and founder alumni. What you build stays yours.",
+      },
+    },
+    {
+      week: "Week 15",
+      name: "Homecoming Day",
+      text: { ko: "현 기수와 OB가 만나 경험을 나눕니다.", en: "Current members and alumni meet and share what they learned." },
+    },
+  ] as { week: string; name: string; trial?: number; text: L }[],
+};
+
+// What a member comes away with, from the deck's "Benefits" page. Only what is
+// planned is listed; support still under discussion with the school is not.
+export const perks = {
+  label: { ko: "혜택", en: "Perks" } as L,
+  title: { ko: ["한 학기 동안 쌓는", "경험과 관계"], en: ["The experience and people", "one semester brings"] } as Lines,
+  items: [
+    {
+      name: "Experience",
+      text: { ko: "직접 실행한 프로젝트와, 고객 반응을 설명할 수 있는 경험", en: "Projects you ran yourself, and customer responses you can speak to" },
+    },
+    {
+      name: "Network",
+      text: { ko: "선배 창업가, 연사, 다른 학회와의 교류 기회", en: "Time with founder alumni, speakers and other societies" },
+    },
+    {
+      name: "Mentor",
+      text: { ko: "프로젝트의 어려움을 나누고, 경험자의 피드백을 받습니다", en: "Talk through what is hard and get feedback from people who have done it" },
+    },
+    {
+      name: "Perks",
+      text: { ko: "팀별 시드 머니 10만 원과 AI 도구 이용을 지원할 계획입니다", en: "₩100,000 seed money per team, with AI tools planned" },
+    },
+    {
+      name: "Team",
+      text: { ko: "프로젝트를 함께 실행하며 협업할 동료를 만납니다", en: "Teammates you find by building together" },
+    },
+    {
+      name: "Direction",
+      text: { ko: "프로젝트 경험을 바탕으로 자신의 강점과 관심 분야를 확인합니다", en: "Your strengths and interests, found through the projects" },
+    },
+  ] as { name: string; text: L }[],
 };
 
 export const join = {
@@ -170,6 +282,8 @@ export const membersPage = {
   close: { ko: "닫기", en: "Close" } as L,
 };
 
+// `chapters`, `quote` and `signature` are the founding letter, kept here
+// while it is off the intro page.
 export const introPage = {
   title: { ko: "소개", en: "Intro" } as L,
   chapters: [

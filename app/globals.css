@@ -132,46 +132,139 @@ html.is-intro .hero-window {
   }
 }
 
-/* iOS-style cards: a white surface with continuous-looking corners and a
-   soft, layered shadow, lifting a little on hover and sinking under a press
-   with a spring back, as a tapped iOS card does. */
-.ios-card {
-  border-radius: 26px;
-  background: #fff;
+/* Glass cards, as on iOS: frosted, translucent white over whatever lies
+   behind (see .glass-stage), with a bright inner edge where light catches
+   the rim and a soft shadow beneath. They lift a little on hover and sink
+   under a press with a spring back, as a tapped iOS card does. */
+.glass-card {
+  position: relative;
+  border-radius: 28px;
+  background: linear-gradient(150deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.32));
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
   box-shadow:
-    0 0 0 1px rgb(16 16 16 / 0.04),
-    0 1px 2px rgb(16 16 16 / 0.04),
-    0 8px 24px -6px rgb(16 16 16 / 0.08);
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 0 0 1px rgb(255 255 255 / 0.5),
+    0 0 0 1px rgb(16 16 16 / 0.06),
+    0 12px 32px -12px rgb(16 16 16 / 0.22);
   transition:
     transform 0.6s cubic-bezier(0.34, 1.4, 0.5, 1),
     box-shadow 0.4s ease;
 }
 
 @media (hover: hover) {
-  .ios-card:hover {
+  .glass-card:hover {
     transform: translateY(-4px);
     box-shadow:
-      0 0 0 1px rgb(16 16 16 / 0.04),
-      0 2px 4px rgb(16 16 16 / 0.04),
-      0 18px 36px -10px rgb(16 16 16 / 0.14);
+      inset 0 1px 0 rgb(255 255 255 / 0.95),
+      inset 0 0 0 1px rgb(255 255 255 / 0.55),
+      0 0 0 1px rgb(16 16 16 / 0.06),
+      0 22px 44px -14px rgb(16 16 16 / 0.3);
   }
 }
 
-.ios-card:active {
+.glass-card:active {
   transform: scale(0.97);
   transition-duration: 0.15s;
 }
 
-/* The squircle badge in a card's corner, like an app icon. */
-.ios-card__badge {
-  border-radius: 12px;
-  background: linear-gradient(180deg, #2a2a2a, #0b0b0b);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
-  color: var(--paper);
+/* What the glass frosts (GlassStage): soft grey shapes behind a group of
+   cards, blurred, each slowly rippling between a few rounded forms on its
+   own clock. The outer span leans toward the pointer by --depth (pixels at
+   the stage's edge); the inner one drifts. */
+.glass-stage {
+  position: relative;
+  isolation: isolate;
+}
+
+/* No overhang below, so the glow never reaches the section after. */
+.glass-stage__blobs {
+  position: absolute;
+  inset: -8% -3% 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glass-blob {
+  position: absolute;
+  transform: translate(calc(var(--px, 0) * var(--depth) * 1px), calc(var(--py, 0) * var(--depth) * 1px));
+}
+
+.glass-blob > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 42% 58% 63% 37% / 45% 39% 61% 55%;
+  filter: blur(44px);
+  animation: blob-ripple var(--dur) ease-in-out infinite alternate;
+}
+
+.glass-blob--a {
+  --depth: 36;
+  top: 8%;
+  left: 4%;
+  width: 40%;
+  aspect-ratio: 1.5;
+}
+
+.glass-blob--a > span {
+  --dur: 19s;
+  background: linear-gradient(135deg, rgb(16 16 16 / 0.36), rgb(70 72 78 / 0.22));
+}
+
+.glass-blob--b {
+  --depth: -28;
+  top: 34%;
+  left: 40%;
+  width: 32%;
+  aspect-ratio: 1.25;
+}
+
+.glass-blob--b > span {
+  --dur: 23s;
+  background: linear-gradient(200deg, rgb(120 122 128 / 0.34), rgb(170 172 176 / 0.2));
+  animation-delay: -7s;
+}
+
+.glass-blob--c {
+  --depth: 48;
+  top: 4%;
+  right: 3%;
+  width: 26%;
+  aspect-ratio: 1;
+}
+
+.glass-blob--c > span {
+  --dur: 27s;
+  background: linear-gradient(160deg, rgb(48 50 54 / 0.28), rgb(140 142 146 / 0.16));
+  animation-delay: -13s;
+}
+
+@keyframes blob-ripple {
+  0% {
+    border-radius: 42% 58% 63% 37% / 45% 39% 61% 55%;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    border-radius: 58% 42% 38% 62% / 55% 61% 39% 45%;
+    transform: translate(6%, -8%) rotate(24deg) scale(1.08);
+  }
+
+  100% {
+    border-radius: 50% 50% 45% 55% / 38% 52% 48% 62%;
+    transform: translate(-5%, 6%) rotate(-14deg) scale(0.95);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ios-card {
+  .glass-blob > span {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-card {
     transition: none;
   }
 }
