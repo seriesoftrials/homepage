@@ -1,54 +1,57 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { T } from "@/components/i18n/T";
-import { TwistText } from "@/components/motion/TwistText";
-import { PageScrollCue } from "@/components/site/PageScrollCue";
+import { InfoCards } from "@/components/intro/InfoCards";
+import { IntroSection } from "@/components/intro/IntroSection";
+import { ProgramTimeline } from "@/components/intro/ProgramTimeline";
+import { SerialWordmark } from "@/components/intro/SerialWordmark";
 import { PageTitle } from "@/components/site/PageTitle";
 import { PageTransition } from "@/components/site/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { introPage } from "@/content/site";
+import { introPage, nameMeanings, people, perks, program, values } from "@/content/site";
 
 export const metadata: Metadata = { title: "소개 · SERIAL" };
 
-// The founding essay, one chapter per band. The bands still alternate paper
-// and ink, but simply follow one another: the chapter title on the left, its
-// text beside it on wide screens, all of it still.
+// What a first visitor wants to know, in the order they would ask it: what
+// the name means, how SERIAL works, what a semester looks like, what they
+// get, and whether they fit. Each part is titled by what it is for.
 export default function IntroPage() {
+  const { sections } = introPage;
   return (
     <PageTransition>
       <main className="theme-paper">
         <PageTitle title={introPage.title} eyebrow="Series of Trials" />
-        {introPage.chapters.map((chapter, i) => (
-          <section key={i} className={`theme-${i % 2 === 0 ? "ink" : "paper"} px-5 py-20 sm:px-8 sm:py-28`}>
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-              <TwistText
-                as="h2"
-                text={chapter.title}
-                mode="manual"
-                className="text-[clamp(1.9rem,3.6vw,3rem)] leading-[1.08] font-semibold tracking-[-0.045em]"
-              />
-              <div className="flex flex-col gap-6">
-                {chapter.body.map((paragraph, j) => (
-                  <p key={j} className="text-[16px] leading-[1.85]">
-                    <T value={paragraph} />
-                  </p>
-                ))}
-                {i === introPage.chapters.length - 1 ? (
-                  <figure className="mt-10 border-t border-(--line) pt-8">
-                    <blockquote className="font-serif text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.45] text-(--muted) italic">
-                      <T value={introPage.quote} />
-                    </blockquote>
-                    <figcaption className="mt-6 flex justify-between label text-(--muted)">
-                      <T value={introPage.signature.name} />
-                      <span>{introPage.signature.date}</span>
-                    </figcaption>
-                  </figure>
-                ) : null}
-              </div>
-            </div>
-          </section>
-        ))}
+
+        <IntroSection title={sections.name.title} lead={sections.name.lead}>
+          <SerialWordmark />
+          <div className="mt-12">
+            <InfoCards items={nameMeanings} columns={4} />
+          </div>
+        </IntroSection>
+
+        <IntroSection title={sections.values.title} lead={sections.values.lead}>
+          <InfoCards items={values.items} />
+        </IntroSection>
+
+        <IntroSection title={sections.program.title} lead={program.lead}>
+          <ProgramTimeline />
+        </IntroSection>
+
+        <IntroSection title={sections.perks.title}>
+          <InfoCards items={perks.items} columns={3} />
+        </IntroSection>
+
+        <IntroSection title={sections.people.title} lead={people.lead}>
+          <InfoCards items={people.items} columns={4} />
+          <Link
+            href="/join"
+            className="mt-12 inline-flex rounded-full bg-(--fg) px-7 py-3.5 text-sm font-medium text-(--bg) transition-[opacity,transform] duration-300 hover:opacity-80 active:scale-95"
+          >
+            <T value={introPage.join} />
+          </Link>
+        </IntroSection>
+
         <SiteFooter />
-        <PageScrollCue />
       </main>
     </PageTransition>
   );

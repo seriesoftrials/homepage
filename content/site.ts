@@ -58,8 +58,6 @@ export const about = {
 };
 
 export const reveal = {
-  label: { ko: "이름", en: "The name" } as L,
-  title: { ko: ["SERIAL은", "Series of Trials입니다"], en: ["SERIAL stands for", "Series of Trials"] } as Lines,
   // SER·IAL expand into SERies of trIALs.
   parts: [
     { text: "SER", keep: true },
@@ -75,39 +73,79 @@ export const reveal = {
   } as Lines,
 };
 
+// What the name carries, from the deck's "Name" page.
+export const nameMeanings = [
+  {
+    tag: "Series of Trials",
+    title: { ko: "이어지는 시도", en: "A series of trials" },
+    text: {
+      ko: "이름의 뿌리입니다. 한 번의 완성보다, 실험과 검증을 반복하며 경험을 쌓아 가는 과정을 뜻합니다.",
+      en: "The root of the name: not one finished piece, but experience built by testing and checking again and again.",
+    },
+  },
+  {
+    tag: "See the Real",
+    title: { ko: "진짜를 보기", en: "Seeing what is real" },
+    text: {
+      ko: "발음 그대로, 아이디어의 그럴듯함보다 고객의 실제 문제와 반응을 확인합니다.",
+      en: "As it sounds: we check customers' real problems and reactions, not how good an idea looks.",
+    },
+  },
+  {
+    tag: "Cereal",
+    title: { ko: "작게 시작하기", en: "Starting small" },
+    text: {
+      ko: "같은 소리, 다른 철자. 간단히 먹는 시리얼처럼 작은 시도부터 시작합니다.",
+      en: "Same sound, different spelling: like a quick bowl of cereal, we start with small attempts.",
+    },
+  },
+  {
+    tag: "C·Real",
+    title: { ko: "중앙대의 실전", en: "Chung-Ang, for real" },
+    text: {
+      ko: "CAU의 C와 Real을 합쳤습니다. 중앙대 학생이 직접 창업을 실행한다는 뜻입니다.",
+      en: "The C of CAU with Real: Chung-Ang students actually building companies.",
+    },
+  },
+] as { tag: string; title: L; text: L }[];
+
+// How SERIAL works, from the deck's "Spirit" page: a plain headline for
+// each, its English name as a tag, and what it means in practice.
 export const values = {
-  label: { ko: "가치", en: "Values" } as L,
-  title: { ko: ["우리가 존재하는 이유"], en: ["Why we exist"] } as Lines,
   items: [
     {
-      name: "Speed up Execution",
+      tag: "Speed up Execution",
+      title: { ko: "작게, 빠르게 실행합니다", en: "We act small and fast" },
       text: {
-        ko: "생각과 행동 사이의 간격을 줄입니다. 해보고, 확인하고, 고쳐서 다시 합니다.",
-        en: "We shrink the gap between thinking and doing. Try it, check it, fix it, do it again.",
+        ko: "작게 실행하고 결과를 확인합니다. 피드백을 반영해 다음 시도를 이어 갑니다.",
+        en: "We try small and check the result, then fold in the feedback and go again.",
       },
     },
     {
-      name: "Deeper Self-understanding",
+      tag: "Deeper Self-understanding",
+      title: { ko: "해보며 나를 알아갑니다", en: "We find ourselves by doing" },
       text: {
-        ko: "해봐야 내가 보입니다. 여러 사람과 프로젝트 속에서 나의 강점과 Founder-Product Fit을 찾습니다.",
-        en: "You see yourself by doing. Across people and projects we find our strengths and our founder-product fit.",
+        ko: "다양한 동료와 프로젝트를 경험하며 자신의 강점과 관심 분야, 맞는 창업 주제를 찾습니다.",
+        en: "Across teammates and projects we find our strengths, interests and the problems that fit us.",
       },
     },
     {
-      name: "Collision of Perspectives",
+      tag: "Collision of Perspectives",
+      title: { ko: "생각을 부딪칩니다", en: "We let ideas collide" },
       text: {
-        ko: "동의든 반대든, 자기 생각으로 말합니다. 생각끼리 부딪히고, 결정한 뒤에는 함께 실행합니다.",
-        en: "Agree or disagree, we speak our own minds. Ideas collide, and once decided, we execute together.",
+        ko: "서로 다른 의견을 근거와 함께 듣고 논의합니다. 결정한 뒤에는 역할을 나누어 함께 실행합니다.",
+        en: "We hear out different views and their reasons. Once decided, we split the work and do it together.",
       },
     },
     {
-      name: "Communication Under Pressure",
+      tag: "Communication Under Pressure",
+      title: { ko: "어려울 때도 대화합니다", en: "We keep talking under pressure" },
       text: {
-        ko: "압박 속에서도 대화를 멈추지 않습니다. 의견을 전하고, 피드백을 주고받고, 다시 함께 일합니다.",
-        en: "We keep talking under pressure. We share views, trade feedback, and get back to work together.",
+        ko: "갈등이 생겨도 대화를 이어 갑니다. 의견과 피드백을 주고받으며 문제를 해결합니다.",
+        en: "When things get tense we keep talking, trading views and feedback until the problem is solved.",
       },
     },
-  ] as { name: string; text: L }[],
+  ] as { tag: string; title: L; text: L }[],
 };
 
 export const activities = {
@@ -150,8 +188,6 @@ export const activities = {
 
 // One semester, from the deck's "Curriculum" pages: three trials, then DEMO DAY.
 export const program = {
-  label: { ko: "커리큘럼", en: "Curriculum" } as L,
-  title: { ko: ["Theory < Execution"], en: ["Theory < Execution"] } as Lines,
   lead: {
     ko: "이론보다 실행. 16주 동안 세 가지 프로젝트를 경험하고, DEMO DAY에서 결과를 공유합니다.",
     en: "Execution over theory. Over 16 weeks you run three projects and share the results at DEMO DAY.",
@@ -209,35 +245,68 @@ export const program = {
 
 // What a member comes away with, from the deck's "Benefits" page. Only what is
 // planned is listed; support still under discussion with the school is not.
+// What a member comes away with, from the deck's "Benefits" page. Only what is
+// planned is listed; support still under discussion with the school is not.
 export const perks = {
-  label: { ko: "혜택", en: "Perks" } as L,
-  title: { ko: ["한 학기 동안 쌓는", "경험과 관계"], en: ["The experience and people", "one semester brings"] } as Lines,
   items: [
     {
-      name: "Experience",
-      text: { ko: "직접 실행한 프로젝트와, 고객 반응을 설명할 수 있는 경험", en: "Projects you ran yourself, and customer responses you can speak to" },
+      tag: "Experience",
+      title: { ko: "설명할 수 있는 경험", en: "Experience you can speak to" },
+      text: { ko: "직접 실행한 프로젝트와, 고객 반응을 근거로 말할 수 있는 경험이 남습니다.", en: "Projects you ran yourself, and real customer responses to back them." },
     },
     {
-      name: "Network",
-      text: { ko: "선배 창업가, 연사, 다른 학회와의 교류 기회", en: "Time with founder alumni, speakers and other societies" },
+      tag: "Network",
+      title: { ko: "먼저 해본 사람들", en: "People who have done it" },
+      text: { ko: "선배 창업가, 연사, 다른 학회와 교류할 기회가 생깁니다.", en: "Time with founder alumni, speakers and other societies." },
     },
     {
-      name: "Mentor",
-      text: { ko: "프로젝트의 어려움을 나누고, 경험자의 피드백을 받습니다", en: "Talk through what is hard and get feedback from people who have done it" },
+      tag: "Mentor",
+      title: { ko: "막힐 때 물어볼 곳", en: "Someone to ask when stuck" },
+      text: { ko: "프로젝트의 어려움을 나누고, 경험자의 피드백을 받습니다.", en: "Talk through what is hard and get feedback from people who have been there." },
     },
     {
-      name: "Perks",
-      text: { ko: "팀별 시드 머니 10만 원과 AI 도구 이용을 지원할 계획입니다", en: "₩100,000 seed money per team, with AI tools planned" },
+      tag: "Perks",
+      title: { ko: "시작할 자원", en: "Resources to start" },
+      text: { ko: "팀별 시드 머니 10만 원과 AI 도구 이용을 지원할 계획입니다.", en: "₩100,000 seed money per team, with AI tools planned." },
     },
     {
-      name: "Team",
-      text: { ko: "프로젝트를 함께 실행하며 협업할 동료를 만납니다", en: "Teammates you find by building together" },
+      tag: "Team",
+      title: { ko: "함께 만들 동료", en: "Teammates to build with" },
+      text: { ko: "프로젝트를 함께 실행하며 앞으로도 협업할 동료를 만납니다.", en: "You meet the people you will keep building with." },
     },
     {
-      name: "Direction",
-      text: { ko: "프로젝트 경험을 바탕으로 자신의 강점과 관심 분야를 확인합니다", en: "Your strengths and interests, found through the projects" },
+      tag: "Direction",
+      title: { ko: "나에게 맞는 방향", en: "A direction that fits" },
+      text: { ko: "프로젝트 경험을 바탕으로 자신의 강점과 관심 분야를 확인합니다.", en: "Your strengths and interests, found through the projects." },
     },
-  ] as { name: string; text: L }[],
+  ] as { tag: string; title: L; text: L }[],
+};
+
+// Who SERIAL wants to work with, from the deck's "Who we look for" page.
+export const people = {
+  lead: { ko: "경력보다 협업과 배우는 태도를 중요하게 봅니다.", en: "We care more about how you work and learn than about your track record." } as L,
+  items: [
+    {
+      tag: "Empathy",
+      title: { ko: "남의 생각을 이해하는 사람", en: "You understand others" },
+      text: { ko: "다른 사람의 생각을 이해하고 함께 일할 수 있는가", en: "Can you understand other people's thinking and work with them?" },
+    },
+    {
+      tag: "Thinking",
+      title: { ko: "문제를 쪼개 보는 사람", en: "You break problems down" },
+      text: { ko: "문제를 잘게 쪼개고 구조화할 수 있는가", en: "Can you break a problem down and give it structure?" },
+    },
+    {
+      tag: "Values",
+      title: { ko: "새로운 걸 해보는 사람", en: "You try new things" },
+      text: { ko: "불확실함을 감수하고 새로운 것을 시도할 수 있는가", en: "Will you accept uncertainty and try something new?" },
+    },
+    {
+      tag: "Learning",
+      title: { ko: "빠르게 배우는 사람", en: "You learn fast" },
+      text: { ko: "필요한 것을 빠르게 배우고 자기 것으로 만드는가", en: "Do you pick up what you need quickly and make it your own?" },
+    },
+  ] as { tag: string; title: L; text: L }[],
 };
 
 export const join = {
@@ -276,7 +345,7 @@ export const members: Member[] = [
 export const membersPage = {
   title: { ko: "멤버", en: "Members" } as L,
   lead: { ko: "SERIAL을 처음 시작한 창립 멤버입니다.", en: "The founding members who started SERIAL." } as L,
-  hint: { ko: "눌러서 프로필 보기", en: "Tap to see the profile" } as L,
+  groupPhoto: { ko: "단체 사진 준비 중", en: "Group photo coming soon" } as L,
   next: { ko: "다음은 당신", en: "You, next" } as L,
   quotePlaceholder: { ko: "한마디를 준비하고 있어요.", en: "A few words, coming soon." } as L,
   close: { ko: "닫기", en: "Close" } as L,
@@ -286,6 +355,15 @@ export const membersPage = {
 // while it is off the intro page.
 export const introPage = {
   title: { ko: "소개", en: "Intro" } as L,
+  // Section titles say what each part is for, not what it says.
+  sections: {
+    name: { title: { ko: "이름에 담은 뜻", en: "What's in the name" }, lead: { ko: "SERIAL이라는 이름 하나에 여러 의미를 겹쳐 담았습니다.", en: "One name, several meanings layered into it." } },
+    values: { title: { ko: "우리가 일하는 방식", en: "How we work" }, lead: { ko: "프로젝트를 할 때 이 네 가지를 지킵니다.", en: "Four things we hold to in every project." } },
+    program: { title: { ko: "한 학기는 이렇게", en: "How a semester runs" } },
+    perks: { title: { ko: "들어오면 얻는 것", en: "What you get" } },
+    people: { title: { ko: "이런 사람과 함께하고 싶어요", en: "Who we're looking for" } },
+  } as Record<"name" | "values" | "program" | "perks" | "people", { title: L; lead?: L }>,
+  join: { ko: "함께하기", en: "Join us" } as L,
   chapters: [
     {
       title: { ko: ["서로를 발견할", "구조가 필요합니다"], en: ["We need a way", "to find each other"] } as Lines,
