@@ -1,21 +1,15 @@
+import { ActivitiesSection } from "@/components/home/ActivitiesSection";
 import { HomeHero } from "@/components/home/HomeHero";
 import { JoinSection } from "@/components/home/JoinSection";
-import { ActivitiesSection, ValuesSection } from "@/components/home/ListSections";
-import { ProblemSection } from "@/components/home/ProblemSection";
-import { RevealSection } from "@/components/home/RevealSection";
 import { PageTransition } from "@/components/site/PageTransition";
 
-// The hero dives into the ribbon's black band, which becomes the problem
-// statement's background; every section after that rises as an arch,
-// alternating paper and ink, and the page ends on "Join us".
+// Three screens: the ribbon forming into the S, what SERIAL does, and "Join
+// us". The story behind it is told on the intro page.
 export default function Home() {
   return (
     <PageTransition>
       <main>
         <HomeHero />
-        <ProblemSection />
-        <RevealSection />
-        <ValuesSection />
         <ActivitiesSection />
         {/* Join carries the footer inside, so the page ends on that one screen. */}
         <JoinSection />
