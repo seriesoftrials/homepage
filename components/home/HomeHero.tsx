@@ -11,10 +11,23 @@ import { gsap, lockScroll, prefersReducedMotion } from "@/lib/motion";
 
 // Ribbon sequence keyframe (lib/ribbon/sequence.js KEYFRAMES.s): the S settles.
 const S_SETTLED = 0.297;
-// Seconds the loose loop takes to form into the S, and the share of that at
-// which each caption takes over: the loop, the crossing, the twist, the S.
-const FORM_SECONDS = 5.5;
-const STAGE_AT = [0, 0.26, 0.52, 0.86];
+// Seconds the loose loop takes to form into the S. The forming runs at an
+// even pace, so the ribbon's own easing sets when each shape appears, and
+// each caption lands with its shape, as it did when scroll drove the hero:
+// share of the forming at which the loop, the crossing, the twist and the S
+// are shown (the scroll story's caption starts, 0.05 / 0.17 / 0.3 / 0.46 of
+// a 0.5 forming).
+const FORM_SECONDS = 7;
+const STAGE_AT = [0.1, 0.34, 0.6, 0.92];
+// A caption flips in over this share of the forming and leaves just before
+// the next one arrives.
+const CAPTION_IN = 0.1;
+const CAPTION_OUT = 0.08;
+// Seconds the S rests with its caption, the unwinding back into the loop,
+// and the pause before the story starts again.
+const HOLD_SECONDS = 3;
+const UNWIND_SECONDS = 1.8;
+const REST_SECONDS = 0.8;
 // The ribbon's frame: small enough to sit between the title and the captions
 // without touching either.
 const ribbonBox = (w: number, h: number) => Math.min(w * 0.7, h * 0.56);
@@ -53,33 +66,25 @@ export function HomeHero() {
       let story: gsap.core.Timeline | null = null;
 
       // The hero holds still on one screen while the loose loop crosses, twists
-      // and settles into the S on its own, each caption with its stage; the last
-      // caption stays with the S.
+      // and settles into the S on its own, each caption with its shape. The S
+      // rests, its caption leaves, the ribbon unwinds into the loop, and the
+      // story plays again.
       const formStory = () => {
         const state = { form: 0 };
-        const tl = gsap.timeline({ delay: 0.3 });
-        tl.to(
-          state,
-          {
-            form: 1,
-            duration: FORM_SECONDS,
-            ease: "power1.inOut",
-            onUpdate: () => ribbon.current?.setProgress(state.form * S_SETTLED),
-          },
-          0,
-        );
+        const apply = () => ribbon.current?.setProgress(state.form * S_SETTLED);
+        const tl = gsap.timeline({ delay: 0.3, repeat: -1, repeatDelay: REST_SECONDS });
+        tl.to(state, { form: 1, duration: FORM_SECONDS, ease: "none", onUpdate: apply }, 0);
         captions.forEach((caption, i) => {
           const at = STAGE_AT[i] * FORM_SECONDS;
+          const end = i < captions.length - 1 ? STAGE_AT[i + 1] * FORM_SECONDS : FORM_SECONDS + HOLD_SECONDS;
+          const out = CAPTION_OUT * FORM_SECONDS;
           const parts = caption.querySelectorAll("[data-twist-item]");
-          tl.set(caption, { opacity: 1 }, at).fromTo(parts, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: 0.6 }, at);
-          if (i === captions.length - 1) return;
-          const end = STAGE_AT[i + 1] * FORM_SECONDS;
-          tl.to(parts, { rotationX: 100, yPercent: -35, opacity: 0, stagger: 0.03, duration: 0.4 }, end - 0.45).set(
-            caption,
-            { opacity: 0 },
-            end,
-          );
+          tl.set(caption, { opacity: 1 }, at)
+            .fromTo(parts, TWIST_FROM, { ...TWIST_TO, stagger: 0.04, duration: CAPTION_IN * FORM_SECONDS }, at)
+            .to(parts, { rotationX: 100, yPercent: -35, opacity: 0, stagger: 0.03, duration: out }, end - out)
+            .set(caption, { opacity: 0 }, end);
         });
+        tl.to(state, { form: 0, duration: UNWIND_SECONDS, ease: "power2.inOut", onUpdate: apply }, FORM_SECONDS + HOLD_SECONDS);
         story = tl;
       };
 
