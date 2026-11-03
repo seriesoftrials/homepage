@@ -9,7 +9,7 @@ import { membersPage } from "@/content/site";
 
 export const metadata: Metadata = { title: "멤버 · SERIAL" };
 
-// The founding members, linked in turn by one line that is drawn as you scroll.
+// The founding members, linked in turn by one line that draws itself on arrival.
 export default function MembersPage() {
   return (
     <PageTransition>
@@ -18,7 +18,7 @@ export default function MembersPage() {
         <p className="-mt-6 px-5 text-[15px] text-(--muted) sm:px-8">
           <T value={membersPage.lead} />
         </p>
-        <div className="pt-[12svh] pb-[20svh]">
+        <div className="pt-10 pb-24">
           <MemberThread />
         </div>
         <SiteFooter />

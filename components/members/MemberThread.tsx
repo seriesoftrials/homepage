@@ -9,12 +9,14 @@ import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { MemberProfile } from "./MemberProfile";
 
 // Vertical distance between members, as a share of the viewport height.
-const GAP_SVH = 0.42;
+const GAP_SVH = 0.2;
 // Members alternate between these horizontal positions (share of the width).
 const LEFT = 0.27;
 const RIGHT = 0.73;
-// Node diameter, matching the w-[clamp(104px,12vw,168px)] avatars.
-const nodeSize = () => Math.min(168, Math.max(104, innerWidth * 0.12));
+// Node diameter, matching the w-[clamp(84px,8vw,120px)] avatars.
+const nodeSize = () => Math.min(120, Math.max(84, innerWidth * 0.08));
+// Seconds the line takes to draw from the first member to the open place.
+const DRAW_SECONDS = 2.4;
 // Remembered once a visitor has opened any profile; the hover hint then stops.
 // Kept as a class on <html> (see globals.css), not React state.
 const HINT_KEY = "serial-member-hint-seen";
@@ -23,9 +25,10 @@ const HINT_CLASS = "member-hint-seen";
 type Point = { x: number; y: number };
 
 // One thin line, like the hairline of the logo, runs down the page and links
-// the founding members in turn: the series of people who started SERIAL. It is
-// drawn as you scroll, each member appears as the line reaches them, and it
-// ends at an open place for whoever comes next.
+// the founding members in turn: the series of people who started SERIAL. It
+// draws itself once on arrival, each member appearing as the line nears
+// them, and it ends at an open place for whoever comes next. Nothing is tied
+// to scrolling, so the whole thread is there to scan.
 export function MemberThread() {
   const root = useRef<HTMLDivElement>(null);
   const path = useRef<SVGPathElement>(null);
@@ -92,34 +95,15 @@ export function MemberThread() {
       if (prefersReducedMotion()) return;
       const length = line.getTotalLength();
       line.style.strokeDasharray = `${length}`;
-      gsap.fromTo(
-        line,
-        { strokeDashoffset: length },
-        {
-          strokeDashoffset: 0,
-          ease: "none",
-          // Finishes as the last circle's rim reaches the same line on screen,
-          // so the drawing ends on the rim even at the bottom of the page.
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top 62%",
-            end: `bottom-=${size.gap / 2 + size.node / 2} 62%`,
-            scrub: 0.6,
-          },
-        },
-      );
-      // Each member surfaces as the line reaches them.
-      nodes.forEach((node) => {
-        gsap.fromTo(
+      const tl = gsap.timeline({ delay: 0.6 });
+      tl.fromTo(line, { strokeDashoffset: length }, { strokeDashoffset: 0, duration: DRAW_SECONDS, ease: "power1.inOut" }, 0);
+      // Each member surfaces as the line nears them.
+      nodes.forEach((node, i) => {
+        tl.fromTo(
           node,
-          { opacity: 0, y: 24, scale: 0.92 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            ease: "power2.out",
-            scrollTrigger: { trigger: node, start: "top 78%", end: "top 52%", scrub: 0.6 },
-          },
+          { opacity: 0, y: 16, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power2.out" },
+          (DRAW_SECONDS * (i + 0.5)) / nodes.length - 0.2,
         );
       });
     },
@@ -144,7 +128,7 @@ export function MemberThread() {
                 className="thread-node group relative flex flex-col items-center gap-3 text-center outline-none"
               >
                 {/* Photos are being retaken; the circle shows only its backdrop for now. */}
-                <span className="relative block aspect-square w-[clamp(104px,12vw,168px)] overflow-hidden rounded-full bg-[radial-gradient(ellipse_at_50%_18%,#57595e,#303237_48%,#17191c)] shadow-[0_0_0_1px_rgb(255_255_255/0.12)] transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:shadow-[0_0_0_2px_#fafafa]" />
+                <span className="relative block aspect-square w-[clamp(84px,8vw,120px)] overflow-hidden rounded-full bg-[radial-gradient(ellipse_at_50%_18%,#57595e,#303237_48%,#17191c)] shadow-[0_0_0_1px_rgb(255_255_255/0.12)] transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:shadow-[0_0_0_2px_#fafafa]" />
                 <span
                   aria-hidden="true"
                   className="thread-hint pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-2 text-[12px] whitespace-nowrap opacity-0 transition-all duration-300 group-hover:-top-14 group-hover:opacity-100"
@@ -163,7 +147,7 @@ export function MemberThread() {
       {size.width ? (
         <div className="absolute" style={place(points[members.length])}>
           <Link href="/join" data-node className="group flex flex-col items-center gap-3 text-center outline-none">
-            <span className="grid aspect-square w-[clamp(104px,12vw,168px)] place-items-center rounded-full border border-dashed border-(--muted) text-3xl font-light text-(--muted) transition-colors group-hover:border-(--fg) group-hover:text-(--fg)">
+            <span className="grid aspect-square w-[clamp(84px,8vw,120px)] place-items-center rounded-full border border-dashed border-(--muted) text-3xl font-light text-(--muted) transition-colors group-hover:border-(--fg) group-hover:text-(--fg)">
               +
             </span>
             <span className="text-lg font-semibold tracking-[-0.02em] text-(--muted) transition-colors group-hover:text-(--fg)">
