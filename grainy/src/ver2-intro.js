@@ -16,7 +16,7 @@
 import { SEQUENCE_DURATION, ROTATION_DURATION, nextRotationStop } from '../assets/serial-ribbon-sequence/sequence.js';
 
 const SEEN_KEY = 'serial:ver2:intro-seen:v1';
-const READY_BUDGET = 2000;
+const READY_BUDGET = 3000;
 // The logo fades in and floats still, turns once, then settles into the hero
 // while the white page takes on its colors and the sections rise into place.
 const FADE_IN_DURATION = 400;
@@ -43,11 +43,13 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
   const animations = [];
   const cleanup = [];
   let disposed = false;
+  let revealed = false;
   const controller = { dispose };
 
   function dispose() {
     if (disposed) return;
     disposed = true;
+    const gated = root?.classList.contains('intro-pending') && !revealed;
     // Release the CSS gate before canceling its temporary animation overrides.
     root?.classList.remove('intro-pending');
     root?.removeAttribute('data-intro-active');
@@ -57,7 +59,22 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
     for (const animation of animations) {
       try { animation.cancel(); } catch { /* A detached animation may be gone. */ }
     }
+    if (gated) easeIn();
     if (doc && mounted.get(doc) === controller) mounted.delete(doc);
+  }
+
+  // A skipped or cut-short entrance still eases the page in instead of
+  // switching it on. These run past dispose and settle on the page's own styles.
+  function easeIn() {
+    if (!doc || view?.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const arrive = (selector, from) => doc.querySelectorAll(selector).forEach(element => {
+      // A lone keyframe at offset 0 animates from it to the page's own value.
+      element.animate?.([{ ...from, offset: 0 }], { duration: 700, easing: SETTLE_EASE });
+    });
+    arrive('[data-page-nav]', { opacity: 0 });
+    arrive('.hero', { borderColor: 'transparent', backgroundColor: 'transparent' });
+    arrive('.hero-copy', { opacity: 0, transform: 'translateY(18px)', filter: 'blur(6px)' });
+    arrive('.site-sections, .site-footer', { opacity: 0, transform: 'translateY(28px)' });
   }
 
   function listen(target, type, listener, options) {
@@ -251,9 +268,10 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
             { opacity, visibility, ...to },
           ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY + index * REVEAL_STAGGER, easing: SETTLE_EASE });
         });
-        listen(last, 'finish', dispose, { once: true });
+        const finish = () => { revealed = true; dispose(); };
+        listen(last, 'finish', finish, { once: true });
         // Protect the gate even if an engine does not deliver a finish event.
-        timeout(dispose, REVEAL_DELAY + REVEAL_DURATION + finalContent.length * REVEAL_STAGGER + 40);
+        timeout(finish, REVEAL_DELAY + REVEAL_DURATION + finalContent.length * REVEAL_STAGGER + 40);
       } catch { dispose(); }
     }
 
