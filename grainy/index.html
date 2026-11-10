@@ -3,6 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script>
+      // A reload starts over from the top with the entrance, wherever the
+      // visitor had scrolled or jumped to. The browser reads the saved
+      // restoration mode on reload, so it is set on every visit.
+      history.scrollRestoration = 'manual';
+      if (performance.getEntriesByType('navigation')[0]?.type === 'reload' && location.hash) {
+        history.replaceState(history.state, '', location.pathname + location.search);
+      }
+    </script>
     <meta name="theme-color" content="#dcebef" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="중앙대학교 학생창업 네트워크 SERIAL. 창업 동료와 선배를 연결하고, 함께 다음 시도를 시작합니다." />
