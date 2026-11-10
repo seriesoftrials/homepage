@@ -46,11 +46,11 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  /* Cap the cards at a 3:2 hero so wide screens gain margin, not length. */
-  --page-width: calc((100svh - 2 * var(--frame)) * 1.5);
-  --page-side: calc((100vw - var(--page-width)) / 2);
-  --page-gutter-left: max(var(--frame), var(--safe-left), var(--page-side));
-  --page-gutter-right: max(var(--frame), var(--safe-right), var(--page-side));
+  --page-gutter-left: max(var(--frame), var(--safe-left));
+  --page-gutter-right: max(var(--frame), var(--safe-right));
+  /* Cards stay full width; their content gathers into a centered column. */
+  --content-width: 1120px;
+  --content-side: max(0px, (100vw - 2 * var(--frame) - var(--content-width)) / 2);
   --inset: clamp(22px, 3.3vw, 64px);
   --section-inset: clamp(28px, 5.2vw, 80px);
   --nav-ease: cubic-bezier(.22, 1, .36, 1);
@@ -217,7 +217,7 @@ img { max-width: 100%; }
 
 .hero { scroll-margin-top: calc(var(--frame) + var(--safe-top)); position: relative; min-height: calc(100svh - 2 * var(--frame) - var(--safe-top) - var(--safe-bottom)); overflow: clip; isolation: isolate; border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); }
 .hero::before { content: ""; position: absolute; z-index: 0; inset: 38% 0 0; opacity: calc(1 - var(--intro-veil)); background: radial-gradient(ellipse 78% 95% at 10% 100%, rgb(47 91 200 / .26), rgb(120 205 218 / .1) 46%, transparent 78%), radial-gradient(ellipse 74% 100% at 100% 100%, rgb(176 166 240 / .3), rgb(255 86 70 / .07) 48%, transparent 80%); pointer-events: none; }
-.hero-copy { position: relative; z-index: 2; padding: 131px var(--inset) 0; }
+.hero-copy { position: relative; z-index: 2; padding: 131px max(var(--inset), var(--content-side)) 0; }
 .hero-copy h1 { margin: 0; font-family: "Newsreader", "Times New Roman", serif; font-size: clamp(36px, 4.25vw, 72px); font-weight: 400; font-optical-sizing: auto; line-height: 1.04; letter-spacing: -.025em; }
 .hero-brand { font-family: "Newsreader", serif; font-weight: 400; letter-spacing: -.025em; }
 html:not([lang="en"]) .hero-copy h1 { font-family: inherit; line-height: 1.12; letter-spacing: -.04em; }
@@ -233,7 +233,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .hero-ribbon.is-ready .hero-ribbon-poster { opacity: 0; }
 
 .site-sections { display: grid; gap: var(--frame); margin-top: var(--frame); }
-.section-tile { min-width: 0; padding: var(--section-inset); border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); scroll-margin-top: calc(110px + var(--safe-top)); }
+.section-tile { min-width: 0; padding: var(--section-inset) max(var(--section-inset), var(--content-side)); border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); scroll-margin-top: calc(110px + var(--safe-top)); }
 .section-caption { display: flex; align-items: center; gap: 10px; margin: 0 0 26px; color: var(--body); font-size: 12px; font-weight: 500; letter-spacing: .02em; }
 .section-caption::before { content: ""; display: block; flex: 0 0 5px; width: 5px; height: 5px; border-radius: 1px; background: var(--accent); }
 .about-statement { max-width: 1100px; margin: 0; font-size: clamp(30px, 3.6vw, 52px); font-weight: 450; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
@@ -269,7 +269,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .person-card figcaption p { margin: 0; color: var(--body); font-size: 12px; line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; }
 .person-college { display: block; margin-bottom: 3px; }
 
-.spirit-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); padding: clamp(20px, 2.4vw, 32px); overflow: hidden; }
+.spirit-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); padding: clamp(20px, 2.4vw, 32px) max(clamp(20px, 2.4vw, 32px), var(--content-side)); overflow: hidden; }
 .spirit-art { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5; margin: 0; border-radius: 0; background: #d7e8e4; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .spirit-art img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
 .spirit-art .spirit-frame { position: absolute; inset: 0; opacity: 0; transition: opacity 180ms cubic-bezier(.23, 1, .32, 1); }
@@ -289,7 +289,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .spirit-copy h2 { margin: 0 0 24px; font-size: clamp(27px, 3vw, 42px); font-weight: 450; line-height: 1.4; letter-spacing: -.045em; text-wrap: balance; word-break: keep-all; }
 
 .project-section { display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
-.project-copy { padding: var(--section-inset); }
+.project-copy { padding: var(--section-inset); padding-left: max(var(--section-inset), var(--content-side)); }
 .status-tag { display: inline-flex; padding: 5px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--body); font-size: 11px; }
 .project-copy h2 { margin: 30px 0 25px; font-family: "Newsreader", serif; font-size: clamp(44px, 5.2vw, 76px); font-weight: 400; line-height: .98; letter-spacing: -.03em; }
 html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(32px, 3.8vw, 56px); line-height: 1.15; letter-spacing: -.045em; }
@@ -304,7 +304,7 @@ html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(
 .story-row h3[lang="en"] { font-family: "Newsreader", serif; font-size: 30px; }
 .story-row p { margin: 8px 0 0; color: var(--body); font-size: 13px; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
 .story-row > svg { transition: transform 180ms var(--nav-ease); }
-.join-section { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); overflow: hidden; padding: clamp(20px, 2.4vw, 32px); background: radial-gradient(ellipse at 0 100%, rgb(120 205 218 / .22), transparent 65%), radial-gradient(ellipse at 100% 100%, rgb(255 86 70 / .12), transparent 70%), var(--tile-surface); }
+.join-section { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); overflow: hidden; padding: clamp(20px, 2.4vw, 32px) max(clamp(20px, 2.4vw, 32px), var(--content-side)); background: radial-gradient(ellipse at 0 100%, rgb(120 205 218 / .22), transparent 65%), radial-gradient(ellipse at 100% 100%, rgb(255 86 70 / .12), transparent 70%), var(--tile-surface); }
 .join-copy { min-width: 0; padding: clamp(8px, 2vw, 24px); }
 .join-art { width: 100%; max-width: 360px; justify-self: end; background: #f1e4d5; }
 .join-section h2 { margin: 0 0 25px; font-size: clamp(34px, 4.3vw, 60px); font-weight: 450; line-height: 1.3; letter-spacing: -.05em; }
