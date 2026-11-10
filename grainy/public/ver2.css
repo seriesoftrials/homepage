@@ -64,6 +64,9 @@
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
   overflow-x: clip;
+  /* The same slim scrollbar as the dialogs, in the current text color. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--ink-rgb) / .2) transparent;
   /* A skipped entrance still lifts the white veil softly. */
   transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease, --intro-veil 700ms ease;
 }
@@ -330,7 +333,7 @@ html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(
 .dialog-close { display: grid; flex: 0 0 40px; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; color: var(--ink); background: rgb(var(--ink-rgb) / .045); cursor: pointer; transition: background-color 160ms ease, transform 160ms var(--nav-ease); }
 .dialog-close:hover { background: rgb(var(--ink-rgb) / .1); }
 .dialog-close:active { transform: scale(.94); }
-.dialog-scroll { position: relative; z-index: 1; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgb(var(--ink-rgb) / .18) transparent; -webkit-mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); }
+.dialog-scroll { position: relative; z-index: 1; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgb(var(--ink-rgb) / .2) transparent; -webkit-mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); }
 .dialog-header, .dialog-scroll { opacity: 1; transition: opacity 140ms ease; }
 .card-dialog[data-state="opening"] .dialog-header, .card-dialog[data-state="opening"] .dialog-scroll,
 .card-dialog[data-state="closing"] .dialog-header, .card-dialog[data-state="closing"] .dialog-scroll { opacity: 0; }
