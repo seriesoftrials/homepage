@@ -289,6 +289,16 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 
 .spirit-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); padding: clamp(20px, 2.4vw, 32px) max(clamp(20px, 2.4vw, 32px), var(--content-side)); overflow: hidden; }
 .spirit-art { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5; margin: 0; border-radius: 0; background: #d7e8e4; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+/* Picture boxes wait as frosted panes with a soft light passing over them, then
+ * the picture fades in once decoded. ver2-hero.js sets data-image, so pictures
+ * still show when scripts are off. */
+[data-image] { overflow: hidden; }
+[data-image] img:not(.spirit-frame) { transition: opacity 600ms ease, filter var(--theme-duration) ease; }
+[data-image="loading"] img:not(.spirit-frame) { opacity: 0; }
+.spirit-art[data-image="loading"] { background: var(--nav-surface); }
+[data-image]::before { content: ""; position: absolute; z-index: 2; inset: 0; background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .3) 50%, transparent 70%); opacity: 0; transform: translateX(-100%); pointer-events: none; transition: opacity 400ms ease; }
+[data-image="loading"]::before { opacity: 1; animation: image-sweep 1.6s ease-in-out infinite; }
+@keyframes image-sweep { to { transform: translateX(100%); } }
 .spirit-art img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
 .spirit-art .spirit-frame { position: absolute; inset: 0; opacity: 0; transition: opacity 180ms cubic-bezier(.23, 1, .32, 1); }
 .spirit-art::after { content: ""; position: absolute; z-index: 1; inset: -35%; background: url("/spirit-grain.svg") repeat; background-size: 180px 180px; opacity: .18; mix-blend-mode: soft-light; pointer-events: none; animation: spirit-grain 900ms steps(1, end) infinite; animation-play-state: paused; }
@@ -471,7 +481,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .dialog-header, .dialog-scroll, .card-dialog::backdrop, .dialog-close { transition: none; }
   .hero-ribbon-poster, .hero-ribbon-canvas { transition: none; }
   .dialog-close:active { transform: none; }
-  .page-grain::before, .page-backdrop span { animation: none; transform: none; }
+  .page-grain::before, .page-backdrop span, [data-image]::before { animation: none; transform: none; }
   .spirit-art::after { animation: none; transform: none; }
   .spirit-art .spirit-frame { transition: none; }
   :root { --theme-duration: 0ms; }

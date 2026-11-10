@@ -217,6 +217,14 @@ window.addEventListener('pageshow', event => {
 });
 document.fonts.ready.then(scheduleNavigation);
 
+// Picture boxes hold a frosted placeholder until their picture is decoded.
+for (const box of document.querySelectorAll('.spirit-art, .person-portrait, .project-visual')) {
+  const image = box.querySelector('img');
+  if (!image || (image.complete && image.naturalWidth)) continue;
+  box.dataset.image = 'loading';
+  image.decode().catch(() => {}).finally(() => { box.dataset.image = 'ready'; });
+}
+
 // After the entrance, fetch and decode the lazy images one after another so none
 // of them decodes in the middle of a scroll. Decoding runs off the main thread.
 async function warmImages() {
