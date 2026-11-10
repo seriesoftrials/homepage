@@ -144,6 +144,12 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
       const style = view.getComputedStyle(element);
       return { element, opacity: style.opacity, visibility: style.visibility };
     });
+    const heroStyle = view.getComputedStyle(hero);
+    const finalHero = {
+      borderColor: heroStyle.borderTopColor,
+      borderRadius: heroStyle.borderTopLeftRadius,
+      backgroundColor: heroStyle.backgroundColor,
+    };
     root.classList.add('intro-pending');
 
     for (const element of [...content, ...doc.querySelectorAll('.skip-link')]) {
@@ -194,6 +200,17 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
           { '--intro-veil': '1', offset: 0 },
           { '--intro-veil': '1', offset: COLOR_START / colorDuration, easing: 'cubic-bezier(.45, 0, .25, 1)' },
           { '--intro-veil': '0', offset: 1 },
+        ], { duration: colorDuration });
+
+        // The hero starts as the whole white screen, then draws back into its
+        // framed card as the colors arrive, like the page landing in place.
+        const bounds = hero.getBoundingClientRect();
+        const cover = Math.max(view.innerWidth / bounds.width, view.innerHeight / bounds.height) * 1.01;
+        const open = { transform: `scale(${cover})`, borderColor: 'transparent', borderRadius: '0px', backgroundColor: 'transparent' };
+        animate(hero, [
+          { ...open, offset: 0 },
+          { ...open, offset: SETTLE_START / colorDuration, easing: SETTLE_EASE },
+          { transform: 'none', ...finalHero, offset: 1 },
         ], { duration: colorDuration });
 
         const turnEnd = nextRotationStop(ribbon.state.elapsed / SEQUENCE_DURATION) * SEQUENCE_DURATION;

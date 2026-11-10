@@ -32,6 +32,13 @@
     opacity: 1;
   }
 
+  /* While the entrance waits for the logo, the hero is plain white screen. */
+  html.intro-pending[data-intro-active] .hero {
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+  }
+
   html.intro-pending .hero-ribbon {
     transform: scale(1.28);
     transform-origin: center;
