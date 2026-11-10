@@ -19,18 +19,19 @@ const SEEN_KEY = 'serial:ver2:intro-seen:v1';
 const READY_BUDGET = 2000;
 // The logo fades in and floats still, turns once, then settles into the hero
 // while the white page takes on its colors and the sections rise into place.
-const FADE_IN_DURATION = 450;
-const HOLD_DURATION = 700;
-const TURN_DURATION = 2600;
-const SETTLE_DURATION = 900;
+const FADE_IN_DURATION = 400;
+const HOLD_DURATION = 500;
+const TURN_DURATION = 2000;
+const SETTLE_DURATION = 700;
 const SETTLE_START = HOLD_DURATION + TURN_DURATION;
 const LOGO_DURATION = SETTLE_START + SETTLE_DURATION;
 const COLOR_START = HOLD_DURATION + TURN_DURATION * .6;
 const REVEAL_DELAY = SETTLE_START + 150;
-const REVEAL_DURATION = 900;
-const REVEAL_RISE = '20px';
+const REVEAL_DURATION = 700;
+// Each part arrives a beat after the one above it.
+const REVEAL_STAGGER = 90;
 // Must match the CSS fallback release in ver2-intro.css.
-const INTRO_DEADLINE = 4000;
+const INTRO_DEADLINE = 6000;
 const SETTLE_EASE = 'cubic-bezier(.5, 0, .15, 1)';
 const mounted = new WeakMap();
 
@@ -235,21 +236,24 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
           if (!ribbon.state.disposed) ribbon.seek(motion?.matches ? SEQUENCE_DURATION : turnEnd);
         });
 
-        // Visibility remains gated during the logo movement. The rest rises into
-        // place; navigation fades only, as its fixed-position transform belongs
-        // to the parent.
+        // Visibility remains gated during the logo movement. Then the nav drops
+        // in, the headline comes into focus as it rises, and the sections follow.
+        // The nav moves with `translate`, since its `transform` belongs to the parent.
+        const arrivals = new Map([
+          [header, [{ translate: '0 -14px' }, { translate: '0 0' }]],
+          [copy, [{ transform: 'translateY(28px)', filter: 'blur(8px)' }, { transform: 'none', filter: 'blur(0px)' }]],
+        ]);
         let last;
-        for (const { element, opacity, visibility } of finalContent) {
-          const [from, to] = element === header ? [{}, {}]
-            : [{ transform: `translateY(${REVEAL_RISE})` }, { transform: 'none' }];
+        finalContent.forEach(({ element, opacity, visibility }, index) => {
+          const [from, to] = arrivals.get(element) ?? [{ transform: 'translateY(40px)' }, { transform: 'none' }];
           last = animate(element, [
             { opacity: '0', visibility, ...from },
             { opacity, visibility, ...to },
-          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY, easing: SETTLE_EASE });
-        }
+          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY + index * REVEAL_STAGGER, easing: SETTLE_EASE });
+        });
         listen(last, 'finish', dispose, { once: true });
         // Protect the gate even if an engine does not deliver a finish event.
-        timeout(dispose, REVEAL_DELAY + REVEAL_DURATION + 40);
+        timeout(dispose, REVEAL_DELAY + REVEAL_DURATION + finalContent.length * REVEAL_STAGGER + 40);
       } catch { dispose(); }
     }
 
