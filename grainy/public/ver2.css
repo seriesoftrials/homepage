@@ -40,7 +40,7 @@
   --grain-texture: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256%22%20height%3D%22256%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cfilter%20id%3D%22grain%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%20seed%3D%227%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type%3D%22linear%22%20slope%3D%220%22%20intercept%3D%220.24%22%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23grain%29%22%2F%3E%3C%2Fsvg%3E");
   /* Scroll sets the theme each frame; this lets colors trail it gently. */
   --theme-duration: 360ms;
-  --frame: clamp(6px, calc(2.2vw - 8px), 34px);
+  --frame: clamp(14px, calc(2.2vw - 8px), 34px);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -398,7 +398,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .mobile-menu nav { position: absolute; top: 54px; right: 0; display: flex; flex-direction: column; width: 190px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: 0 8px 24px rgb(0 0 0 / .04); }
   .mobile-menu nav a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; font-size: 14px; }
   .mobile-menu nav .mobile-nav-join { margin-top: 6px; border-top: 1px solid var(--line); }
-  .hero-copy { padding-top: 119px; }
+  .hero-copy { padding: 119px var(--section-inset) 0; }
   .hero-copy h1 { font-size: clamp(30px, 8.5vw, 45px); line-height: 1.04; letter-spacing: -.025em; }
   .hero-description { margin-top: 18px; font-size: 16px; }
   .hero-ribbon { width: min(132vw, 720px); }
