@@ -39,6 +39,7 @@ let activeSection;
 let activeDarkTheme;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+const smoothstep = value => value * value * (3 - 2 * value);
 
 function updateNavigation() {
   scheduledFrame = 0;
@@ -48,11 +49,13 @@ function updateNavigation() {
   const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
   header.classList.toggle('is-compact', compact);
 
-  // Let the incoming card peek in before switching, in either direction.
-  const membersBounds = membersSection.getBoundingClientRect();
-  const joinBounds = joinSection.getBoundingClientRect();
-  const themeBoundary = window.innerHeight - 32;
-  const darkTheme = membersBounds.top < themeBoundary && joinBounds.top >= themeBoundary;
+  // Blend into the night while the members card rises through the lower 60% of
+  // the screen, and back out as the join card does, in either direction.
+  const nightRamp = top => smoothstep(clamp((window.innerHeight - top) / (window.innerHeight * .6)));
+  const night = nightRamp(membersSection.getBoundingClientRect().top)
+    * (1 - nightRamp(joinSection.getBoundingClientRect().top));
+  document.documentElement.style.setProperty('--night', night.toFixed(3));
+  const darkTheme = night > .5;
   if (darkTheme !== activeDarkTheme) {
     activeDarkTheme = darkTheme;
     document.documentElement.classList.toggle('is-members-theme', darkTheme);
