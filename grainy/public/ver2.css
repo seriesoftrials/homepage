@@ -20,26 +20,25 @@
 }
 :root {
   color-scheme: light;
-  /* 0 is the icy day page, 1 the navy members night; ver2-hero.js scrubs it with scroll. */
-  --night: 0;
-  --night-mix: calc(var(--night) * 100%);
-  --paper: color-mix(in oklab, #f2f7f9, #0a1030 var(--night-mix));
-  --tile-surface: color-mix(in oklab, rgb(246 250 252 / .64), rgb(8 13 40 / .44) var(--night-mix));
-  --surround: color-mix(in oklab, #dcebef, #050a24 var(--night-mix));
-  /* Text flips at the midpoint instead of blending through an unreadable gray. */
+  --paper: #f2f7f9;
+  --tile-surface: rgb(246 250 252 / .64);
+  --surround: #dcebef;
   --ink: #0d1530;
   --body: #4f5b74;
   --ink-rgb: 13 21 48;
-  --line: color-mix(in oklab, rgb(13 21 48 / .1), rgb(255 255 255 / .11) var(--night-mix));
-  --nav-surface: color-mix(in oklab, rgb(244 249 251 / .55), rgb(12 18 50 / .55) var(--night-mix));
-  --visual-paper: color-mix(in oklab, rgb(255 255 255 / .3), rgb(12 18 50 / .3) var(--night-mix));
-  --portrait-paper: color-mix(in oklab, rgb(255 255 255 / .5), rgb(255 255 255 / .085) var(--night-mix));
+  --line: rgb(13 21 48 / .1);
+  --nav-surface: rgb(244 249 251 / .55);
+  --visual-paper: rgb(255 255 255 / .3);
+  --portrait-paper: rgb(255 255 255 / .5);
   --logo-invert: 0;
   --grain-blend: multiply;
   /* Bake 24% alpha into the shared tile for matching canvas/document grain. */
   --grain-texture: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256%22%20height%3D%22256%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cfilter%20id%3D%22grain%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%20seed%3D%227%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type%3D%22linear%22%20slope%3D%220%22%20intercept%3D%220.24%22%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23grain%29%22%2F%3E%3C%2Fsvg%3E");
-  /* Scroll sets the theme each frame; this lets colors trail it gently. */
-  --theme-duration: 360ms;
+  /* The same noise pre-blended as dark specks (multiply over the light page),
+   * so the full-screen grain needs no mix-blend-mode. */
+  --grain-dark: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256%22%20height%3D%22256%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cfilter%20id%3D%22grain%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%20seed%3D%227%22%2F%3E%3CfeColorMatrix%20type%3D%22matrix%22%20values%3D%220%200%200%200%200%200%200%200%200%200%200%200%200%200%200%20-0.0340%20-0.1144%20-0.0115%200%200.16%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23grain%29%22%2F%3E%3C%2Fsvg%3E");
+  /* Shared duration for color transitions. */
+  --theme-duration: 400ms;
   --frame: clamp(14px, calc(2.2vw - 8px), 34px);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
@@ -69,14 +68,6 @@
   scrollbar-color: rgb(var(--ink-rgb) / .2) transparent;
   /* A skipped entrance still lifts the white veil softly. */
   transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease, --intro-veil 700ms ease;
-}
-:root.is-members-theme {
-  color-scheme: dark;
-  --ink: #eef3fb;
-  --body: #a9b4d0;
-  --ink-rgb: 238 243 251;
-  --logo-invert: 1;
-  --grain-blend: screen;
 }
 * { box-sizing: border-box; }
 body {
@@ -111,20 +102,24 @@ main, .site-footer { position: relative; z-index: 1; }
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgb(var(--glow)), rgb(var(--glow) / .55) 45%, rgb(var(--glow) / 0));
-  opacity: calc(.62 + .18 * var(--night));
-  animation: page-glow var(--period) ease-in-out var(--delay) infinite alternate;
+  opacity: .62;
+  animation: var(--period) ease-in-out var(--delay) infinite alternate;
   will-change: transform;
 }
-.page-backdrop span:nth-child(1) { --glow: 47 91 200; --x: -22vmax; --y: -18vmax; --size: 78vmax; --dx: 18vmax; --dy: 14vmax; --turn: 1.12; --period: 34s; --delay: -6s; }
-.page-backdrop span:nth-child(2) { --glow: 120 205 218; --x: 48vw; --y: -24vmax; --size: 70vmax; --dx: -16vmax; --dy: 20vmax; --turn: .9; --period: 41s; --delay: -19s; }
-.page-backdrop span:nth-child(3) { --glow: 176 166 240; --x: 18vw; --y: 38vh; --size: 58vmax; --dx: 20vmax; --dy: -12vmax; --turn: 1.18; --period: 29s; --delay: -11s; }
-.page-backdrop span:nth-child(4) { --glow: 29 99 195; --x: 62vw; --y: 52vh; --size: 64vmax; --dx: -22vmax; --dy: -10vmax; --turn: .94; --period: 37s; --delay: -24s; }
-.page-backdrop span:nth-child(5) { --glow: 255 86 70; --x: 74vw; --y: 78vh; --size: 30vmax; --dx: -26vmax; --dy: -18vmax; --turn: 1.25; --period: 26s; --delay: -3s; }
-.page-backdrop span:nth-child(6) { --glow: 111 51 88; --x: -10vmax; --y: 70vh; --size: 46vmax; --dx: 16vmax; --dy: -16vmax; --turn: 1.1; --period: 45s; --delay: -30s; opacity: calc(.15 + .55 * var(--night)); }
-@keyframes page-glow {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(var(--dx), var(--dy)) scale(var(--turn)); }
-}
+.page-backdrop span:nth-child(1) { --glow: 47 91 200; --x: -22vmax; --y: -18vmax; --size: 78vmax; animation-name: page-glow-1; --period: 34s; --delay: -6s; }
+.page-backdrop span:nth-child(2) { --glow: 120 205 218; --x: 48vw; --y: -24vmax; --size: 70vmax; animation-name: page-glow-2; --period: 41s; --delay: -19s; }
+.page-backdrop span:nth-child(3) { --glow: 176 166 240; --x: 18vw; --y: 38vh; --size: 58vmax; animation-name: page-glow-3; --period: 29s; --delay: -11s; }
+.page-backdrop span:nth-child(4) { --glow: 29 99 195; --x: 62vw; --y: 52vh; --size: 64vmax; animation-name: page-glow-4; --period: 37s; --delay: -24s; }
+.page-backdrop span:nth-child(5) { --glow: 255 86 70; --x: 74vw; --y: 78vh; --size: 30vmax; animation-name: page-glow-5; --period: 26s; --delay: -3s; }
+.page-backdrop span:nth-child(6) { --glow: 111 51 88; --x: -10vmax; --y: 70vh; --size: 46vmax; animation-name: page-glow-6; --period: 45s; --delay: -30s; opacity: .15; }
+/* Literal keyframes so the compositor runs them; var() inside keyframes sends
+ * every frame through the main thread and re-rasterizes the glows. */
+@keyframes page-glow-1 { to { transform: translate(18vmax, 14vmax) scale(1.12); } }
+@keyframes page-glow-2 { to { transform: translate(-16vmax, 20vmax) scale(.9); } }
+@keyframes page-glow-3 { to { transform: translate(20vmax, -12vmax) scale(1.18); } }
+@keyframes page-glow-4 { to { transform: translate(-22vmax, -10vmax) scale(.94); } }
+@keyframes page-glow-5 { to { transform: translate(-26vmax, -18vmax) scale(1.25); } }
+@keyframes page-glow-6 { to { transform: translate(16vmax, -16vmax) scale(1.1); } }
 
 /* On mouse screens a drawn bar replaces the native one, so it can fade out
  * under the nav like the dialogs' bars do. Phones keep their own overlay bar. */
@@ -143,18 +138,19 @@ main, .site-footer { position: relative; z-index: 1; }
   z-index: 101;
   inset: 0;
   overflow: hidden;
-  mix-blend-mode: var(--grain-blend);
   pointer-events: none;
 }
+/* Plain alpha layers that crossfade with the theme; blending a full-screen
+ * layer over the moving light cost a recomposite every frame. */
 .page-grain::before {
   content: "";
   position: absolute;
   inset: -16px;
-  background-image: var(--grain-texture);
   background-repeat: repeat;
   background-size: 256px 256px;
   animation: page-grain-shift 900ms steps(1, end) infinite;
 }
+.page-grain::before { background-image: var(--grain-dark); }
 .page-grain[data-motion="paused"]::before { animation-play-state: paused; }
 @keyframes page-grain-shift {
   0%, 100% { transform: translate(0, 0); }
@@ -346,7 +342,7 @@ html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(
 /* Frosted glass over the page's light, with a floating header like the nav. */
 .dialog-surface { --dialog-head: 84px; position: absolute; inset: calc(var(--frame) + var(--safe-top)) var(--page-gutter-right) calc(var(--frame) + var(--safe-bottom)) var(--page-gutter-left); display: flex; flex-direction: column; min-height: 0; overflow: hidden; border: 1px solid rgb(255 255 255 / .55); border-radius: 28px; background: color-mix(in oklab, var(--paper) 76%, transparent); -webkit-backdrop-filter: blur(40px) saturate(1.4); backdrop-filter: blur(40px) saturate(1.4); box-shadow: 0 30px 90px rgb(13 21 48 / .2), inset 0 1px 0 rgb(255 255 255 / .55); transform-origin: center; }
 .dialog-surface::before { content: ""; position: absolute; z-index: 0; inset: 0; background: radial-gradient(ellipse 70% 50% at 0 100%, rgb(47 91 200 / .14), transparent 70%), radial-gradient(ellipse 60% 45% at 100% 100%, rgb(255 86 70 / .1), transparent 70%), radial-gradient(ellipse 60% 40% at 100% 0, rgb(120 205 218 / .14), transparent 70%); pointer-events: none; }
-.dialog-surface::after { content: ""; position: absolute; z-index: 2; inset: 0; background-image: var(--grain-texture); background-size: 256px 256px; mix-blend-mode: var(--grain-blend); pointer-events: none; }
+.dialog-surface::after { content: ""; position: absolute; z-index: 2; inset: 0; background-image: var(--grain-dark); background-size: 256px 256px; pointer-events: none; }
 .story-dialog .dialog-surface { inset: max(40px, 7svh, var(--safe-top)) max(24px, 5vw, var(--safe-right)) max(40px, 7svh, var(--safe-bottom)) max(24px, 5vw, var(--safe-left)); max-width: 760px; margin-inline: auto; }
 .dialog-header { position: absolute; z-index: 3; top: 14px; right: 14px; left: 14px; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 8px 0 18px; border: 1px solid rgb(var(--ink-rgb) / .08); border-radius: 28px; background: var(--nav-surface); -webkit-backdrop-filter: blur(28px) saturate(1.25); backdrop-filter: blur(28px) saturate(1.25); box-shadow: 0 8px 30px rgb(13 21 48 / .05); }
 .dialog-mark { display: block; flex: 0 0 auto; filter: invert(var(--logo-invert)); }

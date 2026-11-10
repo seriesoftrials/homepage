@@ -18,9 +18,6 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
-const membersSection = document.querySelector('#members');
-const joinSection = document.querySelector('#join');
-const themeColor = document.querySelector('meta[name="theme-color"]');
 const statement = document.querySelector('[data-scroll-statement]');
 const phrases = [...statement.querySelectorAll('span')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -30,13 +27,13 @@ function syncPageGrain() {
 }
 document.addEventListener('visibilitychange', syncPageGrain);
 syncPageGrain();
-const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
+const spiritArts = [...document.querySelectorAll('[data-spirit-art]')];
+const spiritLoops = spiritArts.map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
 let elapsed = SEQUENCE_DURATION;
 let scheduledFrame = 0;
 let activeSection;
-let activeDarkTheme;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -44,10 +41,10 @@ const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const pageScrollbar = document.querySelector('[data-page-scrollbar]');
 const scrollThumb = pageScrollbar?.firstElementChild;
 let thumbTravel = 0;
-function syncScrollbar(progress) {
-  if (!scrollThumb || !pageScrollbar.offsetHeight) return;
-  const track = pageScrollbar.offsetHeight - 8;
-  const size = Math.max(40, track * window.innerHeight / document.documentElement.scrollHeight);
+function syncScrollbar(progress, height, visible) {
+  if (!scrollThumb || !height) return;
+  const track = height - 8;
+  const size = Math.max(40, track * visible);
   thumbTravel = track - size;
   scrollThumb.style.setProperty('--thumb-size', `${size}px`);
   scrollThumb.style.setProperty('--thumb-offset', `${thumbTravel * progress}px`);
@@ -67,36 +64,31 @@ scrollThumb?.addEventListener('pointerdown', event => {
     delete pageScrollbar.dataset.dragging;
   }, { once: true });
 });
-const smoothstep = value => value * value * (3 - 2 * value);
 
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
-  spiritLoops.forEach(loop => loop?.refresh());
+  // Read every position before writing anything, so the browser lays the page
+  // out once per frame instead of again after each change.
   const y = Math.max(0, window.scrollY);
-  const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
-  header.classList.toggle('is-compact', compact);
+  const viewport = window.innerHeight;
+  const distance = document.documentElement.scrollHeight - viewport;
+  const progress = distance > 0 ? clamp(y / distance) : 0;
+  const sectionTops = sections.map(section => [section.id, section.getBoundingClientRect().top]);
+  const statementTop = statement.getBoundingClientRect().top;
+  const track = pageScrollbar?.offsetHeight ?? 0;
+  const spiritBounds = spiritArts.map(artwork => artwork.getBoundingClientRect());
 
-  // Blend into the night while the members card rises through the lower 60% of
-  // the screen, and back out as the join card does, in either direction.
-  const nightRamp = top => smoothstep(clamp((window.innerHeight - top) / (window.innerHeight * .6)));
-  const night = nightRamp(membersSection.getBoundingClientRect().top)
-    * (1 - nightRamp(joinSection.getBoundingClientRect().top));
-  document.documentElement.style.setProperty('--night', night.toFixed(3));
-  const darkTheme = night > .5;
-  if (darkTheme !== activeDarkTheme) {
-    activeDarkTheme = darkTheme;
-    document.documentElement.classList.toggle('is-members-theme', darkTheme);
-    themeColor?.setAttribute('content', darkTheme ? '#050a24' : '#dcebef');
-  }
+  spiritLoops.forEach((loop, index) => loop?.refresh(spiritBounds[index], viewport));
 
-  const distance = document.documentElement.scrollHeight - window.innerHeight;
-  progressBar.style.transform = `scaleX(${distance > 0 ? clamp(y / distance) : 0})`;
-  syncScrollbar(distance > 0 ? clamp(y / distance) : 0);
+  header.classList.toggle('is-compact', y > (header.classList.contains('is-compact') ? 32 : 80));
+
+  progressBar.style.transform = `scaleX(${progress})`;
+  syncScrollbar(progress, track, viewport / (distance + viewport));
 
   let current = '';
-  for (const section of sections) {
-    if (section.getBoundingClientRect().top <= window.innerHeight * .38) current = section.id;
+  for (const [id, top] of sectionTops) {
+    if (top <= viewport * .38) current = id;
   }
   if (current !== activeSection) {
     activeSection = current;
@@ -106,9 +98,7 @@ function updateNavigation() {
     }
   }
 
-  const readingProgress = reducedMotion.matches ? 1 : clamp(
-    (window.innerHeight * .8 - statement.getBoundingClientRect().top) / (window.innerHeight * .6),
-  );
+  const readingProgress = reducedMotion.matches ? 1 : clamp((viewport * .8 - statementTop) / (viewport * .6));
   phrases.forEach((phrase, index) => {
     phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
   });
