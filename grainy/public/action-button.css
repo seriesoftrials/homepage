@@ -17,7 +17,8 @@
   color: var(--button-foreground);
   background-color: var(--button-background);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
@@ -53,7 +54,7 @@
 .action-button:active { color: var(--button-foreground); background-color: var(--button-active-background); transform: scale(.97); }
 .action-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 .action-button:disabled, .action-button[aria-disabled="true"] { opacity: .4; pointer-events: none; cursor: default; }
-@media (max-width: 700px) { .action-button { font-size: 12px; } }
+@media (max-width: 700px) { .action-button { font-size: 13px; } }
 @media (prefers-reduced-motion: reduce) {
   .action-button { transition: none; }
   .action-button:active { transform: none; }
