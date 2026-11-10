@@ -69,5 +69,6 @@ export function mountSpiritLoop(artwork, preference) {
   document.addEventListener('visibilitychange', sync);
   sync();
 
-  return { refresh: sync };
+  // `warm` lets the page fetch and decode the frames ahead of time.
+  return { refresh: sync, warm: loadFrames };
 }

@@ -216,6 +216,18 @@ window.addEventListener('pageshow', event => {
   }
 });
 document.fonts.ready.then(scheduleNavigation);
+
+// After the entrance, fetch and decode the lazy images one after another so none
+// of them decodes in the middle of a scroll. Decoding runs off the main thread.
+async function warmImages() {
+  for (const image of document.querySelectorAll('img[loading="lazy"]')) {
+    image.loading = 'eager';
+    await image.decode().catch(() => {});
+  }
+  spiritLoops.forEach(loop => loop?.warm());
+}
+const whenIdle = callback => (window.requestIdleCallback ?? (run => setTimeout(run, 200)))(callback, { timeout: 1000 });
+window.addEventListener('load', () => setTimeout(() => whenIdle(warmImages), 4500), { once: true });
 changeLanguage(savedLanguage());
 mountCardDialogs(reducedMotion);
 mountPage();
