@@ -12,6 +12,12 @@
   font-weight: 100 900;
   font-display: swap;
 }
+/* Registered so the entrance can fade it; ver2-intro.css starts it at 1. */
+@property --intro-veil {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
 :root {
   color-scheme: light;
   /* 0 is the icy day page, 1 the navy members night; ver2-hero.js scrubs it with scroll. */
@@ -92,6 +98,8 @@ main, .site-footer { position: relative; z-index: 1; }
 }
 /* Slow light under the frosted cards, after the grainy gradient references. */
 .page-backdrop { overflow: hidden; }
+/* The entrance keeps the plain white page, then lifts it off the light. */
+.page-backdrop::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: var(--intro-veil); }
 .page-backdrop span {
   position: absolute;
   left: var(--x);
@@ -208,7 +216,7 @@ img { max-width: 100%; }
 .mobile-menu { display: none; }
 
 .hero { scroll-margin-top: calc(var(--frame) + var(--safe-top)); position: relative; min-height: calc(100svh - 2 * var(--frame) - var(--safe-top) - var(--safe-bottom)); overflow: clip; isolation: isolate; border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); }
-.hero::before { content: ""; position: absolute; z-index: 0; inset: 38% 0 0; background: radial-gradient(ellipse 78% 95% at 10% 100%, rgb(47 91 200 / .26), rgb(120 205 218 / .1) 46%, transparent 78%), radial-gradient(ellipse 74% 100% at 100% 100%, rgb(176 166 240 / .3), rgb(255 86 70 / .07) 48%, transparent 80%); pointer-events: none; }
+.hero::before { content: ""; position: absolute; z-index: 0; inset: 38% 0 0; opacity: calc(1 - var(--intro-veil)); background: radial-gradient(ellipse 78% 95% at 10% 100%, rgb(47 91 200 / .26), rgb(120 205 218 / .1) 46%, transparent 78%), radial-gradient(ellipse 74% 100% at 100% 100%, rgb(176 166 240 / .3), rgb(255 86 70 / .07) 48%, transparent 80%); pointer-events: none; }
 .hero-copy { position: relative; z-index: 2; padding: 131px var(--inset) 0; }
 .hero-copy h1 { margin: 0; font-family: "Newsreader", "Times New Roman", serif; font-size: clamp(36px, 4.25vw, 72px); font-weight: 400; font-optical-sizing: auto; line-height: 1.04; letter-spacing: -.025em; }
 .hero-brand { font-family: "Newsreader", serif; font-weight: 400; letter-spacing: -.025em; }

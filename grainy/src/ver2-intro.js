@@ -19,6 +19,7 @@ const SEEN_KEY = 'serial:ver2:intro-seen:v1';
 const READY_BUDGET = 1200;
 const TURN_DURATION = 1500;
 const LOGO_DURATION = TURN_DURATION + 500;
+const COLOR_START = 900;
 const REVEAL_DURATION = 400;
 const REVEAL_DELAY = 1600;
 const INTRO_DEADLINE = 3200;
@@ -176,6 +177,14 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
           { opacity, offset: 1 },
         ];
         animate(visual, fade(finalVisualOpacity), { duration: LOGO_DURATION });
+
+        // The white page takes on the gradient while the logo settles, so home
+        // arrives as a color change rather than as a cut.
+        animate(root, [
+          { '--intro-veil': '1', offset: 0 },
+          { '--intro-veil': '1', offset: COLOR_START / LOGO_DURATION, easing: 'cubic-bezier(.45, 0, .25, 1)' },
+          { '--intro-veil': '0', offset: 1 },
+        ], { duration: LOGO_DURATION });
 
         const turnEnd = nextRotationStop(ribbon.state.elapsed / SEQUENCE_DURATION) * SEQUENCE_DURATION;
         const turnStart = turnEnd - ROTATION_DURATION;
