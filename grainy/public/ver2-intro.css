@@ -24,6 +24,7 @@
     animation: intro-release 0s 4000ms forwards;
   }
   html.intro-pending:not([data-intro-active]) { animation: intro-veil-fallback 600ms 4000ms ease forwards; }
+  html.intro-pending:not([data-intro-active]) .hero { animation: intro-hero-fallback 0s 4000ms forwards; }
   html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 4000ms forwards; }
   html.intro-pending:not([data-intro-active]) .hero-ribbon { animation: intro-scale-fallback 0s 4000ms forwards; }
   html.intro-pending:not([data-intro-active]) .hero-ribbon .hero-ribbon-poster { animation: intro-poster-fallback 0s 4000ms forwards; }
@@ -32,8 +33,8 @@
     opacity: 1;
   }
 
-  /* While the entrance waits for the logo, the hero is plain white screen. */
-  html.intro-pending[data-intro-active] .hero {
+  /* From the first paint the hero is plain white screen, card edges hidden. */
+  html.intro-pending .hero {
     border-color: transparent;
     border-radius: 0;
     background: transparent;
@@ -63,5 +64,6 @@
 }
 @keyframes intro-background-fallback { to { opacity: .5; } }
 @keyframes intro-veil-fallback { to { --intro-veil: 0; } }
+@keyframes intro-hero-fallback { to { border-color: var(--line); border-radius: 18px; background: var(--tile-surface); } }
 @keyframes intro-scale-fallback { to { transform: none; } }
 @keyframes intro-poster-fallback { to { opacity: .25; } }
