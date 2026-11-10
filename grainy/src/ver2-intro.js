@@ -16,14 +16,22 @@
 import { SEQUENCE_DURATION, ROTATION_DURATION, nextRotationStop } from '../assets/serial-ribbon-sequence/sequence.js';
 
 const SEEN_KEY = 'serial:ver2:intro-seen:v1';
-const READY_BUDGET = 1200;
-const TURN_DURATION = 1500;
-const LOGO_DURATION = TURN_DURATION + 500;
-const COLOR_START = 900;
-const REVEAL_DURATION = 400;
-const REVEAL_DELAY = 1600;
-const INTRO_DEADLINE = 3200;
-const EASE = 'cubic-bezier(.65, 0, .35, 1)';
+const READY_BUDGET = 2000;
+// The logo fades in and floats still, turns once, then settles into the hero
+// while the white page takes on its colors and the sections rise into place.
+const FADE_IN_DURATION = 450;
+const HOLD_DURATION = 700;
+const TURN_DURATION = 1600;
+const SETTLE_DURATION = 900;
+const SETTLE_START = HOLD_DURATION + TURN_DURATION;
+const LOGO_DURATION = SETTLE_START + SETTLE_DURATION;
+const COLOR_START = HOLD_DURATION + TURN_DURATION * .6;
+const REVEAL_DELAY = SETTLE_START + 150;
+const REVEAL_DURATION = 900;
+const REVEAL_RISE = '20px';
+// Must match the CSS fallback release in ver2-intro.css.
+const INTRO_DEADLINE = 4000;
+const SETTLE_EASE = 'cubic-bezier(.5, 0, .15, 1)';
 const mounted = new WeakMap();
 
 export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
@@ -165,35 +173,37 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
       if (disposed) return;
       try {
         const base = finalTransform === 'none' ? '' : `${finalTransform} `;
+        const settle = SETTLE_START / LOGO_DURATION;
         animate(holder, [
           { transform: `${base}scale(1.28)`, offset: 0 },
-          { transform: `${base}scale(1.28)`, offset: TURN_DURATION / LOGO_DURATION, easing: EASE },
+          { transform: `${base}scale(1.28)`, offset: settle, easing: SETTLE_EASE },
           { transform: finalTransform, offset: 1 },
         ], { duration: LOGO_DURATION });
 
-        const fade = opacity => [
-          { opacity: '1', offset: 0 },
-          { opacity: '1', offset: TURN_DURATION / LOGO_DURATION, easing: EASE },
-          { opacity, offset: 1 },
-        ];
-        animate(visual, fade(finalVisualOpacity), { duration: LOGO_DURATION });
+        animate(visual, [
+          { opacity: '0', offset: 0, easing: 'ease-out' },
+          { opacity: '1', offset: FADE_IN_DURATION / LOGO_DURATION },
+          { opacity: '1', offset: settle, easing: SETTLE_EASE },
+          { opacity: finalVisualOpacity, offset: 1 },
+        ], { duration: LOGO_DURATION });
 
         // The white page takes on the gradient while the logo settles, so home
         // arrives as a color change rather than as a cut.
+        const colorDuration = REVEAL_DELAY + REVEAL_DURATION;
         animate(root, [
           { '--intro-veil': '1', offset: 0 },
-          { '--intro-veil': '1', offset: COLOR_START / LOGO_DURATION, easing: 'cubic-bezier(.45, 0, .25, 1)' },
+          { '--intro-veil': '1', offset: COLOR_START / colorDuration, easing: 'cubic-bezier(.45, 0, .25, 1)' },
           { '--intro-veil': '0', offset: 1 },
-        ], { duration: LOGO_DURATION });
+        ], { duration: colorDuration });
 
         const turnEnd = nextRotationStop(ribbon.state.elapsed / SEQUENCE_DURATION) * SEQUENCE_DURATION;
         const turnStart = turnEnd - ROTATION_DURATION;
         let frame;
-        const startTime = view.performance.now();
+        const startTime = view.performance.now() + HOLD_DURATION;
         ribbon.seek(turnStart);
         const turn = now => {
           if (disposed) return;
-          const progress = Math.min(1, (now - startTime) / TURN_DURATION);
+          const progress = Math.min(1, Math.max(0, now - startTime) / TURN_DURATION);
           const easedProgress = progress * progress * (3 - 2 * progress);
           ribbon.seek(turnStart + easedProgress * ROTATION_DURATION);
           if (progress < 1) frame = view.requestAnimationFrame(turn);
@@ -202,20 +212,23 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
         timeout(() => {
           view.cancelAnimationFrame(frame);
           if (!disposed) ribbon.seek(turnEnd);
-        }, TURN_DURATION);
+        }, SETTLE_START);
         cleanup.push(() => {
           view.cancelAnimationFrame(frame);
           if (!ribbon.state.disposed) ribbon.seek(motion?.matches ? SEQUENCE_DURATION : turnEnd);
         });
 
-        // Visibility remains gated during the logo movement. Animate only opacity
-        // on navigation; its existing fixed-position transform belongs to the parent.
+        // Visibility remains gated during the logo movement. The rest rises into
+        // place; navigation fades only, as its fixed-position transform belongs
+        // to the parent.
         let last;
         for (const { element, opacity, visibility } of finalContent) {
+          const [from, to] = element === header ? [{}, {}]
+            : [{ transform: `translateY(${REVEAL_RISE})` }, { transform: 'none' }];
           last = animate(element, [
-            { opacity: '0', visibility },
-            { opacity, visibility },
-          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY, easing: EASE });
+            { opacity: '0', visibility, ...from },
+            { opacity, visibility, ...to },
+          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY, easing: SETTLE_EASE });
         }
         listen(last, 'finish', dispose, { once: true });
         // Protect the gate even if an engine does not deliver a finish event.

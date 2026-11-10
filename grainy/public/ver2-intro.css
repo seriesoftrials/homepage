@@ -21,12 +21,12 @@
   }
 
   html.intro-pending:not([data-intro-active]) :is([data-page-nav], .hero-copy, .site-sections, .site-footer, .skip-link) {
-    animation: intro-release 0s 3200ms forwards;
+    animation: intro-release 0s 4000ms forwards;
   }
-  html.intro-pending:not([data-intro-active]) { animation: intro-veil-fallback 600ms 3200ms ease forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 3200ms forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-ribbon { animation: intro-scale-fallback 0s 3200ms forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-ribbon .hero-ribbon-poster { animation: intro-poster-fallback 0s 3200ms forwards; }
+  html.intro-pending:not([data-intro-active]) { animation: intro-veil-fallback 600ms 4000ms ease forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 4000ms forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-ribbon { animation: intro-scale-fallback 0s 4000ms forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-ribbon .hero-ribbon-poster { animation: intro-poster-fallback 0s 4000ms forwards; }
 
   html.intro-pending .hero-visual {
     opacity: 1;

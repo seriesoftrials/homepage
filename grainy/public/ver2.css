@@ -64,7 +64,8 @@
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
   overflow-x: clip;
-  transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease;
+  /* A skipped entrance still lifts the white veil softly. */
+  transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease, --intro-veil 700ms ease;
 }
 :root.is-members-theme {
   color-scheme: dark;
