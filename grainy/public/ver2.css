@@ -34,8 +34,11 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  --page-gutter-left: max(var(--frame), var(--safe-left));
-  --page-gutter-right: max(var(--frame), var(--safe-right));
+  /* Cap the cards at a 3:2 hero so wide screens gain margin, not length. */
+  --page-width: calc((100svh - 2 * var(--frame)) * 1.5);
+  --page-side: calc((100vw - var(--page-width)) / 2);
+  --page-gutter-left: max(var(--frame), var(--safe-left), var(--page-side));
+  --page-gutter-right: max(var(--frame), var(--safe-right), var(--page-side));
   --inset: clamp(22px, 3.3vw, 64px);
   --section-inset: clamp(28px, 5.2vw, 80px);
   --nav-ease: cubic-bezier(.22, 1, .36, 1);
