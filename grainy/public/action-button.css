@@ -1,10 +1,10 @@
 .action-button {
-  --button-background: #171715;
+  --button-background: #0d1530;
   --button-foreground: #fff;
-  --button-border: #171715;
-  --button-hover-background: #333330;
-  --button-hover-border: #333330;
-  --button-active-background: #080808;
+  --button-border: #0d1530;
+  --button-hover-background: #2f5bc8;
+  --button-hover-border: #2f5bc8;
+  --button-active-background: #1d3f99;
   display: inline-flex;
   align-items: center;
   justify-content: center;

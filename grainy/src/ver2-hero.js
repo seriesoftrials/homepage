@@ -56,7 +56,7 @@ function updateNavigation() {
   if (darkTheme !== activeDarkTheme) {
     activeDarkTheme = darkTheme;
     document.documentElement.classList.toggle('is-members-theme', darkTheme);
-    themeColor?.setAttribute('content', darkTheme ? '#080808' : '#fafaf8');
+    themeColor?.setAttribute('content', darkTheme ? '#050a24' : '#dcebef');
   }
 
   const distance = document.documentElement.scrollHeight - window.innerHeight;
