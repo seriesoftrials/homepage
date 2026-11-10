@@ -45,3 +45,6 @@ next-env.d.ts
 # member photos (kept local, not committed)
 /public/people
 /.claude
+
+# Generated from grainy/ by npm run build:grainy.
+/public/grainy/

@@ -1,0 +1,639 @@
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --ink: #101010;
+  --text: #101010;
+  --muted: #6f6f6a;
+  --line: #dededa;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: "Instrument Serif", var(--font-sans);
+  --gutter: clamp(1.25rem, 2.5vw, 2.25rem);
+  --ease: 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100svh;
+  margin: 0;
+  color: var(--text);
+  background: var(--paper);
+}
+
+img,
+.hero-image,
+.person-profile__avatar,
+.wordmark-mark {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+@media print {
+  img,
+  .hero-image,
+  .person-profile__avatar,
+  .wordmark-mark {
+    visibility: hidden;
+  }
+}
+
+button,
+a,
+input,
+textarea {
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
+}
+
+::selection {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.site-shell {
+  display: grid;
+  min-height: 100svh;
+  padding: clamp(2.25rem, 6.4vh, 3.625rem) var(--gutter) clamp(2.5rem, 6vh, 5rem);
+  grid-template-rows: auto auto auto;
+  align-content: start;
+  align-content: start;
+  background: var(--paper);
+  transition:
+    color var(--ease),
+    background-color var(--ease);
+}
+
+.site-header {
+  position: relative;
+}
+
+.wordmark,
+.wordmark * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.wordmark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--text);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color var(--ease);
+}
+
+.wordmark-mark {
+  display: block;
+  flex: none;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.wordmark-mark .dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wordmark-text {
+  display: block;
+}
+
+.wordmark-reveal {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  color: var(--muted);
+  filter: blur(0.8px);
+  letter-spacing: 0;
+  transform: translateX(-0.08em);
+  vertical-align: bottom;
+  white-space: nowrap;
+  transition:
+    max-width 600ms cubic-bezier(0.45, 0, 0.15, 1),
+    opacity 360ms cubic-bezier(0.45, 0, 0.15, 1),
+    filter 600ms cubic-bezier(0.45, 0, 0.15, 1),
+    letter-spacing 600ms cubic-bezier(0.45, 0, 0.15, 1),
+    transform 600ms cubic-bezier(0.45, 0, 0.15, 1);
+}
+
+.wordmark:hover .wordmark-reveal,
+.wordmark:focus-visible .wordmark-reveal {
+  opacity: 1;
+  filter: blur(0);
+  letter-spacing: 0;
+  transform: translateX(0);
+}
+
+.wordmark:hover .wordmark-reveal-long,
+.wordmark:focus-visible .wordmark-reveal-long {
+  max-width: 10em;
+}
+
+.wordmark:hover .wordmark-reveal-short,
+.wordmark:focus-visible .wordmark-reveal-short {
+  max-width: 1em;
+}
+
+.manifesto {
+  width: min(100%, 32rem);
+  margin-top: clamp(1.25rem, 2.5vh, 2rem);
+}
+
+.manifesto.people-manifesto {
+  width: min(100%, 64rem);
+  margin-top: clamp(2rem, 3.5vh, 2.75rem);
+}
+
+.hero-image {
+  width: min(100%, 32rem);
+  margin: clamp(1.75rem, 3.5vh, 2.5rem) 0 0;
+}
+
+.hero-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.people-breadcrumb {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  margin: 0 0 1.75em;
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.people-breadcrumb a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.people-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+  align-items: start;
+  gap: 2rem;
+}
+
+.person-profile {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.person-profile img,
+.person-profile__avatar {
+  display: block;
+  flex: none;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+}
+
+.person-profile img {
+  object-fit: cover;
+}
+
+.person-profile__avatar {
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 18%, #57595e 0%, #303237 48%, #17191c 100%);
+}
+
+.person-profile .person-profile__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.person-profile .person-profile__avatar--rihyeon img {
+  width: 92%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.person-profile .person-profile__avatar--hyoseok {
+  display: flex;
+  align-items: flex-end;
+}
+
+.person-profile .person-profile__avatar--hyoseok img {
+  width: 70%;
+  height: auto;
+  margin-inline: auto;
+  transform: translateY(-8px);
+}
+
+.person-profile .person-profile__avatar--gun img {
+  object-position: center -8px;
+}
+
+.person-profile .person-profile__avatar--taerin img {
+  width: 95%;
+  height: auto;
+  margin-inline: auto;
+  transform: translateY(4px);
+}
+
+.person-profile .person-profile__avatar--yebin img {
+  width: 85%;
+  height: auto;
+  margin-inline: auto;
+  transform: translateY(6px);
+}
+
+.person-profile .person-profile__avatar--seojin img {
+  width: 95%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.person-profile__details {
+  min-width: 0;
+}
+
+.person-profile__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.person-profile__name h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.62;
+}
+
+.person-profile__name span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.62;
+}
+
+.person-profile__details .person-intro {
+  margin: 0.15rem 0 0;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.62;
+}
+
+.person-intro .text-link {
+  text-decoration: none;
+}
+
+.text-link {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: color var(--ease);
+}
+
+.text-link:hover {
+  color: var(--muted);
+}
+
+.manifesto p,
+.manifesto .manifesto-title {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.62;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.manifesto p {
+  margin: 0 0 1.25em;
+}
+
+.manifesto .manifesto-title {
+  margin: 0 0 1.25em;
+  font-weight: 600;
+}
+
+.manifesto .manifesto-name-expansion,
+.manifesto .manifesto-reference {
+  color: var(--muted);
+}
+
+.manifesto-section + .manifesto-section {
+  margin-top: 2.5rem;
+}
+
+.manifesto-section > p:last-child {
+  margin-bottom: 0;
+}
+
+.manifesto .manifesto-quote {
+  margin-top: 2.5rem;
+  font-style: italic;
+}
+
+.manifesto .contact-action-row,
+.manifesto .footer-link-row {
+  margin-bottom: 0.5em;
+}
+
+.manifesto strong {
+  font-weight: 600;
+}
+
+.contact-open {
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: color var(--ease);
+}
+
+.contact-open:hover {
+  color: var(--muted);
+}
+
+.contact-open:focus-visible {
+  outline: none;
+}
+
+.signature {
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.manifesto .signature {
+  margin: clamp(1.5rem, 3vh, 2.5rem) 0 0.25em;
+}
+
+.manifesto .signature-date {
+  color: var(--muted);
+}
+
+.signature a {
+  display: inline-block;
+}
+
+.contact-dialog {
+  width: 80%;
+  max-width: 28rem;
+  max-height: calc(100svh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  color: var(--text);
+  background: var(--paper);
+}
+
+.contact-dialog:not([open]) {
+  display: none;
+}
+
+.contact-dialog::backdrop {
+  background: rgb(16 16 16 / 46%);
+}
+
+.contact-dialog__surface {
+  padding: clamp(1.25rem, 3vw, 1.5rem);
+}
+
+.contact-dialog__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.contact-dialog__header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.62;
+}
+
+.contact-dialog__header button {
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.contact-dialog__header button:hover {
+  color: var(--ink);
+}
+
+.contact-dialog__intro {
+  margin: 0.25rem 0 2rem;
+}
+
+.contact-dialog__intro p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.62;
+  word-break: keep-all;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.form-field > span {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  letter-spacing: 0.02em;
+}
+
+.form-field em {
+  font-style: normal;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  resize: none;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  outline: none;
+  color: var(--text);
+  background: transparent;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition: border-color var(--ease);
+}
+
+.form-field textarea {
+  min-height: 6.5rem;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--ink);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: #aaa9a3;
+}
+
+.privacy-notice {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-submit {
+  justify-self: start;
+  padding: 0;
+  cursor: pointer;
+  color: var(--ink);
+  background: transparent;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.contact-submit:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.form-status {
+  min-height: 1.1em;
+  margin: -0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+.form-status[data-state="success"] {
+  color: var(--ink);
+}
+
+body:has(.contact-dialog[open]) {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .site-shell {
+    padding-top: 2rem;
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+  }
+
+  .manifesto {
+    margin-top: 1.75rem;
+  }
+
+  .manifesto p,
+  .manifesto .manifesto-title {
+    line-height: 1.65;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

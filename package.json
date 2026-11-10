@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run build:grainy",
     "dev": "next dev",
+    "build:grainy": "node scripts/build-grainy.mjs",
+    "prebuild": "npm run build:grainy",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -23,6 +26,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.186.0",
+    "esbuild": "0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",

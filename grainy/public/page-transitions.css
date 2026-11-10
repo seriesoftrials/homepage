@@ -1,0 +1,156 @@
+@view-transition {
+  navigation: auto;
+}
+
+#site-page {
+  display: contents;
+}
+
+/* Keep the page and its white background live; animate only the wordmark. */
+:root {
+  view-transition-name: none;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+.home-title,
+.intro-page .site-header .wordmark,
+.people-page .site-header .wordmark,
+.projects-page .site-header .wordmark,
+.member-header .wordmark,
+.log-header .wordmark {
+  view-transition-name: serial-wordmark;
+}
+
+.serial-static-logo #site-page .wordmark {
+  view-transition-name: none;
+}
+
+.intro-page .site-shell,
+.projects-page .site-shell,
+.people-page .site-shell {
+  justify-items: center;
+}
+
+.intro-page .site-header,
+.projects-page .site-header,
+.people-page .site-header {
+  text-align: center;
+}
+
+.intro-page .site-header .wordmark,
+.projects-page .site-header .wordmark,
+.people-page .site-header .wordmark {
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.people-page .people-manifesto {
+  width: min(100%, 32rem);
+  margin-top: calc(clamp(2rem, 3.5vh, 2.75rem) + 12px);
+}
+
+.people-page .founding-members-title {
+  margin: 0 0 28px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.people-page .people-list {
+  --profile-photo-size: clamp(96px, 28vw, 132px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 36px) clamp(16px, 4vw, 44px);
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.people-page .person-profile {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.people-page .person-profile > img,
+.people-page .person-profile__avatar {
+  width: var(--profile-photo-size);
+  height: var(--profile-photo-size);
+  border-radius: calc(var(--profile-photo-size) * 0.36363636);
+}
+
+.people-page .person-profile__name {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.serial-intro-enter .hero-image,
+.serial-intro-enter .manifesto > * {
+  animation: serial-intro-rise 640ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  animation-delay: var(--intro-delay, 220ms);
+}
+
+.serial-intro-enter .hero-image { --intro-delay: 140ms; }
+.serial-intro-enter .manifesto > :nth-child(2) { --intro-delay: 280ms; }
+.serial-intro-enter .manifesto > :nth-child(3) { --intro-delay: 340ms; }
+.serial-intro-enter .manifesto > :nth-child(4) { --intro-delay: 400ms; }
+.serial-intro-enter .manifesto > :nth-child(5) { --intro-delay: 460ms; }
+.serial-intro-enter .manifesto > :nth-child(6) { --intro-delay: 520ms; }
+.serial-intro-enter .manifesto > :nth-child(7) { --intro-delay: 560ms; }
+
+@keyframes serial-intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::view-transition-group(serial-wordmark) {
+  animation-duration: 750ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* One shared wordmark moves between the two page layouts. */
+::view-transition-old(serial-wordmark) {
+  display: none;
+}
+
+::view-transition-new(serial-wordmark) {
+  height: 100%;
+  object-fit: contain;
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (max-width: 480px) {
+  .intro-page .site-header .wordmark,
+  .people-page .site-header .wordmark {
+    font-size: 18px;
+  }
+}
+
+main[tabindex="-1"]:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  .serial-intro-enter .hero-image,
+  .serial-intro-enter .manifesto > * {
+    animation: none;
+  }
+}

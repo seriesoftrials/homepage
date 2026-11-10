@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Approved ribbon modules copied verbatim from the serial repo.
     "lib/ribbon/**",
+    // Third-party Three.js files and the generated browser bundle.
+    "grainy/assets/serial-ribbon-sequence/vendor/**",
+    "public/grainy/**",
   ]),
 ]);
 
