@@ -21,7 +21,7 @@ const READY_BUDGET = 2000;
 // while the white page takes on its colors and the sections rise into place.
 const FADE_IN_DURATION = 450;
 const HOLD_DURATION = 700;
-const TURN_DURATION = 1600;
+const TURN_DURATION = 2600;
 const SETTLE_DURATION = 900;
 const SETTLE_START = HOLD_DURATION + TURN_DURATION;
 const LOGO_DURATION = SETTLE_START + SETTLE_DURATION;
@@ -186,10 +186,10 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
           { transform: finalTransform, offset: 1 },
         ], { duration: LOGO_DURATION });
 
+        // The logo keeps the hero's soft tone throughout instead of a full-strength turn.
         animate(visual, [
           { opacity: '0', offset: 0, easing: 'ease-out' },
-          { opacity: '1', offset: FADE_IN_DURATION / LOGO_DURATION },
-          { opacity: '1', offset: settle, easing: SETTLE_EASE },
+          { opacity: finalVisualOpacity, offset: FADE_IN_DURATION / LOGO_DURATION },
           { opacity: finalVisualOpacity, offset: 1 },
         ], { duration: LOGO_DURATION });
 
