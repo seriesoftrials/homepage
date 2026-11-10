@@ -12,11 +12,12 @@ export function studioRadiance(x, y, z) {
 
 export function createGlassMaterial(THREE) {
   return new THREE.MeshPhysicalMaterial({
-    // A cool slate tint keeps the glass gray but readable on the icy page.
-    color: 0x8fa3c2, metalness: 0, roughness: .025,
+    // A cool slate tint keeps the glass gray but readable on the icy page;
+    // slight roughness and dimmer reflections soften the glints.
+    color: 0x8fa3c2, metalness: 0, roughness: .08,
     transmission: 1, thickness: .06, ior: 1.5,
     opacity: 1, transparent: true, premultipliedAlpha: true,
-    envMapIntensity: 1,
+    envMapIntensity: .75,
   });
 }
 
