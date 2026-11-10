@@ -54,7 +54,7 @@
 @keyframes intro-release {
   to { visibility: visible; opacity: 1; pointer-events: auto; }
 }
-@keyframes intro-background-fallback { to { opacity: .32; } }
+@keyframes intro-background-fallback { to { opacity: .5; } }
 @keyframes intro-veil-fallback { to { --intro-veil: 0; } }
 @keyframes intro-scale-fallback { to { transform: none; } }
 @keyframes intro-poster-fallback { to { opacity: .25; } }
