@@ -34,7 +34,6 @@
   --nav-surface: color-mix(in oklab, rgb(244 249 251 / .55), rgb(12 18 50 / .55) var(--night-mix));
   --visual-paper: color-mix(in oklab, rgb(255 255 255 / .3), rgb(12 18 50 / .3) var(--night-mix));
   --portrait-paper: color-mix(in oklab, rgb(255 255 255 / .5), rgb(255 255 255 / .085) var(--night-mix));
-  --accent: color-mix(in oklab, #2f5bc8, #8bd1db var(--night-mix));
   --logo-invert: 0;
   --grain-blend: multiply;
   /* Bake 24% alpha into the shared tile for matching canvas/document grain. */
@@ -234,8 +233,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 
 .site-sections { display: grid; gap: var(--frame); margin-top: var(--frame); }
 .section-tile { min-width: 0; padding: var(--section-inset) max(var(--section-inset), var(--content-side)); border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); scroll-margin-top: calc(110px + var(--safe-top)); }
-.section-caption { display: flex; align-items: center; gap: 10px; margin: 0 0 26px; color: var(--body); font-size: 12px; font-weight: 500; letter-spacing: .02em; }
-.section-caption::before { content: ""; display: block; flex: 0 0 5px; width: 5px; height: 5px; border-radius: 1px; background: var(--accent); }
+.section-caption { margin: 0 0 26px; color: var(--body); font-size: 13px; letter-spacing: -.01em; }
 .about-statement { max-width: 1100px; margin: 0; font-size: clamp(30px, 3.6vw, 52px); font-weight: 450; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
 html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-break: normal; }
 .about-statement span { color: rgb(var(--ink-rgb) / .38); transition: color 220ms ease; }
@@ -290,7 +288,8 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 
 .project-section { display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
 .project-copy { padding: var(--section-inset); padding-left: max(var(--section-inset), var(--content-side)); }
-.status-tag { display: inline-flex; padding: 5px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--body); font-size: 11px; }
+.project-copy .section-caption { margin-bottom: 4px; }
+.status-tag { display: block; color: var(--body); font-size: 13px; letter-spacing: -.01em; }
 .project-copy h2 { margin: 30px 0 25px; font-family: "Newsreader", serif; font-size: clamp(44px, 5.2vw, 76px); font-weight: 400; line-height: .98; letter-spacing: -.03em; }
 html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(32px, 3.8vw, 56px); line-height: 1.15; letter-spacing: -.045em; }
 .project-visual { position: relative; display: grid; place-items: center; min-width: 0; margin: 0; padding: 26px; border-left: 1px solid var(--line); background: var(--visual-paper); }
@@ -400,7 +399,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .hero-description { margin-top: 18px; font-size: 16px; }
   .hero-ribbon { width: min(132vw, 720px); }
   .section-tile { padding-top: 34px; padding-bottom: 34px; scroll-margin-top: calc(94px + var(--safe-top)); }
-  .section-caption { margin-bottom: 20px; font-size: 11px; }
+  .section-caption { margin-bottom: 20px; font-size: 12px; }
   .about-statement { font-size: 28px; line-height: 1.3; }
   .about-columns { grid-template-columns: 1fr; margin-top: 34px; }
   .about-origin { padding: 26px 0 30px; }
