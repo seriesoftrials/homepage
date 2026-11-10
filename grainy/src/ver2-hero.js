@@ -39,6 +39,34 @@ let activeSection;
 let activeDarkTheme;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+
+// The drawn page scrollbar: its thumb shows how much of the page is in view.
+const pageScrollbar = document.querySelector('[data-page-scrollbar]');
+const scrollThumb = pageScrollbar?.firstElementChild;
+let thumbTravel = 0;
+function syncScrollbar(progress) {
+  if (!scrollThumb || !pageScrollbar.offsetHeight) return;
+  const track = pageScrollbar.offsetHeight - 8;
+  const size = Math.max(40, track * window.innerHeight / document.documentElement.scrollHeight);
+  thumbTravel = track - size;
+  scrollThumb.style.setProperty('--thumb-size', `${size}px`);
+  scrollThumb.style.setProperty('--thumb-offset', `${thumbTravel * progress}px`);
+}
+scrollThumb?.addEventListener('pointerdown', event => {
+  if (event.button !== 0) return;
+  event.preventDefault();
+  const startY = event.clientY;
+  const startScroll = window.scrollY;
+  const distance = document.documentElement.scrollHeight - window.innerHeight;
+  const drag = move => window.scrollTo({ top: startScroll + (move.clientY - startY) * distance / Math.max(1, thumbTravel), behavior: 'instant' });
+  scrollThumb.setPointerCapture(event.pointerId);
+  pageScrollbar.dataset.dragging = '';
+  scrollThumb.addEventListener('pointermove', drag);
+  scrollThumb.addEventListener('lostpointercapture', () => {
+    scrollThumb.removeEventListener('pointermove', drag);
+    delete pageScrollbar.dataset.dragging;
+  }, { once: true });
+});
 const smoothstep = value => value * value * (3 - 2 * value);
 
 function updateNavigation() {
@@ -64,6 +92,7 @@ function updateNavigation() {
 
   const distance = document.documentElement.scrollHeight - window.innerHeight;
   progressBar.style.transform = `scaleX(${distance > 0 ? clamp(y / distance) : 0})`;
+  syncScrollbar(distance > 0 ? clamp(y / distance) : 0);
 
   let current = '';
   for (const section of sections) {

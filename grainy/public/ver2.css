@@ -126,6 +126,17 @@ main, .site-footer { position: relative; z-index: 1; }
   to { transform: translate(var(--dx), var(--dy)) scale(var(--turn)); }
 }
 
+/* On mouse screens a drawn bar replaces the native one, so it can fade out
+ * under the nav like the dialogs' bars do. Phones keep their own overlay bar. */
+.page-scrollbar { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  :root { scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
+  .page-scrollbar { position: fixed; z-index: 99; top: 0; right: 0; bottom: 0; display: block; width: 16px; pointer-events: none; -webkit-mask-image: linear-gradient(transparent 24px, #000 96px); mask-image: linear-gradient(transparent 24px, #000 96px); transition: opacity 400ms ease; }
+  .page-scrollbar span { position: absolute; top: 4px; right: 4px; width: 6px; height: var(--thumb-size, 0px); border-radius: 4px; background: rgb(var(--ink-rgb) / .2); transform: translateY(var(--thumb-offset, 0px)); pointer-events: auto; transition: width 160ms ease, background-color 160ms ease; }
+  .page-scrollbar span:hover, .page-scrollbar[data-dragging] span { width: 8px; background: rgb(var(--ink-rgb) / .32); }
+  .intro-pending .page-scrollbar, .has-card-dialog .page-scrollbar { opacity: 0; }
+}
 /* Clip a moving texture within the document so Safari's safe area stays covered. */
 .page-grain {
   position: absolute;
