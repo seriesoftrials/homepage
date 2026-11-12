@@ -18,6 +18,8 @@
   --tile-surface: rgb(255 255 255 / .42);
   --grain-texture: url("/grain-tile.png");
   --surround: #fafaf8;
+  --page-end: #ccd7e2;
+  --page-edge: var(--surround);
   --ink: #171715;
   --body: #65655f;
   --line: #e7e7e2;
@@ -40,13 +42,14 @@
   --section-inset: clamp(28px, 5.2vw, 80px);
   --nav-ease: cubic-bezier(.22, 1, .36, 1);
   color: var(--ink);
-  /* Keep Safari's safe and overscroll areas on the same solid surface. */
-  background-color: var(--surround);
+  /* Safari uses this solid color outside the document's painted gradient. */
+  background-color: var(--page-edge);
   font-family: "Pretendard", sans-serif;
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
   overflow-x: clip;
 }
+:root.at-page-footer { --page-edge: var(--page-end); }
 * { box-sizing: border-box; }
 body {
   position: relative;
@@ -54,14 +57,14 @@ body {
   margin: 0;
   padding: calc(var(--frame) + var(--safe-top)) var(--page-gutter-right)
     calc(var(--frame) + var(--safe-bottom)) var(--page-gutter-left);
-  background-color: var(--surround);
+  background-color: var(--page-edge);
   /* A small cached texture tiles with the static gradient. */
   background-image: var(--grain-texture), linear-gradient(180deg,
     #fafaf8 0%,
     #f7f7f3 20%,
     #edf0ef 45%,
     #e1e7eb 70%,
-    #ccd7e2 100%);
+    var(--page-end) 100%);
   background-size: 128px 128px, 100% 100%;
   background-repeat: repeat, no-repeat;
 }

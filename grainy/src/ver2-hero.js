@@ -18,6 +18,8 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
+const footer = document.querySelector('.site-footer');
+const themeColor = document.querySelector('meta[name="theme-color"]');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
@@ -27,6 +29,17 @@ let scheduledFrame = 0;
 let activeSection;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+
+if (footer) {
+  // Match Safari's under-page / safe-area color to the visible page end.
+  // Only update when the footer enters or leaves view, never on every scroll frame.
+  const footerObserver = new IntersectionObserver(([entry]) => {
+    document.documentElement.classList.toggle('at-page-footer', entry.isIntersecting);
+    const edgeColor = getComputedStyle(document.documentElement).getPropertyValue('--page-edge').trim();
+    themeColor?.setAttribute('content', edgeColor);
+  });
+  footerObserver.observe(footer);
+}
 
 function updateNavigation() {
   scheduledFrame = 0;
