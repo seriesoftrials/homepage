@@ -20,4 +20,5 @@
 - Homepage revision: `/api/deployment`; backend revision: `/api/health`.
 - Backport any production hotfix from `main` into `develop`.
 - `legacy-main` preserves the original `main` at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6`.
-- `grainy` is the separately uploaded Grainy version, not the shared development branch. `re` and `static` are earlier version branches. Preserve these version branches independently; adopting a version is an explicit change into `develop`.
+- The `grainy` Git branch was retired after its commits were included in `main` and `develop`; `grainy/` remains the active homepage source directory.
+- `re` and `static` are earlier version branches. Preserve these version branches independently; adopting a version is an explicit change into `develop`.

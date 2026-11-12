@@ -59,7 +59,6 @@ routes and components remain in the repository.
 | --- | --- | --- |
 | `main` | Production release branch | Pushes and merges run checks, deploy, and verify the exact commit. |
 | `develop` | Shared development branch, started from the current `main` | Checks only. Release through a PR into `main`. |
-| `grainy` | The separately uploaded Grainy version | No automatic production deployment. It is not the shared development branch. |
 | `legacy-main` | The original `main`, preserved at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6` | No automatic production deployment. |
 | `re`, `static` | Earlier version branches with their own changes | No automatic production deployment. |
 
@@ -72,8 +71,11 @@ any production hotfix on `main` back into `develop`.
 Version branches are independent design versions, not stages of that release
 flow. Bring a selected version or change into `develop` deliberately; do not
 automatically update, merge, or delete version branches to keep them aligned
-with production. The `grainy/` source directory is separate from the role of
-the Git branch named `grainy`.
+with production.
+
+The former `grainy` Git branch was removed after all its commits were included
+in both `main` and `develop`. The `grainy/` source directory remains active and
+does not require a matching Git branch.
 
 GitHub Actions uses `.github/workflows/deploy.yml` and the repository Secret
 `CLOUDFLARE_API_TOKEN`. The repository Variable `CLOUDFLARE_DEPLOY_ENABLED` must be
