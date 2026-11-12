@@ -27,10 +27,10 @@
     <link rel="preload" href="/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/brand-assets/pretendard-variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/action-button.css?v=1" />
-    <link rel="stylesheet" href="/ver2.css?v=57" />
+    <link rel="stylesheet" href="/ver2.css?v=59" />
     <link rel="stylesheet" href="/ver2-intro.css?v=3" />
     <script src="/image-protection.js" defer></script>
-    <script src="/ver2-hero.js?v=27" defer></script>
+    <script src="/ver2-hero.js?v=29" defer></script>
     <title>SERIAL — 중앙대학교 학생창업 네트워크</title>
   </head>
   <body>
@@ -39,12 +39,14 @@
       <a class="brand" href="#top" aria-label="SERIAL 맨 위로" data-i18n-aria="homeLabel"><img src="/favicon-light.svg?v=8" alt="" width="30" height="30" /></a>
       <nav class="hero-nav" aria-label="사이트 메뉴" data-i18n-aria="mainNavigation"><a href="#about" data-section-link="about" data-i18n="about">소개</a>
 <a href="#spirit" data-section-link="spirit" data-i18n="spirit">Spirit</a>
+<a href="#curriculum" data-section-link="curriculum" data-i18n="curriculum">커리큘럼</a>
 <a href="#members" data-section-link="members" data-i18n="members">멤버</a>
 <a href="#projects" data-section-link="projects" data-i18n="projects">프로젝트</a></nav>
       <div class="mobile-menu" data-open="false">
         <button type="button" class="mobile-menu-toggle" aria-expanded="false" aria-label="사이트 메뉴" data-i18n-aria="menuLabel" aria-controls="mobile-navigation"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
         <nav id="mobile-navigation" aria-hidden="true" inert aria-label="모바일 사이트 메뉴" data-i18n-aria="mobileNavigation"><a href="#about" data-section-link="about" data-i18n="about">소개</a>
 <a href="#spirit" data-section-link="spirit" data-i18n="spirit">Spirit</a>
+<a href="#curriculum" data-section-link="curriculum" data-i18n="curriculum">커리큘럼</a>
 <a href="#members" data-section-link="members" data-i18n="members">멤버</a>
 <a href="#projects" data-section-link="projects" data-i18n="projects">프로젝트</a>
 <a class="mobile-nav-join" href="#join" data-i18n="join">함께하기</a></nav>
@@ -108,62 +110,96 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
 
       <div class="site-sections">
         <section class="section-tile about-section" id="about" aria-labelledby="about-title" tabindex="-1">
-          <p class="section-caption" data-i18n="networkName">중앙대학교 학생창업 네트워크</p>
-          <h2 class="about-statement" id="about-title" data-scroll-statement><span data-i18n="aboutUniversity">중앙대학교에서,</span> <span data-i18n="aboutPeople">창업을 꿈꾸는 사람들이</span><br /> <span data-i18n="aboutConnection">서로를 발견하고</span> <span data-i18n="aboutStart">함께 시작하는 네트워크.</span></h2>
-          <div class="about-columns">
-            <div class="about-origin">
-              <p class="section-caption" data-i18n="originCaption">첫 연결을 만든 사람들</p>
-              <p class="body-copy"><span data-i18n="originFirst">다른 전공, 다른 경험을 가진 학생들이 모였습니다.</span><br class="desktop-break" /> <span data-i18n="originSecond">혼자 품었던 생각을 함께 해볼 수 있는 연결로 바꿉니다.</span></p>
-              <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="origin-story"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
-            </div>
-            <div class="about-connections">
-              <p class="section-caption" data-i18n="connectionsCaption">우리가 잇는 것</p>
-              <ul class="connection-list">
-                <li><span data-i18n="studentPair">학생과 학생</span><p data-i18n="studentDescription">함께 시작할 창업 동료를 만납니다.</p></li>
-                <li><span data-i18n="mentorPair">학생과 선배</span><p data-i18n="mentorDescription">먼저 시도한 사람의 경험을 나눕니다.</p></li>
-                <li><span data-i18n="campusPair">캠퍼스와 창업 현장</span><p data-i18n="campusDescription">학교에서의 생각을 실제 시도로 이어갑니다.</p></li>
-              </ul>
+          <div class="content-shell">
+            <p class="section-caption" data-i18n="aboutCaption">SERIAL을 만든 이유</p>
+            <h2 class="about-statement" id="about-title"><span data-i18n="aboutLineOne">같이 창업할 사람을</span><br /><span data-i18n="aboutLineTwo">학교에서 찾고 싶었습니다.</span></h2>
+            <div class="about-columns">
+              <div class="about-origin">
+                <p class="body-copy" data-i18n="originFirst">창업 행사에서 다른 학교 사람들은 자주 만났는데, 정작 중앙대 동료를 만나기는 어려웠습니다.</p>
+                <p class="body-copy" data-i18n="originSecond">그래서 학과와 학년을 넘어, 창업에 관심 있는 사람들이 모일 곳을 만들기로 했습니다.</p>
+                <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="origin-story"><span data-i18n="originLink">우리가 시작한 이유</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+              </div>
+              <div class="about-connections">
+                <p class="section-caption" data-i18n="connectionsCaption">처음 모인 사람들</p>
+                <p class="body-copy" data-i18n="connectionsBody">경영학, 공학, 심리학, 중국어문학까지. 다른 전공의 일곱 명이 SERIAL을 시작했습니다.</p>
+              </div>
             </div>
           </div>
         </section>
 
         <section class="section-tile spirit-section" id="spirit" aria-labelledby="spirit-title" tabindex="-1">
-          <figure class="spirit-art" data-spirit-art data-spirit-frames="/spirit-walk-02-v2.webp,/spirit-walk-03-v2.webp,/spirit-walk-04-v2.webp">
-            <img src="/spirit-forward-v1.webp" alt="푸른 잔상 속에서 앞으로 발을 내딛는 사람" data-i18n-alt="spiritImageAlt" width="1122" height="1402" loading="lazy" decoding="async" draggable="false" />
-          </figure>
-          <div class="spirit-copy">
-            <p class="section-caption" data-i18n="spiritCaption">우리가 시도하는 방식</p>
-            <h2 id="spirit-title"><span data-i18n="spiritLineOne">영리하게 사고하고,</span><br /><span data-i18n="spiritLineTwo">대담하게 실행합니다.</span></h2>
-            <p class="body-copy" data-i18n="spiritDescription">우리는 모든 답을 알고 시작하지 않습니다. 가설을 세우고, 직접 시도하고, 결과에서 배웁니다. 서로의 시행착오를 나누며 다음 시도로 나아갑니다.</p>
+          <div class="content-shell spirit-content">
+            <figure class="spirit-art" data-spirit-art data-spirit-frames="/spirit-walk-02-v2.webp,/spirit-walk-03-v2.webp,/spirit-walk-04-v2.webp">
+              <img src="/spirit-forward-v1.webp" alt="푸른 잔상 속에서 앞으로 발을 내딛는 사람" data-i18n-alt="spiritImageAlt" width="1122" height="1402" loading="lazy" decoding="async" draggable="false" />
+            </figure>
+            <div class="spirit-copy">
+              <p class="section-caption" data-i18n="spiritCaption">우리가 시도하는 방식</p>
+              <h2 id="spirit-title"><span data-i18n="spiritLineOne">영리하게 사고하고,</span><br /><span data-i18n="spiritLineTwo">대담하게 실행합니다.</span></h2>
+              <p class="body-copy" data-i18n="spiritDescription">우리는 모든 답을 알고 시작하지 않습니다. 가설을 세우고, 직접 시도하고, 결과에서 배웁니다. 서로의 시행착오를 나누며 다음 시도로 나아갑니다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-tile curriculum-section" id="curriculum" aria-labelledby="curriculum-title" tabindex="-1">
+          <div class="content-shell">
+            <p class="section-caption" data-i18n="curriculum">커리큘럼</p>
+            <div class="curriculum-heading"><h2 id="curriculum-title"><span data-i18n="curriculumLineOne">1학기 프로젝트에서</span><br /><span data-i18n="curriculumLineTwo">2학기 선택 트랙까지.</span></h2><p class="body-copy" data-i18n="curriculumLead">1년 동안 직접 팔아보고, 가설을 검증하고, 결과를 발표합니다. 그 경험을 바탕으로 다음 활동을 선택합니다.</p></div>
+            <h3 class="curriculum-semester" data-i18n="curriculumSemesterOne">1학기 · 교육과 세 번의 프로젝트</h3>
+            <ol class="curriculum-list">
+              <li><span class="curriculum-number" data-i18n="curriculumStep1Timing">1주차</span><h4 data-i18n="curriculumStep1Title">OT</h4><p data-i18n="curriculumStep1Body">기수 목표, 일정, 수료 기준과 규칙을 확인하고 서로를 소개합니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep2Timing">2–4주차</span><h4 data-i18n="curriculumStep2Title">Cereal Project</h4><p data-i18n="curriculumStep2Body">팀별 10만 원으로 3주 동안 직접 판매하고, 고객 반응과 손익을 확인합니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep3Timing">5주차</span><h4 data-i18n="curriculumStep3Title">단련</h4><p data-i18n="curriculumStep3Body">첫 프로젝트의 결과와 배운 점을 나누고, 기수 동료들과 교류합니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep4Timing">6–12주차</span><h4 data-i18n="curriculumStep4Title">학습 · 가설 검증</h4><p data-i18n="curriculumStep4Body">YC 기반 정기 교육 2–3회와 팀별 가설 검증, 멘토 피드백을 진행합니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep5Timing">13주차</span><h4 data-i18n="curriculumStep5Title">Short-term Project</h4><p data-i18n="curriculumStep5Body">활동마다 새 팀을 꾸려 아이디어톤이나 해커톤으로 짧게 실행합니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep6Timing">14주차</span><h4 data-i18n="curriculumStep6Title">DEMO DAY</h4><p data-i18n="curriculumStep6Body">심사역과 선배 창업가 앞에서 프로젝트 결과를 발표하고 질문을 받습니다.</p></li>
+              <li><span class="curriculum-number" data-i18n="curriculumStep7Timing">15주차</span><h4 data-i18n="curriculumStep7Title">Homecoming Day</h4><p data-i18n="curriculumStep7Body">현 기수와 OB가 만나 활동 경험을 나누고 교류합니다.</p></li>
+            </ol>
+            <p class="curriculum-note" data-i18n="curriculumSeminar">공모전·정부지원사업 모집 시기에 맞춰 비정기 세미나도 진행합니다.</p>
+            <div class="curriculum-second">
+              <h3 class="curriculum-semester" data-i18n="curriculumSemesterTwo">2학기 · 세 가지 선택 트랙</h3>
+              <ul class="curriculum-tracks">
+              <li><h4 data-i18n="curriculumTrack1Title">실전 창업</h4><p data-i18n="curriculumTrack1Body">제품·서비스를 출시하고 고객을 만납니다. 매출과 고객 반응 등 사업 지표를 기록합니다.</p></li>
+              <li><h4 data-i18n="curriculumTrack2Title">기업 실무</h4><p data-i18n="curriculumTrack2Body">인턴이나 기업 연계 프로젝트로 실무에 참여합니다. 업무 결과물과 회고를 남깁니다.</p></li>
+              <li><h4 data-i18n="curriculumTrack3Title">연구</h4><p data-i18n="curriculumTrack3Body">연구실 또는 개인·팀 연구를 진행합니다. 실험과 분석을 기록하고 결과를 정리합니다.</p></li>
+              </ul>
+              <p class="curriculum-common" data-i18n="curriculumCommon">학기 초에 트랙과 목표를 정하고, 월 1회 진행 상황과 피드백을 나눕니다. 학기 말에는 결과를 발표하고 기록을 남깁니다.</p>
+            </div>
+            <p class="curriculum-note" data-i18n="curriculumNote">현재 준비 중인 1년 운영안입니다. 주차와 세부 일정은 운영 여건에 따라 조정될 수 있습니다.</p>
           </div>
         </section>
 
         <section class="section-tile members-section" id="members" aria-labelledby="members-title" tabindex="-1">
-          <div class="section-heading"><div><p class="section-caption" data-i18n="people">사람들</p><h2 id="members-title" lang="en">Series of trials</h2></div></div>
-          <div class="people-grid">
-            <figure class="person-card"><div class="person-portrait"><img class="portrait-minseo" src="/profiles/minseo-cutout.webp" alt="김민서의 흑백 인물 사진" data-person-name="김민서" width="480" height="480" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="김민서">김민서</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/rihyeon-cutout.webp" alt="윤리현의 흑백 인물 사진" data-person-name="윤리현" width="480" height="640" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="윤리현">윤리현</h3><p><span class="person-college" data-i18n="collegeEngineering">공과대학</span><span data-i18n="majorCivil">건설환경플랜트공학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/hyoseok-v2-cutout.webp" alt="곽효석의 흑백 인물 사진" data-person-name="곽효석" width="1086" height="1448" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="곽효석">곽효석</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/yebin-cutout.webp" alt="권예빈의 흑백 인물 사진" data-person-name="권예빈" width="480" height="614" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="권예빈">권예빈</h3><p><span class="person-college" data-i18n="collegeSocialSciences">사회과학대학</span><span data-i18n="majorPsychology">심리학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/gun-cutout.webp" alt="정건의 흑백 인물 사진" data-person-name="정건" width="480" height="697" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="정건">정건</h3><p><span class="person-college" data-i18n="collegeICT">창의ICT공과대학</span><span data-i18n="majorElectrical">전자전기공학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/seojin-cutout.webp" alt="홍서진의 흑백 인물 사진" data-person-name="홍서진" width="480" height="603" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="홍서진">홍서진</h3><p><span class="person-college" data-i18n="collegeHumanities">인문대학</span><span data-i18n="majorChinese">중국어문학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/taerin-cutout.webp" alt="기태린의 흑백 인물 사진" data-person-name="기태린" width="480" height="617" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="기태린">기태린</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorSecurity">산업보안학</span></p></figcaption></figure>
+          <div class="content-shell members-content">
+            <div class="section-heading"><div><p class="section-caption" data-i18n="people">사람들</p><h2 id="members-title" lang="en">Series of trials</h2></div></div>
+            <div class="people-grid">
+              <figure class="person-card"><div class="person-portrait"><img class="portrait-minseo" src="/profiles/minseo-cutout.webp" alt="김민서의 흑백 인물 사진" data-person-name="김민서" width="480" height="480" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="김민서">김민서</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img src="/profiles/rihyeon-cutout.webp" alt="윤리현의 흑백 인물 사진" data-person-name="윤리현" width="480" height="640" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="윤리현">윤리현</h3><p><span class="person-college" data-i18n="collegeEngineering">공과대학</span><span data-i18n="majorCivil">건설환경플랜트공학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img src="/profiles/hyoseok-v2-cutout.webp" alt="곽효석의 흑백 인물 사진" data-person-name="곽효석" width="1086" height="1448" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="곽효석">곽효석</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img src="/profiles/yebin-cutout.webp" alt="권예빈의 흑백 인물 사진" data-person-name="권예빈" width="480" height="614" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="권예빈">권예빈</h3><p><span class="person-college" data-i18n="collegeSocialSciences">사회과학대학</span><span data-i18n="majorPsychology">심리학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img class="portrait-gun" src="/profiles/gun-cutout.webp" alt="정건의 흑백 인물 사진" data-person-name="정건" width="480" height="697" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="정건">정건</h3><p><span class="person-college" data-i18n="collegeICT">창의ICT공과대학</span><span data-i18n="majorElectrical">전자전기공학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img src="/profiles/seojin-cutout.webp" alt="홍서진의 흑백 인물 사진" data-person-name="홍서진" width="480" height="603" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="홍서진">홍서진</h3><p><span class="person-college" data-i18n="collegeHumanities">인문대학</span><span data-i18n="majorChinese">중국어문학</span></p></figcaption></figure>
+  <figure class="person-card"><div class="person-portrait"><img src="/profiles/taerin-cutout.webp" alt="기태린의 흑백 인물 사진" data-person-name="기태린" width="480" height="617" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="기태린">기태린</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorSecurity">산업보안학</span></p></figcaption></figure>
+            </div>
           </div>
         </section>
 
         <section class="section-tile project-section" id="projects" aria-labelledby="projects-title" tabindex="-1">
-          <div class="project-copy"><p class="section-caption" data-i18n="projects">프로젝트</p><span class="status-tag" data-i18n="projectStatus">준비 중</span><h2 id="projects-title" lang="ko"><span data-i18n="projectLineOne">다음 시도는</span><br /><span data-i18n="projectLineTwo">여기서 시작됩니다.</span></h2><p class="body-copy"><span data-i18n="projectFirst">첫 프로젝트를 준비하고 있습니다.</span><br /><span data-i18n="projectSecond">문제를 함께 발견하고, 작은 실험부터 시작합니다.</span></p></div>
-          <figure class="project-visual"><img src="/brand-assets/614-147-image-s.png" alt="하나의 띠로 이어지는 SERIAL의 S 리본" data-i18n-alt="ribbonAlt" width="2048" height="2048" loading="lazy" decoding="async" /></figure>
+          <div class="content-shell project-content">
+            <div class="project-copy"><p class="section-caption" data-i18n="projects">프로젝트</p><span class="status-tag" data-i18n="projectStatus">준비 중</span><h2 id="projects-title" lang="ko"><span data-i18n="projectLineOne">다음 시도는</span><br /><span data-i18n="projectLineTwo">여기서 시작됩니다.</span></h2><p class="body-copy"><span data-i18n="projectFirst">첫 프로젝트를 준비하고 있습니다.</span><br /><span data-i18n="projectSecond">문제를 함께 발견하고, 작은 실험부터 시작합니다.</span></p></div>
+            <figure class="project-visual"><img src="/brand-assets/614-147-image-s.png" alt="하나의 띠로 이어지는 SERIAL의 S 리본" data-i18n-alt="ribbonAlt" width="2048" height="2048" loading="lazy" decoding="async" /></figure>
+          </div>
         </section>
 
         <section class="section-tile join-section" id="join" aria-labelledby="join-title" tabindex="-1">
-          <div class="join-copy">
-            <p class="section-caption" data-i18n="join">함께하기</p><h2 id="join-title" data-i18n="joinTitle">다음 시도를, 함께.</h2><p class="body-copy"><span data-i18n="joinFirst">창업에 대한 생각이 있다면, 지금 시작해보려 한다면.</span><br /><span data-i18n="joinSecond">중앙대학교에서 다음 연결을 만들어갑니다.</span></p>
-            <div class="join-actions"><a class="action-button" href="mailto:me@creativeminseo.com" data-i18n="emailAction">함께하기</a><button class="action-button action-button--secondary" type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog" data-i18n="support">후원하기</button></div>
+          <div class="content-shell join-content">
+            <div class="join-copy">
+              <p class="section-caption" data-i18n="join">함께하기</p><h2 id="join-title" data-i18n="joinTitle">다음 시도를, 함께.</h2><p class="body-copy"><span data-i18n="joinFirst">창업에 대한 생각이 있다면, 지금 시작해보려 한다면.</span><br /><span data-i18n="joinSecond">중앙대학교에서 다음 연결을 만들어갑니다.</span></p>
+              <div class="join-actions"><a class="action-button" href="mailto:me@creativeminseo.com" data-i18n="emailAction">함께하기</a><button class="action-button action-button--secondary" type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog" data-i18n="support">후원하기</button></div>
+            </div>
+            <figure class="spirit-art join-art" data-spirit-art>
+              <img src="/spirit-coral-v1.webp" alt="따뜻한 코랄빛 잔상 속에서 한 걸음을 내딛는 사람" data-i18n-alt="joinImageAlt" width="1122" height="1402" loading="lazy" decoding="async" />
+            </figure>
           </div>
-          <figure class="spirit-art join-art" data-spirit-art>
-            <img src="/spirit-coral-v1.webp" alt="따뜻한 코랄빛 잔상 속에서 한 걸음을 내딛는 사람" data-i18n-alt="joinImageAlt" width="1122" height="1402" loading="lazy" decoding="async" />
-          </figure>
         </section>
       </div>
     </main>

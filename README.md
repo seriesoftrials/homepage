@@ -7,9 +7,17 @@ and support dialog. The frontend source was copied from SERIAL main commit
 The landing follows that pre-migration production layout and stays in light mode.
 A single static CSS background gradient gradually deepens towards the footer.
 There are no animated page backgrounds, document-wide noise overlays or
-scroll-driven theme changes. Cards use a light translucent fill without extra blur.
+scroll-driven theme changes. A cached 128px PNG adds static grain to the background
+and cards. Cards use a 42% white translucent fill without extra blur.
 The About essay and Support use the floating glass dialogs from the pre-restoration
 homepage, including browser-back dismissal, focus return and scroll restoration.
+Outer cards span the page; their content is centered at a maximum of 1120px.
+The curriculum follows the latest Figma school presentation: a one-year programme
+with seven first-semester stages (weeks 1–15), seasonal seminars, and second-semester
+startup, industry and research tracks. It is labelled as a draft with adjustable
+weeks and dates. Curriculum copy is maintained in all four landing languages.
+Source: [Curriculum I](https://www.figma.com/design/Mguy5QX2Tyc8pI7HQgRVWd?node-id=1618-2162)
+and [Curriculum II](https://www.figma.com/design/Mguy5QX2Tyc8pI7HQgRVWd?node-id=1618-2237).
 
 ## 브랜치 전략
 
