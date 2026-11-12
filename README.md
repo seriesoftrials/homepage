@@ -9,6 +9,9 @@ A single static CSS background gradient gradually deepens towards the footer.
 There are no animated page backgrounds, document-wide noise overlays or
 scroll-driven theme changes. A cached 128px PNG adds static grain to the background
 and cards. Cards use a 42% white translucent fill without extra blur.
+When the footer enters view, the root/body fallback and browser theme color match
+the gradient's final color. This fills Safari's safe-area and overscroll background;
+scrolling back restores the light top color without animating the page background.
 The About essay and Support use the floating glass dialogs from the pre-restoration
 homepage, including browser-back dismissal, focus return and scroll restoration.
 Outer cards span the page; their content is centered at a maximum of 1120px.
