@@ -11,6 +11,45 @@ scroll-driven theme changes. Cards use a light translucent fill without extra bl
 The About essay and Support use the floating glass dialogs from the pre-restoration
 homepage, including browser-back dismissal, focus return and scroll restoration.
 
+## 브랜치 전략
+
+평소 개발은 `develop`에서 진행하고, 배포할 때 `main`에 반영합니다.
+
+| 브랜치 | 역할 | 검사·배포 |
+| --- | --- | --- |
+| [`main`](https://github.com/seriesoftrials/homepage/tree/main) | 현재 운영 중인 홈페이지의 배포 기준 | 반영 시 자동 검사 → 운영 배포 → 배포 검증 |
+| [`develop`](https://github.com/seriesoftrials/homepage/tree/develop) | 작업을 모으고 검증하는 개발 통합 브랜치 | 자동 검사만 실행. 배포는 `main`으로 릴리스 PR을 보내서 진행 |
+| `codex/<작업명>` | `develop`에서 나누는 임시 작업 브랜치 | 작업 후 `develop`으로 PR |
+| [`legacy-main`](https://github.com/seriesoftrials/homepage/tree/legacy-main) | 이름을 바꿔 보존한 기존 `main` | 이전 버전 참고용. 자동 운영 배포 없음 |
+| [`re`](https://github.com/seriesoftrials/homepage/tree/re), [`static`](https://github.com/seriesoftrials/homepage/tree/static) | 각각의 변경을 보존한 이전 버전 브랜치 | 이전 버전 참고용. 자동 운영 배포 없음 |
+
+### 개발부터 배포까지
+
+```text
+codex/<작업명> ──PR──▶ develop ──릴리스 PR──▶ main ──자동 배포──▶ seriesoftrials.com
+```
+
+1. 최신 `develop`에서 작업 브랜치를 만들고, 완료한 작업은 `develop`으로 PR을 보냅니다. 작업 PR은 **Squash merge**로 합칩니다.
+2. 배포할 준비가 되면 `develop` → `main` 릴리스 PR을 보냅니다. 공유 이력이 유지되도록 **Create a merge commit**으로 합칩니다.
+3. 배포 후에는 `main`을 `develop`에 다시 병합합니다. `main`에 긴급 수정이 들어간 경우에도 `develop`에 반영합니다.
+
+```sh
+git fetch origin
+git switch develop
+git pull --ff-only
+git switch -c codex/update-homepage
+```
+
+### `grainy` 브랜치와 소스 폴더
+
+`grainy`는 별도로 올렸던 버전 브랜치입니다. 모든 커밋이 `main`과 `develop`에
+포함된 것을 확인해 **로컬·원격 브랜치를 삭제했습니다**.
+현재 홈페이지의 실제 소스인 **[`grainy/`](grainy/)** 폴더는 계속 사용합니다.
+브랜치를 삭제한 것이며, 이 폴더나 소스를 삭제한 것은 아닙니다.
+
+`legacy-main`·`re`·`static`은 개발·배포 단계가 아닌 이전 버전 보관용입니다.
+각 브랜치의 고유한 변경을 확인하기 전에는 자동으로 합치거나 삭제하지 않습니다.
+
 ## Run
 
 Use Node.js 22.18 or later.
@@ -55,15 +94,13 @@ and the original article at `/intro`. Original asset URLs resolve to
 the existing React layout or Lenis scroll engine to these pages. Other Next.js
 routes and components remain in the repository.
 
-## Branches and production deployment
-
-- `main`: production. A push or merge runs checks, deploys, and verifies the exact commit.
-- `grainy`: development. Pushes do not deploy production; open a PR into `main` when ready.
-- `legacy-main`: the previous `main`, preserved at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6`.
+## Production deployment
 
 GitHub Actions uses `.github/workflows/deploy.yml` and the repository Secret
 `CLOUDFLARE_API_TOKEN`. The repository Variable `CLOUDFLARE_DEPLOY_ENABLED` must be
-`true` to deploy. PRs run checks without publishing or requiring the secret.
+`true` to deploy. Pushes to `develop` and PRs targeting `develop` or `main` run
+checks without publishing or requiring the secret. Only `main` can run the
+production deployment job.
 
 ```sh
 npm run check          # lint, Next.js build, Worker tests and Cloudflare dry run
