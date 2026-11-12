@@ -54,13 +54,31 @@ routes and components remain in the repository.
 
 ## Branches and production deployment
 
-- `main`: production. A push or merge runs checks, deploys, and verifies the exact commit.
-- `grainy`: development. Pushes do not deploy production; open a PR into `main` when ready.
-- `legacy-main`: the previous `main`, preserved at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6`.
+| Branch | Role | Production deployment |
+| --- | --- | --- |
+| `main` | Production release branch | Pushes and merges run checks, deploy, and verify the exact commit. |
+| `develop` | Shared development branch, started from the current `main` | Checks only. Release through a PR into `main`. |
+| `grainy` | The separately uploaded Grainy version | No automatic production deployment. It is not the shared development branch. |
+| `legacy-main` | The original `main`, preserved at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6` | No automatic production deployment. |
+| `re`, `static` | Earlier version branches with their own changes | No automatic production deployment. |
+
+Start ordinary work from the latest `develop`, use a short-lived branch such as
+`codex/<change>`, and open its PR into `develop`. Squash those feature PRs.
+When a release is ready, open a `develop` → `main` PR and use a merge commit to
+preserve the shared history, then merge `main` back into `develop`. Also merge
+any production hotfix on `main` back into `develop`.
+
+Version branches are independent design versions, not stages of that release
+flow. Bring a selected version or change into `develop` deliberately; do not
+automatically update, merge, or delete version branches to keep them aligned
+with production. The `grainy/` source directory is separate from the role of
+the Git branch named `grainy`.
 
 GitHub Actions uses `.github/workflows/deploy.yml` and the repository Secret
 `CLOUDFLARE_API_TOKEN`. The repository Variable `CLOUDFLARE_DEPLOY_ENABLED` must be
-`true` to deploy. PRs run checks without publishing or requiring the secret.
+`true` to deploy. Pushes to `develop` and PRs targeting `develop` or `main` run
+checks without publishing or requiring the secret. Only `main` can run the
+production deployment job.
 
 ```sh
 npm run check          # lint, Next.js build, Worker tests and Cloudflare dry run
