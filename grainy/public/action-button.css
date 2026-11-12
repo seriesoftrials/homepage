@@ -1,10 +1,10 @@
 .action-button {
-  --button-background: #0d1530;
+  --button-background: #171715;
   --button-foreground: #fff;
-  --button-border: #0d1530;
-  --button-hover-background: #2f5bc8;
-  --button-hover-border: #2f5bc8;
-  --button-active-background: #1d3f99;
+  --button-border: #171715;
+  --button-hover-background: #333330;
+  --button-hover-border: #333330;
+  --button-active-background: #080808;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -17,8 +17,7 @@
   color: var(--button-foreground);
   background-color: var(--button-background);
   font: inherit;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
@@ -54,7 +53,7 @@
 .action-button:active { color: var(--button-foreground); background-color: var(--button-active-background); transform: scale(.97); }
 .action-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 .action-button:disabled, .action-button[aria-disabled="true"] { opacity: .4; pointer-events: none; cursor: default; }
-@media (max-width: 700px) { .action-button { font-size: 13px; } }
+@media (max-width: 700px) { .action-button { font-size: 12px; } }
 @media (prefers-reduced-motion: reduce) {
   .action-button { transition: none; }
   .action-button:active { transform: none; }

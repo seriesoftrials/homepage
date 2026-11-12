@@ -16,23 +16,13 @@
 import { SEQUENCE_DURATION, ROTATION_DURATION, nextRotationStop } from '../assets/serial-ribbon-sequence/sequence.js';
 
 const SEEN_KEY = 'serial:ver2:intro-seen:v1';
-const READY_BUDGET = 3000;
-// The logo fades in and floats still, turns once, then settles into the hero
-// while the white page takes on its colors and the sections rise into place.
-const FADE_IN_DURATION = 400;
-const HOLD_DURATION = 500;
-const TURN_DURATION = 2000;
-const SETTLE_DURATION = 700;
-const SETTLE_START = HOLD_DURATION + TURN_DURATION;
-const LOGO_DURATION = SETTLE_START + SETTLE_DURATION;
-const COLOR_START = HOLD_DURATION + TURN_DURATION * .6;
-const REVEAL_DELAY = SETTLE_START + 150;
-const REVEAL_DURATION = 700;
-// Each part arrives a beat after the one above it.
-const REVEAL_STAGGER = 90;
-// Must match the CSS fallback release in ver2-intro.css.
-const INTRO_DEADLINE = 6000;
-const SETTLE_EASE = 'cubic-bezier(.5, 0, .15, 1)';
+const READY_BUDGET = 1200;
+const TURN_DURATION = 1500;
+const LOGO_DURATION = TURN_DURATION + 500;
+const REVEAL_DURATION = 400;
+const REVEAL_DELAY = 1600;
+const INTRO_DEADLINE = 3200;
+const EASE = 'cubic-bezier(.65, 0, .35, 1)';
 const mounted = new WeakMap();
 
 export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
@@ -43,13 +33,11 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
   const animations = [];
   const cleanup = [];
   let disposed = false;
-  let revealed = false;
   const controller = { dispose };
 
   function dispose() {
     if (disposed) return;
     disposed = true;
-    const gated = root?.classList.contains('intro-pending') && !revealed;
     // Release the CSS gate before canceling its temporary animation overrides.
     root?.classList.remove('intro-pending');
     root?.removeAttribute('data-intro-active');
@@ -59,22 +47,7 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
     for (const animation of animations) {
       try { animation.cancel(); } catch { /* A detached animation may be gone. */ }
     }
-    if (gated) easeIn();
     if (doc && mounted.get(doc) === controller) mounted.delete(doc);
-  }
-
-  // A skipped or cut-short entrance still eases the page in instead of
-  // switching it on. These run past dispose and settle on the page's own styles.
-  function easeIn() {
-    if (!doc || view?.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const arrive = (selector, from) => doc.querySelectorAll(selector).forEach(element => {
-      // A lone keyframe at offset 0 animates from it to the page's own value.
-      element.animate?.([{ ...from, offset: 0 }], { duration: 700, easing: SETTLE_EASE });
-    });
-    arrive('[data-page-nav]', { opacity: 0 });
-    arrive('.hero', { borderColor: 'transparent', backgroundColor: 'transparent' });
-    arrive('.hero-copy', { opacity: 0, transform: 'translateY(18px)', filter: 'blur(6px)' });
-    arrive('.site-sections, .site-footer', { opacity: 0, transform: 'translateY(28px)' });
   }
 
   function listen(target, type, listener, options) {
@@ -162,12 +135,6 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
       const style = view.getComputedStyle(element);
       return { element, opacity: style.opacity, visibility: style.visibility };
     });
-    const heroStyle = view.getComputedStyle(hero);
-    const finalHero = {
-      borderColor: heroStyle.borderTopColor,
-      borderRadius: heroStyle.borderTopLeftRadius,
-      backgroundColor: heroStyle.backgroundColor,
-    };
     root.classList.add('intro-pending');
 
     for (const element of [...content, ...doc.querySelectorAll('.skip-link')]) {
@@ -197,48 +164,27 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
       if (disposed) return;
       try {
         const base = finalTransform === 'none' ? '' : `${finalTransform} `;
-        const settle = SETTLE_START / LOGO_DURATION;
         animate(holder, [
           { transform: `${base}scale(1.28)`, offset: 0 },
-          { transform: `${base}scale(1.28)`, offset: settle, easing: SETTLE_EASE },
+          { transform: `${base}scale(1.28)`, offset: TURN_DURATION / LOGO_DURATION, easing: EASE },
           { transform: finalTransform, offset: 1 },
         ], { duration: LOGO_DURATION });
 
-        // The logo keeps the hero's soft tone throughout instead of a full-strength turn.
-        animate(visual, [
-          { opacity: '0', offset: 0, easing: 'ease-out' },
-          { opacity: finalVisualOpacity, offset: FADE_IN_DURATION / LOGO_DURATION },
-          { opacity: finalVisualOpacity, offset: 1 },
-        ], { duration: LOGO_DURATION });
-
-        // The white page takes on the gradient while the logo settles, so home
-        // arrives as a color change rather than as a cut.
-        const colorDuration = REVEAL_DELAY + REVEAL_DURATION;
-        animate(root, [
-          { '--intro-veil': '1', offset: 0 },
-          { '--intro-veil': '1', offset: COLOR_START / colorDuration, easing: 'cubic-bezier(.45, 0, .25, 1)' },
-          { '--intro-veil': '0', offset: 1 },
-        ], { duration: colorDuration });
-
-        // The hero starts as the whole white screen, then draws back into its
-        // framed card as the colors arrive, like the page landing in place.
-        const bounds = hero.getBoundingClientRect();
-        const cover = Math.max(view.innerWidth / bounds.width, view.innerHeight / bounds.height) * 1.01;
-        const open = { transform: `scale(${cover})`, borderColor: 'transparent', borderRadius: '0px', backgroundColor: 'transparent' };
-        animate(hero, [
-          { ...open, offset: 0 },
-          { ...open, offset: SETTLE_START / colorDuration, easing: SETTLE_EASE },
-          { transform: 'none', ...finalHero, offset: 1 },
-        ], { duration: colorDuration });
+        const fade = opacity => [
+          { opacity: '1', offset: 0 },
+          { opacity: '1', offset: TURN_DURATION / LOGO_DURATION, easing: EASE },
+          { opacity, offset: 1 },
+        ];
+        animate(visual, fade(finalVisualOpacity), { duration: LOGO_DURATION });
 
         const turnEnd = nextRotationStop(ribbon.state.elapsed / SEQUENCE_DURATION) * SEQUENCE_DURATION;
         const turnStart = turnEnd - ROTATION_DURATION;
         let frame;
-        const startTime = view.performance.now() + HOLD_DURATION;
+        const startTime = view.performance.now();
         ribbon.seek(turnStart);
         const turn = now => {
           if (disposed) return;
-          const progress = Math.min(1, Math.max(0, now - startTime) / TURN_DURATION);
+          const progress = Math.min(1, (now - startTime) / TURN_DURATION);
           const easedProgress = progress * progress * (3 - 2 * progress);
           ribbon.seek(turnStart + easedProgress * ROTATION_DURATION);
           if (progress < 1) frame = view.requestAnimationFrame(turn);
@@ -247,31 +193,24 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
         timeout(() => {
           view.cancelAnimationFrame(frame);
           if (!disposed) ribbon.seek(turnEnd);
-        }, SETTLE_START);
+        }, TURN_DURATION);
         cleanup.push(() => {
           view.cancelAnimationFrame(frame);
           if (!ribbon.state.disposed) ribbon.seek(motion?.matches ? SEQUENCE_DURATION : turnEnd);
         });
 
-        // Visibility remains gated during the logo movement. Then the nav drops
-        // in, the headline comes into focus as it rises, and the sections follow.
-        // The nav moves with `translate`, since its `transform` belongs to the parent.
-        const arrivals = new Map([
-          [header, [{ translate: '0 -14px' }, { translate: '0 0' }]],
-          [copy, [{ transform: 'translateY(28px)', filter: 'blur(8px)' }, { transform: 'none', filter: 'blur(0px)' }]],
-        ]);
+        // Visibility remains gated during the logo movement. Animate only opacity
+        // on navigation; its existing fixed-position transform belongs to the parent.
         let last;
-        finalContent.forEach(({ element, opacity, visibility }, index) => {
-          const [from, to] = arrivals.get(element) ?? [{ transform: 'translateY(40px)' }, { transform: 'none' }];
+        for (const { element, opacity, visibility } of finalContent) {
           last = animate(element, [
-            { opacity: '0', visibility, ...from },
-            { opacity, visibility, ...to },
-          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY + index * REVEAL_STAGGER, easing: SETTLE_EASE });
-        });
-        const finish = () => { revealed = true; dispose(); };
-        listen(last, 'finish', finish, { once: true });
+            { opacity: '0', visibility },
+            { opacity, visibility },
+          ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY, easing: EASE });
+        }
+        listen(last, 'finish', dispose, { once: true });
         // Protect the gate even if an engine does not deliver a finish event.
-        timeout(finish, REVEAL_DELAY + REVEAL_DURATION + finalContent.length * REVEAL_STAGGER + 40);
+        timeout(dispose, REVEAL_DELAY + REVEAL_DURATION + 40);
       } catch { dispose(); }
     }
 

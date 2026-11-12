@@ -18,77 +18,47 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
+const membersSection = document.querySelector('#members');
+const joinSection = document.querySelector('#join');
+const themeColor = document.querySelector('meta[name="theme-color"]');
 const statement = document.querySelector('[data-scroll-statement]');
 const phrases = [...statement.querySelectorAll('span')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const pageGrain = document.querySelector('[data-page-grain]');
-function syncPageGrain() {
-  pageGrain?.setAttribute('data-motion', document.hidden ? 'paused' : 'running');
-}
-document.addEventListener('visibilitychange', syncPageGrain);
-syncPageGrain();
-const spiritArts = [...document.querySelectorAll('[data-spirit-art]')];
-const spiritLoops = spiritArts.map(artwork => mountSpiritLoop(artwork, reducedMotion));
+const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
 let elapsed = SEQUENCE_DURATION;
 let scheduledFrame = 0;
 let activeSection;
+let activeDarkTheme;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
-
-// The drawn page scrollbar: its thumb shows how much of the page is in view.
-const pageScrollbar = document.querySelector('[data-page-scrollbar]');
-const scrollThumb = pageScrollbar?.firstElementChild;
-let thumbTravel = 0;
-function syncScrollbar(progress, height, visible) {
-  if (!scrollThumb || !height) return;
-  const track = height - 8;
-  const size = Math.max(40, track * visible);
-  thumbTravel = track - size;
-  scrollThumb.style.setProperty('--thumb-size', `${size}px`);
-  scrollThumb.style.setProperty('--thumb-offset', `${thumbTravel * progress}px`);
-}
-scrollThumb?.addEventListener('pointerdown', event => {
-  if (event.button !== 0) return;
-  event.preventDefault();
-  const startY = event.clientY;
-  const startScroll = window.scrollY;
-  const distance = document.documentElement.scrollHeight - window.innerHeight;
-  const drag = move => window.scrollTo({ top: startScroll + (move.clientY - startY) * distance / Math.max(1, thumbTravel), behavior: 'instant' });
-  scrollThumb.setPointerCapture(event.pointerId);
-  pageScrollbar.dataset.dragging = '';
-  scrollThumb.addEventListener('pointermove', drag);
-  scrollThumb.addEventListener('lostpointercapture', () => {
-    scrollThumb.removeEventListener('pointermove', drag);
-    delete pageScrollbar.dataset.dragging;
-  }, { once: true });
-});
 
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
-  // Read every position before writing anything, so the browser lays the page
-  // out once per frame instead of again after each change.
+  spiritLoops.forEach(loop => loop?.refresh());
   const y = Math.max(0, window.scrollY);
-  const viewport = window.innerHeight;
-  const distance = document.documentElement.scrollHeight - viewport;
-  const progress = distance > 0 ? clamp(y / distance) : 0;
-  const sectionTops = sections.map(section => [section.id, section.getBoundingClientRect().top]);
-  const statementTop = statement.getBoundingClientRect().top;
-  const track = pageScrollbar?.offsetHeight ?? 0;
-  const spiritBounds = spiritArts.map(artwork => artwork.getBoundingClientRect());
+  const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
+  header.classList.toggle('is-compact', compact);
 
-  spiritLoops.forEach((loop, index) => loop?.refresh(spiritBounds[index], viewport));
+  // Let the incoming card peek in before switching, in either direction.
+  const membersBounds = membersSection.getBoundingClientRect();
+  const joinBounds = joinSection.getBoundingClientRect();
+  const themeBoundary = window.innerHeight - 32;
+  const darkTheme = membersBounds.top < themeBoundary && joinBounds.top >= themeBoundary;
+  if (darkTheme !== activeDarkTheme) {
+    activeDarkTheme = darkTheme;
+    document.documentElement.classList.toggle('is-members-theme', darkTheme);
+    themeColor?.setAttribute('content', darkTheme ? '#080808' : '#fafaf8');
+  }
 
-  header.classList.toggle('is-compact', y > (header.classList.contains('is-compact') ? 32 : 80));
-
-  progressBar.style.transform = `scaleX(${progress})`;
-  syncScrollbar(progress, track, viewport / (distance + viewport));
+  const distance = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.transform = `scaleX(${distance > 0 ? clamp(y / distance) : 0})`;
 
   let current = '';
-  for (const [id, top] of sectionTops) {
-    if (top <= viewport * .38) current = id;
+  for (const section of sections) {
+    if (section.getBoundingClientRect().top <= window.innerHeight * .38) current = section.id;
   }
   if (current !== activeSection) {
     activeSection = current;
@@ -98,7 +68,9 @@ function updateNavigation() {
     }
   }
 
-  const readingProgress = reducedMotion.matches ? 1 : clamp((viewport * .8 - statementTop) / (viewport * .6));
+  const readingProgress = reducedMotion.matches ? 1 : clamp(
+    (window.innerHeight * .8 - statement.getBoundingClientRect().top) / (window.innerHeight * .6),
+  );
   phrases.forEach((phrase, index) => {
     phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
   });
@@ -206,26 +178,6 @@ window.addEventListener('pageshow', event => {
   }
 });
 document.fonts.ready.then(scheduleNavigation);
-
-// Picture boxes hold a frosted placeholder until their picture is decoded.
-for (const box of document.querySelectorAll('.spirit-art, .person-portrait, .project-visual')) {
-  const image = box.querySelector('img');
-  if (!image || (image.complete && image.naturalWidth)) continue;
-  box.dataset.image = 'loading';
-  image.decode().catch(() => {}).finally(() => { box.dataset.image = 'ready'; });
-}
-
-// After the entrance, fetch and decode the lazy images one after another so none
-// of them decodes in the middle of a scroll. Decoding runs off the main thread.
-async function warmImages() {
-  for (const image of document.querySelectorAll('img[loading="lazy"]')) {
-    image.loading = 'eager';
-    await image.decode().catch(() => {});
-  }
-  spiritLoops.forEach(loop => loop?.warm());
-}
-const whenIdle = callback => (window.requestIdleCallback ?? (run => setTimeout(run, 200)))(callback, { timeout: 1000 });
-window.addEventListener('load', () => setTimeout(() => whenIdle(warmImages), 4500), { once: true });
 changeLanguage(savedLanguage());
 mountCardDialogs(reducedMotion);
 mountPage();

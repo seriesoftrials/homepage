@@ -1,8 +1,7 @@
-export function spiritFramePosition(top, viewportHeight, frameCount) {
-  // Play the walk while the picture rises through the middle of the screen,
-  // from 75% down to 30%, so it finishes in view without scrolling past it.
-  const start = viewportHeight * .75;
-  const end = viewportHeight * .3;
+export function spiritFramePosition(top, artworkHeight, viewportHeight, frameCount) {
+  // Prefer the part of the scroll where the entire figure fits on screen.
+  const start = Math.max(viewportHeight * .4, viewportHeight - artworkHeight - 32);
+  const end = viewportHeight * .12;
   const progress = Math.max(0, Math.min(1, (start - top) / (start - end)));
   return progress * Math.max(0, frameCount - 1);
 }
@@ -46,21 +45,19 @@ export function mountSpiritLoop(artwork, preference) {
     sync();
   }
 
-  // The page passes the bounds it already read this frame to avoid a second layout.
-  function sync(bounds = artwork.getBoundingClientRect(), viewportHeight = window.innerHeight) {
-    const visible = bounds.bottom > 0 && bounds.top < viewportHeight;
-    const motion = visible && !preference.matches && !document.hidden ? 'running' : 'paused';
-    if (artwork.dataset.motion !== motion) artwork.dataset.motion = motion;
+  function sync() {
+    const bounds = artwork.getBoundingClientRect();
+    const visible = bounds.bottom > 0 && bounds.top < window.innerHeight;
+    artwork.dataset.motion = visible && !preference.matches && !document.hidden ? 'running' : 'paused';
     if (nearViewport && !preference.matches) void loadFrames();
     if (!loaded) return;
-    const position = preference.matches ? 0 : Math.round(spiritFramePosition(bounds.top, viewportHeight, frames.length + 1));
+    const position = preference.matches ? 0 : Math.round(spiritFramePosition(bounds.top, bounds.height, window.innerHeight, frames.length + 1));
     const opacities = spiritFrameOpacities(position, frames.length + 1);
     frames.forEach((image, index) => {
       const opacity = opacities[index + 1].toFixed(3);
       if (image.style.opacity !== opacity) image.style.opacity = opacity;
     });
-    const frame = String(Math.floor(position));
-    if (artwork.dataset.frame !== frame) artwork.dataset.frame = frame;
+    artwork.dataset.frame = String(Math.floor(position));
   }
 
   const observer = new IntersectionObserver(entries => {
@@ -68,10 +65,9 @@ export function mountSpiritLoop(artwork, preference) {
     sync();
   }, { rootMargin: '500px 0px' });
   observer.observe(artwork);
-  preference.addEventListener('change', () => sync());
-  document.addEventListener('visibilitychange', () => sync());
+  preference.addEventListener('change', sync);
+  document.addEventListener('visibilitychange', sync);
   sync();
 
-  // `warm` lets the page fetch and decode the frames ahead of time.
-  return { refresh: sync, warm: loadFrames };
+  return { refresh: sync };
 }

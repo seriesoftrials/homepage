@@ -5,9 +5,6 @@
  * The scripting guard leaves the complete page visible when JavaScript is off.
  */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  /* Open on plain white; mountIntro() fades it into the gradient page. */
-  html.intro-pending { --intro-veil: 1; }
-
   html.intro-pending :is(
     [data-page-nav],
     .hero-copy,
@@ -21,23 +18,14 @@
   }
 
   html.intro-pending:not([data-intro-active]) :is([data-page-nav], .hero-copy, .site-sections, .site-footer, .skip-link) {
-    animation: intro-release 0s 6000ms forwards;
+    animation: intro-release 0s 3200ms forwards;
   }
-  html.intro-pending:not([data-intro-active]) { animation: intro-veil-fallback 600ms 6000ms ease forwards; }
-  html.intro-pending:not([data-intro-active]) .hero { animation: intro-hero-fallback 0s 6000ms forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 6000ms forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-ribbon { animation: intro-scale-fallback 0s 6000ms forwards; }
-  html.intro-pending:not([data-intro-active]) .hero-ribbon .hero-ribbon-poster { animation: intro-poster-fallback 0s 6000ms forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 3200ms forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-ribbon { animation: intro-scale-fallback 0s 3200ms forwards; }
+  html.intro-pending:not([data-intro-active]) .hero-ribbon .hero-ribbon-poster { animation: intro-poster-fallback 0s 3200ms forwards; }
 
   html.intro-pending .hero-visual {
     opacity: 1;
-  }
-
-  /* From the first paint the hero is plain white screen, card edges hidden. */
-  html.intro-pending .hero {
-    border-color: transparent;
-    border-radius: 0;
-    background: transparent;
   }
 
   html.intro-pending .hero-ribbon {
@@ -62,8 +50,6 @@
 @keyframes intro-release {
   to { visibility: visible; opacity: 1; pointer-events: auto; }
 }
-@keyframes intro-background-fallback { to { opacity: .5; } }
-@keyframes intro-veil-fallback { to { --intro-veil: 0; } }
-@keyframes intro-hero-fallback { to { border-color: var(--line); border-radius: 18px; background: var(--tile-surface); } }
+@keyframes intro-background-fallback { to { opacity: .32; } }
 @keyframes intro-scale-fallback { to { transform: none; } }
 @keyframes intro-poster-fallback { to { opacity: .25; } }

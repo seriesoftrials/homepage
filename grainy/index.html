@@ -3,16 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <script>
-      // A reload starts over from the top with the entrance, wherever the
-      // visitor had scrolled or jumped to. The browser reads the saved
-      // restoration mode on reload, so it is set on every visit.
-      history.scrollRestoration = 'manual';
-      if (performance.getEntriesByType('navigation')[0]?.type === 'reload' && location.hash) {
-        history.replaceState(history.state, '', location.pathname + location.search);
-      }
-    </script>
-    <meta name="theme-color" content="#dcebef" />
+    <meta name="theme-color" content="#fafaf8" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="중앙대학교 학생창업 네트워크 SERIAL. 창업 동료와 선배를 연결하고, 함께 다음 시도를 시작합니다." />
     <meta property="og:title" content="SERIAL — 중앙대학교 학생창업 네트워크" />
@@ -35,17 +26,14 @@
     <link rel="icon" href="/favicon.svg?v=8" type="image/svg+xml" />
     <link rel="preload" href="/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/brand-assets/pretendard-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="/action-button.css?v=3" />
-    <link rel="stylesheet" href="/ver2.css?v=74" />
-    <link rel="stylesheet" href="/ver2-intro.css?v=10" />
+    <link rel="stylesheet" href="/action-button.css?v=1" />
+    <link rel="stylesheet" href="/ver2.css?v=55" />
+    <link rel="stylesheet" href="/ver2-intro.css?v=3" />
     <script src="/image-protection.js" defer></script>
-    <script src="/ver2-hero.js?v=43" defer></script>
+    <script src="/ver2-hero.js?v=25" defer></script>
     <title>SERIAL — 중앙대학교 학생창업 네트워크</title>
   </head>
   <body>
-    <div class="page-backdrop" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="page-grain" data-page-grain aria-hidden="true"></div>
-    <div class="page-scrollbar" data-page-scrollbar aria-hidden="true"><span></span></div>
     <a class="skip-link" href="#about" data-i18n="skipLabel">본문으로 바로 가기</a>
     <header class="hero-header" data-page-nav>
       <a class="brand" href="#top" aria-label="SERIAL 맨 위로" data-i18n-aria="homeLabel"><img src="/favicon-light.svg?v=8" alt="" width="30" height="30" /></a>
@@ -126,7 +114,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <div class="about-origin">
               <p class="section-caption" data-i18n="originCaption">첫 연결을 만든 사람들</p>
               <p class="body-copy"><span data-i18n="originFirst">다른 전공, 다른 경험을 가진 학생들이 모였습니다.</span><br class="desktop-break" /> <span data-i18n="originSecond">혼자 품었던 생각을 함께 해볼 수 있는 연결로 바꿉니다.</span></p>
-              <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="origin-story"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+              <a class="text-link" href="/intro"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
             </div>
             <div class="about-connections">
               <p class="section-caption" data-i18n="connectionsCaption">우리가 잇는 것</p>
@@ -147,6 +135,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <p class="section-caption" data-i18n="spiritCaption">우리가 시도하는 방식</p>
             <h2 id="spirit-title"><span data-i18n="spiritLineOne">영리하게 사고하고,</span><br /><span data-i18n="spiritLineTwo">대담하게 실행합니다.</span></h2>
             <p class="body-copy" data-i18n="spiritDescription">우리는 모든 답을 알고 시작하지 않습니다. 가설을 세우고, 직접 시도하고, 결과에서 배웁니다. 서로의 시행착오를 나누며 다음 시도로 나아갑니다.</p>
+            <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="spirit-story"><span data-i18n="originLink">우리가 시작한 이유</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
           </div>
         </section>
 
@@ -155,17 +144,17 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="people-grid">
             <figure class="person-card"><div class="person-portrait"><img class="portrait-minseo" src="/profiles/minseo-cutout.webp" alt="김민서의 흑백 인물 사진" data-person-name="김민서" width="480" height="480" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="김민서">김민서</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
 <figure class="person-card"><div class="person-portrait"><img src="/profiles/rihyeon-cutout.webp" alt="윤리현의 흑백 인물 사진" data-person-name="윤리현" width="480" height="640" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="윤리현">윤리현</h3><p><span class="person-college" data-i18n="collegeEngineering">공과대학</span><span data-i18n="majorCivil">건설환경플랜트공학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img src="/profiles/hyoseok-v2-cutout.webp" alt="곽효석의 흑백 인물 사진" data-person-name="곽효석" width="480" height="640" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="곽효석">곽효석</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
+<figure class="person-card"><div class="person-portrait"><img src="/profiles/hyoseok-v2-cutout.webp" alt="곽효석의 흑백 인물 사진" data-person-name="곽효석" width="1086" height="1448" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="곽효석">곽효석</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorBusiness">경영학</span></p></figcaption></figure>
 <figure class="person-card"><div class="person-portrait"><img src="/profiles/yebin-cutout.webp" alt="권예빈의 흑백 인물 사진" data-person-name="권예빈" width="480" height="614" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="권예빈">권예빈</h3><p><span class="person-college" data-i18n="collegeSocialSciences">사회과학대학</span><span data-i18n="majorPsychology">심리학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img class="portrait-gun" src="/profiles/gun-cutout.webp" alt="정건의 흑백 인물 사진" data-person-name="정건" width="480" height="697" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="정건">정건</h3><p><span class="person-college" data-i18n="collegeICT">창의ICT공과대학</span><span data-i18n="majorElectrical">전자전기공학</span></p></figcaption></figure>
-<figure class="person-card"><div class="person-portrait"><img class="portrait-seojin" src="/profiles/seojin-cutout.webp" alt="홍서진의 흑백 인물 사진" data-person-name="홍서진" width="480" height="603" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="홍서진">홍서진</h3><p><span class="person-college" data-i18n="collegeHumanities">인문대학</span><span data-i18n="majorChinese">중국어문학</span></p></figcaption></figure>
+<figure class="person-card"><div class="person-portrait"><img src="/profiles/gun-cutout.webp" alt="정건의 흑백 인물 사진" data-person-name="정건" width="480" height="697" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="정건">정건</h3><p><span class="person-college" data-i18n="collegeICT">창의ICT공과대학</span><span data-i18n="majorElectrical">전자전기공학</span></p></figcaption></figure>
+<figure class="person-card"><div class="person-portrait"><img src="/profiles/seojin-cutout.webp" alt="홍서진의 흑백 인물 사진" data-person-name="홍서진" width="480" height="603" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="홍서진">홍서진</h3><p><span class="person-college" data-i18n="collegeHumanities">인문대학</span><span data-i18n="majorChinese">중국어문학</span></p></figcaption></figure>
 <figure class="person-card"><div class="person-portrait"><img src="/profiles/taerin-cutout.webp" alt="기태린의 흑백 인물 사진" data-person-name="기태린" width="480" height="617" loading="lazy" decoding="async" /></div><figcaption><h3 data-person-name="기태린">기태린</h3><p><span class="person-college" data-i18n="collegeBusiness">경영경제대학</span><span data-i18n="majorSecurity">산업보안학</span></p></figcaption></figure>
           </div>
         </section>
 
         <section class="section-tile project-section" id="projects" aria-labelledby="projects-title" tabindex="-1">
           <div class="project-copy"><p class="section-caption" data-i18n="projects">프로젝트</p><span class="status-tag" data-i18n="projectStatus">준비 중</span><h2 id="projects-title" lang="ko"><span data-i18n="projectLineOne">다음 시도는</span><br /><span data-i18n="projectLineTwo">여기서 시작됩니다.</span></h2><p class="body-copy"><span data-i18n="projectFirst">첫 프로젝트를 준비하고 있습니다.</span><br /><span data-i18n="projectSecond">문제를 함께 발견하고, 작은 실험부터 시작합니다.</span></p></div>
-          <figure class="project-visual"><img src="/brand-assets/614-147-image-s.png" alt="하나의 띠로 이어지는 SERIAL의 S 리본" data-i18n-alt="ribbonAlt" width="1080" height="1080" loading="lazy" decoding="async" /></figure>
+          <figure class="project-visual"><img src="/brand-assets/614-147-image-s.png" alt="하나의 띠로 이어지는 SERIAL의 S 리본" data-i18n-alt="ribbonAlt" width="2048" height="2048" loading="lazy" decoding="async" /></figure>
         </section>
 
         <section class="section-tile join-section" id="join" aria-labelledby="join-title" tabindex="-1">
@@ -179,9 +168,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
         </section>
       </div>
     </main>
-    <dialog class="card-dialog story-dialog" id="origin-story" aria-labelledby="origin-story-title">
+    <dialog class="card-dialog story-dialog" id="spirit-story" aria-labelledby="spirit-story-title">
       <div class="dialog-surface" data-dialog-surface>
-        <header class="dialog-header"><img class="dialog-mark" src="/favicon-light.svg?v=8" alt="" width="22" height="22" /><h2 id="origin-story-title" data-i18n="originLink">우리가 시작한 이유</h2><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
+        <header class="dialog-header"><h2 id="spirit-story-title" data-i18n="originLink">우리가 시작한 이유</h2><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
         <div class="dialog-scroll" tabindex="0"><div class="story-article" lang="ko"><!-- SPIRIT_ORIGIN_ARTICLE --></div></div>
       </div>
     </dialog>
@@ -191,6 +180,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
         <div class="dialog-scroll support-content"><h2 id="support-dialog-title" data-i18n="supportTitle">다음 시도를 응원해주세요.</h2><p class="body-copy" data-i18n="supportDescription">SERIAL의 다음 시도를 함께 만들어주세요. 후원과 협업에 관한 이야기는 이메일로 편하게 남겨주세요.</p><a class="action-button" href="mailto:me@creativeminseo.com?subject=SERIAL%20Support" data-i18n="supportContact">이메일로 문의하기</a></div>
       </div>
     </dialog>
-    <footer class="site-footer"><div class="footer-pattern" aria-hidden="true"><svg viewBox="0 -24 1000 214" focusable="false"><text x="0" y="178" textLength="1000" lengthAdjust="spacingAndGlyphs">SERIAL</text></svg></div></footer>
+    <footer class="site-footer"><div class="footer-pattern" aria-hidden="true"><svg viewBox="0 0 1000 190" focusable="false"><text x="0" y="178" textLength="1000" lengthAdjust="spacingAndGlyphs">SERIAL</text></svg></div></footer>
   </body>
 </html>

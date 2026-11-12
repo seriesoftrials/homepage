@@ -1,9 +1,12 @@
 # SERIAL homepage
 
 The `main` branch deploys the SERIAL landing page to https://seriesoftrials.com, including the
-grain, glass S ribbon, entrance, Spirit reader, member portraits, language switcher
+glass S ribbon, entrance, Spirit reader, member portraits, language switcher
 and support dialog. The frontend source was copied from SERIAL main commit
 `04fe9ae40046ead25d42dcacd1c1403005c020db`.
+The landing follows that pre-migration production layout, with page and section
+background gradients and the document-wide noise overlay removed. The light/dark
+section colors remain solid surfaces.
 
 ## Run
 
