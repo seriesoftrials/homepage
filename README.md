@@ -10,6 +10,10 @@ There are no animated page backgrounds, document-wide noise overlays or
 scroll-driven theme changes. Cards use a light translucent fill without extra blur.
 The About essay and Support use the floating glass dialogs from the pre-restoration
 homepage, including browser-back dismissal, focus return and scroll restoration.
+Outer cards span the page; their content is centered at a maximum of 1120px.
+The curriculum overview follows the current Cohort 01 planning flow. It lists
+stages rather than unconfirmed week numbers or dates and is labelled as a programme
+in preparation. Curriculum copy is maintained in all four landing languages.
 
 ## 브랜치 전략
 
