@@ -18,8 +18,6 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
-const statement = document.querySelector('[data-scroll-statement]');
-const phrases = [...statement.querySelectorAll('span')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
@@ -53,12 +51,6 @@ function updateNavigation() {
     }
   }
 
-  const readingProgress = reducedMotion.matches ? 1 : clamp(
-    (window.innerHeight * .8 - statement.getBoundingClientRect().top) / (window.innerHeight * .6),
-  );
-  phrases.forEach((phrase, index) => {
-    phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
-  });
 }
 
 function scheduleNavigation() {
