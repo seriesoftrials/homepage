@@ -1,6 +1,6 @@
-# SERIAL homepage — grainy
+# SERIAL homepage
 
-The `grainy` branch serves the current SERIAL landing page at `/`, including the
+The `main` branch deploys the SERIAL landing page to https://seriesoftrials.com, including the
 grain, glass S ribbon, entrance, Spirit reader, member portraits, language switcher
 and support dialog. The frontend source was copied from SERIAL main commit
 `04fe9ae40046ead25d42dcacd1c1403005c020db`.
@@ -49,7 +49,37 @@ and the original article at `/intro`. Original asset URLs resolve to
 the existing React layout or Lenis scroll engine to these pages. Other Next.js
 routes and components remain in the repository.
 
-This branch contains public frontend source and assets. It does not include the
-Cloudflare Worker, member authentication, member email list, database or runtime
-configuration. Join and support keep the original email links. A push to `grainy`
-does not merge it into `main` or change the production domain.
+## Branches and production deployment
+
+- `main`: production. A push or merge runs checks, deploys, and verifies the exact commit.
+- `grainy`: development. Pushes do not deploy production; open a PR into `main` when ready.
+- `legacy-main`: the previous `main`, preserved at `1ce4fc56199929bbd74fb7f0349d9921acc11ec6`.
+
+GitHub Actions uses `.github/workflows/deploy.yml` and the repository Secret
+`CLOUDFLARE_API_TOKEN`. The repository Variable `CLOUDFLARE_DEPLOY_ENABLED` must be
+`true` to deploy. PRs run checks without publishing or requiring the secret.
+
+```sh
+npm run check          # lint, Next.js build, Worker tests and Cloudflare dry run
+npm run deploy         # build and deploy using a SERIAL Cloudflare credential
+npm run deploy:verify  # exact commit, asset hashes and existing member services
+```
+
+Production deploys the generated `public/grainy/` assets and `worker/index.mjs`
+with Wrangler, independently of the Next.js preview server. Edit `grainy/` for
+the live homepage; the older React pages remain available in local Next.js previews.
+
+The `serial-homepage` Worker handles the `seriesoftrials.com/*` route in front
+of the existing `serial` Worker. It serves this repository's landing and assets;
+login, members, protected updates, APIs, Brand and other existing pages reach
+`serial` through a service binding. The member email list, D1 database, session
+secrets and mail credentials stay in the existing private backend. Join and
+support retain their email links. No database migration is part of a homepage deploy.
+
+`/api/deployment` identifies this repository's deployed commit. `/api/health`
+continues to report the existing backend. See [deployment settings](CLAUDE.md).
+
+To roll back homepage content, revert the relevant commit on `main`. To remove
+the frontend layer entirely, remove only the `serial-homepage` route
+`seriesoftrials.com/*` in Cloudflare; the existing `serial` Custom Domain remains
+the origin. Do not delete the `serial` Worker or its D1 database.

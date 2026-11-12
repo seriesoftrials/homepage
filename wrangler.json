@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "serial-homepage",
+  "account_id": "8406a5140c860dd8913de7a07d7624ba",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2026-11-12",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "seriesoftrials.com/*",
+      "zone_id": "a7906597a4333773e5b677363397fc0b"
+    }
+  ],
+  "assets": {
+    "directory": "public/grainy",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "run_worker_first": true
+  },
+  "services": [{ "binding": "BACKEND", "service": "serial" }]
+}

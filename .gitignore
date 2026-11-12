@@ -48,3 +48,8 @@ next-env.d.ts
 
 # Generated from grainy/ by npm run build:grainy.
 /public/grainy/
+
+# Local Cloudflare state and deployment checks.
+/.wrangler/
+/.deploy-local/
+.dev.vars*

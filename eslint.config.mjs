@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     // Third-party Three.js files and the generated browser bundle.
     "grainy/assets/serial-ribbon-sequence/vendor/**",
     "public/grainy/**",
+    ".deploy-local/**",
+    ".wrangler/**",
   ]),
 ]);
 
