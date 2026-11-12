@@ -27,10 +27,10 @@
     <link rel="preload" href="/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/brand-assets/pretendard-variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/action-button.css?v=1" />
-    <link rel="stylesheet" href="/ver2.css?v=56" />
+    <link rel="stylesheet" href="/ver2.css?v=57" />
     <link rel="stylesheet" href="/ver2-intro.css?v=3" />
     <script src="/image-protection.js" defer></script>
-    <script src="/ver2-hero.js?v=26" defer></script>
+    <script src="/ver2-hero.js?v=27" defer></script>
     <title>SERIAL — 중앙대학교 학생창업 네트워크</title>
   </head>
   <body>
@@ -114,7 +114,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <div class="about-origin">
               <p class="section-caption" data-i18n="originCaption">첫 연결을 만든 사람들</p>
               <p class="body-copy"><span data-i18n="originFirst">다른 전공, 다른 경험을 가진 학생들이 모였습니다.</span><br class="desktop-break" /> <span data-i18n="originSecond">혼자 품었던 생각을 함께 해볼 수 있는 연결로 바꿉니다.</span></p>
-              <a class="text-link" href="/intro"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+              <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="origin-story"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
             </div>
             <div class="about-connections">
               <p class="section-caption" data-i18n="connectionsCaption">우리가 잇는 것</p>
@@ -135,7 +135,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <p class="section-caption" data-i18n="spiritCaption">우리가 시도하는 방식</p>
             <h2 id="spirit-title"><span data-i18n="spiritLineOne">영리하게 사고하고,</span><br /><span data-i18n="spiritLineTwo">대담하게 실행합니다.</span></h2>
             <p class="body-copy" data-i18n="spiritDescription">우리는 모든 답을 알고 시작하지 않습니다. 가설을 세우고, 직접 시도하고, 결과에서 배웁니다. 서로의 시행착오를 나누며 다음 시도로 나아갑니다.</p>
-            <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="spirit-story"><span data-i18n="originLink">우리가 시작한 이유</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
           </div>
         </section>
 
@@ -168,9 +167,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
         </section>
       </div>
     </main>
-    <dialog class="card-dialog story-dialog" id="spirit-story" aria-labelledby="spirit-story-title">
+    <dialog class="card-dialog story-dialog" id="origin-story" aria-labelledby="origin-story-title">
       <div class="dialog-surface" data-dialog-surface>
-        <header class="dialog-header"><h2 id="spirit-story-title" data-i18n="originLink">우리가 시작한 이유</h2><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
+        <header class="dialog-header"><img class="dialog-mark" src="/favicon-light.svg?v=8" alt="" width="22" height="22" /><h2 id="origin-story-title" data-i18n="originLink">우리가 시작한 이유</h2><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
         <div class="dialog-scroll" tabindex="0"><div class="story-article" lang="ko"><!-- SPIRIT_ORIGIN_ARTICLE --></div></div>
       </div>
     </dialog>

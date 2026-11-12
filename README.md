@@ -1,13 +1,15 @@
 # SERIAL homepage
 
 The `main` branch deploys the SERIAL landing page to https://seriesoftrials.com, including the
-glass S ribbon, entrance, Spirit reader, member portraits, language switcher
+glass S ribbon, entrance, About reader, member portraits, language switcher
 and support dialog. The frontend source was copied from SERIAL main commit
 `04fe9ae40046ead25d42dcacd1c1403005c020db`.
 The landing follows that pre-migration production layout and stays in light mode.
 A single static CSS background gradient gradually deepens towards the footer.
 There are no animated page backgrounds, document-wide noise overlays or
 scroll-driven theme changes. Cards use a light translucent fill without extra blur.
+The About essay and Support use the floating glass dialogs from the pre-restoration
+homepage, including browser-back dismissal, focus return and scroll restoration.
 
 ## Run
 
@@ -42,7 +44,7 @@ npm start
 | Next.js route mapping | `next.config.ts` |
 
 `npm run build:grainy` bundles the browser code and embeds the original Intro
-article in the Spirit reader. It writes generated files to `public/grainy/` and
+article in the About reader. It writes generated files to `public/grainy/` and
 checks the HTML, CSS and Spirit frame references for missing local assets.
 After editing the landing during development, rerun `npm run build:grainy` and
 refresh the browser. Restart `npm run dev` after adding a new top-level asset path.

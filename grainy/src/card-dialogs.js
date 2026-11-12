@@ -1,11 +1,13 @@
 export function mountCardDialogs(preference) {
   if (typeof HTMLDialogElement === 'undefined') return;
   const root = document.documentElement;
+  // `rest` is each surface's own resting transform; both rise into it.
   const entries = [
-    { id: 'spirit-story', trigger: document.querySelector('[data-open-story]'), source: document.querySelector('#spirit'), morph: true },
-    { id: 'support-dialog', trigger: document.querySelector('[data-open-support]'), morph: false },
+    { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '' },
+    { id: 'support-dialog', trigger: document.querySelector('[data-open-support]'), rest: 'translate(-50%, -50%)' },
   ].map(entry => ({ ...entry, dialog: document.getElementById(entry.id) }))
-    .filter(entry => entry.trigger && entry.dialog && (!entry.morph || entry.dialog.querySelector('.manifesto')));
+    .filter(entry => entry.trigger && entry.dialog);
+  const lowered = entry => `${entry.rest} translateY(18px) scale(.98)`;
   const byId = new Map(entries.map(entry => [entry.id, entry]));
   let active;
   let animation;
@@ -14,7 +16,6 @@ export function mountCardDialogs(preference) {
   let dismissPending = false;
   let savedScroll;
   let savedBody;
-  let savedVisibility;
   let savedRestoration;
   let restoreFrame;
 
@@ -41,49 +42,12 @@ export function mountCardDialogs(preference) {
     root.style.scrollBehavior = previousBehavior;
   }
 
-  function sourceTransform(entry, bounds) {
-    const destination = entry.surface.getBoundingClientRect();
-    return `translate(${bounds.left - destination.left}px, ${bounds.top - destination.top}px) scale(${bounds.width / destination.width}, ${bounds.height / destination.height})`;
-  }
-
-  function morphCardContent(entry, bounds, opening) {
-    if (!entry.morph) return;
-    const destination = entry.surface.getBoundingClientRect();
-    const created = !entry.preview;
-    if (!entry.preview) {
-      const preview = entry.source.cloneNode(true);
-      preview.removeAttribute('id');
-      preview.removeAttribute('aria-labelledby');
-      preview.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
-      preview.querySelectorAll('img').forEach(image => { image.loading = 'eager'; });
-      preview.classList.add('dialog-card-preview');
-      preview.setAttribute('aria-hidden', 'true');
-      preview.inert = true;
-      entry.dialog.append(preview);
-      entry.preview = preview;
-    }
-    const previous = getComputedStyle(entry.preview);
-    const current = { transform: previous.transform, opacity: previous.opacity };
-    entry.previewAnimation?.cancel();
-    Object.assign(entry.preview.style, { left: `${bounds.left}px`, top: `${bounds.top}px`, width: `${bounds.width}px`, height: `${bounds.height}px`, visibility: 'visible' });
-    const readingTransform = `translate(${destination.left - bounds.left}px, ${destination.top - bounds.top}px) scale(${destination.width / bounds.width}, ${destination.height / bounds.height})`;
-    const reverseFrom = created || Number(current.opacity) === 0 ? { transform: readingTransform, opacity: 0 } : current;
-    entry.previewAnimation = entry.preview.animate(opening
-      ? [{ transform: 'none', opacity: 1 }, { transform: readingTransform, opacity: 0 }]
-      : [reverseFrom, { transform: 'none', opacity: 1 }],
-    { duration: opening ? 300 : 180, easing: opening ? 'cubic-bezier(.32,.72,0,1)' : 'cubic-bezier(.23,1,.32,1)', fill: 'forwards' });
-  }
-
   function finishClose(entry) {
     if (active !== entry) return;
     animation?.cancel();
     clearTimeout(entry.revealTimer);
-    entry.previewAnimation?.cancel();
-    entry.preview?.remove();
-    entry.preview = undefined;
     animation = undefined;
     entry.dialog.close();
-    if (entry.source) entry.source.style.visibility = savedVisibility;
     entry.trigger.setAttribute('aria-expanded', 'false');
     unlockPage();
     active = undefined;
@@ -100,7 +64,6 @@ export function mountCardDialogs(preference) {
 
   function open(entry, instant = false, push = true) {
     if (active) return;
-    const bounds = entry.source?.getBoundingClientRect();
     lockPage();
     active = entry;
     entry.dialog.dataset.state = 'opening';
@@ -108,22 +71,18 @@ export function mountCardDialogs(preference) {
     entry.surface = entry.dialog.querySelector('[data-dialog-surface]');
     entry.dialog.querySelector('.dialog-scroll').scrollTop = 0;
     entry.trigger.setAttribute('aria-expanded', 'true');
-    if (entry.source) {
-      savedVisibility = entry.source.style.visibility;
-      entry.source.style.visibility = 'hidden';
-    }
     if (push) history.pushState({ ...history.state, serialDialog: entry.id, serialDialogRestoration: savedRestoration }, '');
-    const from = entry.morph ? sourceTransform(entry, bounds) : 'translate(-50%, -50%) scale(.97)';
-    const to = entry.morph ? 'none' : 'translate(-50%, -50%)';
     if (instant || preference.matches || !entry.surface.animate) {
       entry.dialog.dataset.state = 'open';
       return;
     }
-    morphCardContent(entry, bounds, true);
     entry.revealTimer = setTimeout(() => {
       if (active === entry && entry.dialog.dataset.state === 'opening') entry.dialog.dataset.state = 'revealing';
     }, 120);
-    animation = entry.surface.animate([{ transform: from }, { transform: to }], { duration: entry.morph ? 300 : 180, easing: 'cubic-bezier(.32,.72,0,1)' });
+    animation = entry.surface.animate([
+      { transform: lowered(entry), opacity: 0 },
+      { transform: entry.rest || 'none', opacity: 1 },
+    ], { duration: 380, easing: 'cubic-bezier(.32,.72,0,1)' });
     animation.finished.then(() => {
       clearTimeout(entry.revealTimer);
       if (active === entry && entry.dialog.dataset.state !== 'closing') entry.dialog.dataset.state = 'open';
@@ -135,16 +94,17 @@ export function mountCardDialogs(preference) {
     if (active !== entry) return Promise.resolve();
     entry.dialog.dataset.state = 'closing';
     clearTimeout(entry.revealTimer);
-    const from = getComputedStyle(entry.surface).transform;
+    const { transform: from, opacity } = getComputedStyle(entry.surface);
     animation?.cancel();
     if (instant || preference.matches || !entry.surface.animate) {
       finishClose(entry);
       return Promise.resolve();
     }
-    // Read the resting geometry after cancelling the entrance, then reverse it.
-    const to = entry.morph ? sourceTransform(entry, entry.source.getBoundingClientRect()) : 'translate(-50%, -50%) scale(.97)';
-    morphCardContent(entry, entry.source?.getBoundingClientRect(), false);
-    animation = entry.surface.animate([{ transform: from }, { transform: to }], { duration: 180, easing: 'cubic-bezier(.23,1,.32,1)', fill: 'forwards' });
+    // Sink back out from wherever the entrance had reached.
+    animation = entry.surface.animate([
+      { transform: from, opacity },
+      { transform: lowered(entry), opacity: 0 },
+    ], { duration: 200, easing: 'cubic-bezier(.23,1,.32,1)', fill: 'forwards' });
     closing = animation.finished.catch(() => {}).then(() => finishClose(entry));
     return closing;
   }
@@ -185,7 +145,7 @@ export function mountCardDialogs(preference) {
   window.addEventListener('pagehide', () => { if (active) finishClose(active); });
   window.addEventListener('pageshow', () => { void syncHistory(); });
   preference.addEventListener('change', () => {
-    if (preference.matches) { animation?.finish(); active?.previewAnimation?.finish(); }
+    if (preference.matches) animation?.finish();
   });
   void syncHistory();
 }
