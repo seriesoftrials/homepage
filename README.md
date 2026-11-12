@@ -4,9 +4,10 @@ The `main` branch deploys the SERIAL landing page to https://seriesoftrials.com,
 glass S ribbon, entrance, Spirit reader, member portraits, language switcher
 and support dialog. The frontend source was copied from SERIAL main commit
 `04fe9ae40046ead25d42dcacd1c1403005c020db`.
-The landing follows that pre-migration production layout, with page and section
-background gradients and the document-wide noise overlay removed. The light/dark
-section colors remain solid surfaces.
+The landing follows that pre-migration production layout and stays in light mode.
+A single static CSS background gradient gradually deepens towards the footer.
+There are no animated page backgrounds, document-wide noise overlays or
+scroll-driven theme changes. Cards use a light translucent fill without extra blur.
 
 ## Run
 
@@ -32,7 +33,7 @@ npm start
 | --- | --- |
 | Landing HTML | `grainy/index.html` |
 | Original article and full Intro page | `grainy/intro.html` |
-| Layout, grain and typography | `grainy/public/ver2.css` |
+| Layout, background and typography | `grainy/public/ver2.css` |
 | Entrance and shared buttons | `grainy/public/ver2-intro.css`, `grainy/public/action-button.css` |
 | Ribbon, navigation, languages and dialogs | `grainy/src/` |
 | Original ribbon geometry, motion and Three.js | `grainy/assets/serial-ribbon-sequence/` |

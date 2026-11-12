@@ -18,9 +18,6 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
-const membersSection = document.querySelector('#members');
-const joinSection = document.querySelector('#join');
-const themeColor = document.querySelector('meta[name="theme-color"]');
 const statement = document.querySelector('[data-scroll-statement]');
 const phrases = [...statement.querySelectorAll('span')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -30,7 +27,6 @@ let intro;
 let elapsed = SEQUENCE_DURATION;
 let scheduledFrame = 0;
 let activeSection;
-let activeDarkTheme;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -41,17 +37,6 @@ function updateNavigation() {
   const y = Math.max(0, window.scrollY);
   const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
   header.classList.toggle('is-compact', compact);
-
-  // Let the incoming card peek in before switching, in either direction.
-  const membersBounds = membersSection.getBoundingClientRect();
-  const joinBounds = joinSection.getBoundingClientRect();
-  const themeBoundary = window.innerHeight - 32;
-  const darkTheme = membersBounds.top < themeBoundary && joinBounds.top >= themeBoundary;
-  if (darkTheme !== activeDarkTheme) {
-    activeDarkTheme = darkTheme;
-    document.documentElement.classList.toggle('is-members-theme', darkTheme);
-    themeColor?.setAttribute('content', darkTheme ? '#080808' : '#fafaf8');
-  }
 
   const distance = document.documentElement.scrollHeight - window.innerHeight;
   progressBar.style.transform = `scaleX(${distance > 0 ? clamp(y / distance) : 0})`;
