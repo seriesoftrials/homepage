@@ -4,6 +4,7 @@ import { applyLanguage, LANGUAGE_STORAGE_KEY } from './ver2-i18n.js';
 import { mountSpiritLoop } from './spirit-loop.js';
 import { mountCardDialogs } from './card-dialogs.js';
 import { mountIntro } from './ver2-intro.js';
+import { mountGrainMotion } from './grain-motion.js';
 
 const holder = document.querySelector('[data-ver2-ribbon]');
 const header = document.querySelector('[data-page-nav]');
@@ -21,6 +22,7 @@ const sections = [...document.querySelectorAll('.site-sections > section[id]')];
 const footer = document.querySelector('.site-footer');
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+mountGrainMotion(reducedMotion);
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
