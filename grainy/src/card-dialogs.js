@@ -5,6 +5,8 @@ export function mountCardDialogs(preference) {
   const entries = [
     { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '' },
     { id: 'support-dialog', trigger: document.querySelector('[data-open-support]'), rest: 'translate(-50%, -50%)' },
+    { id: 'curriculum-dialog-1', trigger: document.querySelector('[data-open-curriculum="1"]'), rest: '' },
+    { id: 'curriculum-dialog-2', trigger: document.querySelector('[data-open-curriculum="2"]'), rest: '' },
   ].map(entry => ({ ...entry, dialog: document.getElementById(entry.id) }))
     .filter(entry => entry.trigger && entry.dialog);
   const lowered = entry => `${entry.rest} translateY(18px) scale(.98)`;
