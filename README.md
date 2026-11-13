@@ -6,9 +6,12 @@ and support dialog. The frontend source was copied from SERIAL main commit
 `04fe9ae40046ead25d42dcacd1c1403005c020db`.
 The landing follows that pre-migration production layout and stays in light mode.
 A single static CSS background gradient gradually deepens towards the footer.
-There are no animated page backgrounds, document-wide noise overlays or
-scroll-driven theme changes. A cached 128px PNG adds static grain to the background
-and cards. Cards use a 42% white translucent fill without extra blur.
+The page gradient stays static without scroll-driven theme changes. A cached 128px
+PNG gives the background and cards an eight-step grain loop every 1.2 seconds.
+The page texture is limited to the viewport; card textures pause outside the viewport,
+behind dialogs, in hidden tabs, and for reduced-motion preferences. Only texture
+transforms animate. Cards use a 64% white translucent fill, a subtle local gradient,
+and a clearer edge and shadow without extra backdrop blur.
 When the footer enters view, the root/body fallback and browser theme color match
 the gradient's final color. This fills Safari's safe-area and overscroll background;
 scrolling back restores the light top color without animating the page background.
