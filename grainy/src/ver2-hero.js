@@ -19,6 +19,8 @@ const dropdowns = [
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
 const sections = [...document.querySelectorAll('.site-sections > section[id]')];
+const statement = document.querySelector('[data-scroll-statement]');
+const phrases = [...(statement?.querySelectorAll('span') || [])];
 const footer = document.querySelector('.site-footer');
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -46,6 +48,7 @@ if (footer) {
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
+  const statementTop = statement?.getBoundingClientRect().top;
   spiritLoops.forEach(loop => loop?.refresh());
   const y = Math.max(0, window.scrollY);
   const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
@@ -66,6 +69,14 @@ function updateNavigation() {
     }
   }
 
+  if (statementTop !== undefined) {
+    const readingProgress = reducedMotion.matches ? 1 : clamp(
+      (window.innerHeight * .8 - statementTop) / (window.innerHeight * .6),
+    );
+    phrases.forEach((phrase, index) => {
+      phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
+    });
+  }
 }
 
 function scheduleNavigation() {
