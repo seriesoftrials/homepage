@@ -324,6 +324,8 @@ html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(
 .card-dialog[data-state="opening"] .dialog-header, .card-dialog[data-state="opening"] .dialog-scroll,
 .card-dialog[data-state="closing"] .dialog-header, .card-dialog[data-state="closing"] .dialog-scroll { opacity: 0; }
 .story-article { max-width: 640px; margin: 0 auto; padding: calc(var(--dialog-head) + clamp(20px, 4vw, 40px)) clamp(24px, 6vw, 56px) 72px; font-size: 16px; line-height: 1.9; word-break: keep-all; overflow-wrap: anywhere; }
+.story-cover { margin: 0 0 32px; }
+.story-cover img { display: block; width: 100%; height: auto; }
 .story-article .manifesto-title { margin: 0 0 20px; color: var(--ink); font-size: clamp(22px, 2.4vw, 28px); font-weight: 600; line-height: 1.45; letter-spacing: -.035em; }
 .story-article p { margin: 0 0 20px; color: var(--body); }
 .story-article .manifesto-section + .manifesto-section { margin-top: 56px; }
