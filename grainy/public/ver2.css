@@ -198,12 +198,12 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .event-copy > .section-caption { margin-bottom: 24px; }
 .event-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 280px); align-items: center; gap: clamp(32px, 4vw, 56px); }
 .event-copy { min-width: 0; }
-.event-copy h2 { margin: 0; font-family: "Newsreader", "Times New Roman", serif; font-size: clamp(36px, 3.8vw, 52px); font-weight: 400; line-height: 1.08; letter-spacing: -.03em; }
-.event-subtitle { margin: 14px 0 18px; font-size: 22px; font-weight: 450; line-height: 1.4; letter-spacing: -.035em; word-break: keep-all; }
+.event-copy h2 { margin: 0; font-family: inherit; font-size: clamp(36px, 3.8vw, 52px); font-weight: 400; line-height: 1.08; letter-spacing: -.03em; }
+.event-subtitle { margin: 14px 0 18px; font-weight: 450; line-height: 1.4; letter-spacing: -.035em; word-break: keep-all; }
 .event-meta { margin: 20px 0; font-size: 14px; line-height: 1.8; }
 .event-meta p { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
-.event-meta-icon { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: #f5f5f2; }
-.event-meta-icon svg { width: 16px; height: 16px; }
+.event-meta-icon { display: grid; flex: 0 0 24px; place-items: center; width: 24px; height: 24px; border: 1px solid #7b8792; border-radius: 50%; color: #fff; background: #7b8792; }
+.event-meta-icon svg { width: 14px; height: 14px; }
 .hero-copy > .action-button { margin-top: 24px; max-width: 100%; text-align: center; }
 .event-poster { margin: 0; overflow: hidden; border: 1px solid rgb(var(--ink-rgb) / .1); border-radius: 12px; }
 .event-poster img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
@@ -437,7 +437,6 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(96px, calc(100svh - 392px), 288px); width: calc(100% - 16px); padding: 24px 20px; }
   .event-copy > .section-caption { margin-bottom: 20px; }
   .event-copy h2 { font-size: 42px; }
-  .event-subtitle { font-size: 22px; }
   .event-poster { width: min(100%, 280px); justify-self: center; }
   .curriculum-heading h2 { font-size: 27px; }
   .curriculum-list li { grid-template-columns: 62px minmax(0, 1fr); gap: 10px 16px; padding: 22px 0; }
