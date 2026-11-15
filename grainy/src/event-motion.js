@@ -2,6 +2,8 @@ export function mountEventMotion(card, preference) {
   if (!card) return;
   const root = document.documentElement;
   const following = document.querySelector('.site-sections');
+  const hero = document.querySelector('.hero');
+  const heroCopy = document.querySelector('.hero-copy');
   let offset = 0;
   let room = 0;
   let baseTop = 0;
@@ -30,6 +32,11 @@ export function mountEventMotion(card, preference) {
 
   function resize() {
     if (root.classList.contains('has-card-dialog')) return;
+    if (hero && heroCopy) {
+      const heroTop = hero.getBoundingClientRect().top + window.scrollY;
+      const copyEnd = heroCopy.getBoundingClientRect().bottom + window.scrollY;
+      card.style.setProperty('--event-hero-clearance', `${Math.ceil(copyEnd + heroTop + 40)}px`);
+    }
     const rect = card.getBoundingClientRect();
     const style = getComputedStyle(card);
     const visualOffset = style.transform === 'none' ? 0 : new DOMMatrixReadOnly(style.transform).m42;
@@ -71,6 +78,7 @@ export function mountEventMotion(card, preference) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) resize(); });
   const observer = new ResizeObserver(resize);
   observer.observe(card);
+  if (heroCopy) observer.observe(heroCopy);
   syncPreference();
   return { refresh };
 }

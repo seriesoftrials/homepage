@@ -394,6 +394,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .mobile-menu nav a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; font-size: 14px; }
   .mobile-menu nav .mobile-nav-join { margin-top: 6px; border-top: 1px solid var(--line); }
   .hero-copy { padding-top: 119px; }
+  .hero { padding-bottom: 40px; }
   .hero-copy h1 { font-size: clamp(28px, 7.2vw, 36px); line-height: 1.04; letter-spacing: -.025em; }
   .hero-description { margin-top: 18px; font-size: 16px; }
   .hero-ribbon { width: min(132vw, 720px); }
@@ -437,10 +438,10 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .join-content { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .curriculum-heading { grid-template-columns: minmax(0, 1fr); gap: 20px; margin-bottom: 28px; }
   .event-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(96px, calc(100svh - 392px), 288px); width: calc(100% - 16px); padding: 24px 20px; }
+  .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(0px, calc(100svh - max(384px, var(--event-hero-clearance, 384px))), 520px); width: calc(100% - 16px); padding: 24px 20px; }
   .event-copy > .section-caption { margin-bottom: 20px; }
   .event-copy h2 { font-size: 42px; }
-  .event-poster { width: min(100%, 280px); justify-self: center; }
+  .event-poster { order: -1; width: min(100%, 280px); justify-self: center; }
   .curriculum-heading h2 { font-size: 27px; }
   .curriculum-list li { grid-template-columns: 62px minmax(0, 1fr); gap: 10px 16px; padding: 22px 0; }
   .curriculum-number { grid-row: span 2; }
