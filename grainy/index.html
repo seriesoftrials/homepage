@@ -99,7 +99,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
 
     <main id="ver2">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="hero-copy"><h1 id="hero-title" lang="ko"><span data-i18n="heroLead">계속되는 시도,</span><br /> <span class="hero-brand" lang="en">Serial.</span></h1><p class="hero-description" data-i18n="heroDescription">중앙대학교 실전창업학회 SERIAL</p></div>
+        <div class="hero-copy"><h1 id="hero-title" lang="ko"><span data-i18n="heroLead">계속되는 시도,</span><br /> <span class="hero-brand" lang="en">Serial.</span></h1><p class="hero-description" data-i18n="heroDescription">중앙대학교 실전창업학회 SERIAL</p><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="preregistrationAction">2027 1기 사전 알림 신청하기</button></div>
         <div class="hero-visual" aria-hidden="true">
           <div class="hero-ribbon" data-ver2-ribbon>
             <img class="hero-ribbon-poster" src="/serial-ribbon-front-transparent.png" alt="" width="1600" height="1600" fetchpriority="high" aria-hidden="true" />
@@ -199,7 +199,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="content-shell join-content">
             <div class="join-copy">
               <p class="section-caption" data-i18n="join">함께하기</p><h2 id="join-title" data-i18n="joinTitle">다음 시도를, 함께.</h2><p class="body-copy"><span data-i18n="joinFirst">창업에 대한 생각이 있다면, 지금 시작해보려 한다면.</span><br /><span data-i18n="joinSecond">중앙대학교에서 다음 연결을 만들어갑니다.</span></p>
-              <div class="join-actions"><a class="action-button" href="mailto:me@creativeminseo.com" data-i18n="emailAction">함께하기</a><button class="action-button action-button--secondary" type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog" data-i18n="support">후원하기</button></div>
+              <div class="join-actions"><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="emailAction">함께하기</button><button class="action-button action-button--secondary" type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog" data-i18n="support">후원하기</button></div>
             </div>
             <figure class="spirit-art join-art" data-spirit-art>
               <img src="/spirit-coral-v1.webp" alt="따뜻한 코랄빛 잔상 속에서 한 걸음을 내딛는 사람" data-i18n-alt="joinImageAlt" width="1122" height="1402" loading="lazy" decoding="async" />
@@ -248,6 +248,23 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
       <div class="dialog-surface" data-dialog-surface>
         <header class="dialog-header"><span class="dialog-label" data-i18n="support">후원하기</span><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
         <div class="dialog-scroll support-content"><h2 id="support-dialog-title" data-i18n="supportTitle">다음 시도를 응원해주세요.</h2><p class="body-copy" data-i18n="supportDescription">SERIAL의 다음 시도를 함께 만들어주세요. 후원과 협업에 관한 이야기는 이메일로 편하게 남겨주세요.</p><a class="action-button" href="mailto:me@creativeminseo.com?subject=SERIAL%20Support" data-i18n="supportContact">이메일로 문의하기</a></div>
+      </div>
+    </dialog>
+    <dialog class="card-dialog preregistration-dialog" id="preregistration-dialog" aria-labelledby="preregistration-title">
+      <div class="dialog-surface" data-dialog-surface>
+        <header class="dialog-header"><span class="dialog-label" data-i18n="preregistrationLabel">2027 1기 사전 알림</span><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
+        <div class="dialog-scroll preregistration-content">
+          <h2 id="preregistration-title" data-i18n="preregistrationTitle">다음 시도를 함께.</h2>
+          <p class="body-copy" data-i18n="preregistrationDescription">2027년 1기 모집이 시작되면 이메일로 알려드릴게요.</p>
+          <form class="preregistration-form" data-preregistration-form>
+            <label class="preregistration-field" for="preregistration-name"><span data-i18n="preregistrationName">이름</span><input id="preregistration-name" name="name" type="text" autocomplete="name" maxlength="80" required /></label>
+            <label class="preregistration-field" for="preregistration-email"><span data-i18n="preregistrationEmail">이메일</span><input id="preregistration-email" name="email" type="email" autocomplete="email" maxlength="254" required /></label>
+            <label class="preregistration-consent"><input type="checkbox" name="consent" required /><span data-i18n="preregistrationConsent">이름·이메일 수집 및 2027 1기 모집 알림 이메일 수신에 동의합니다.</span></label>
+            <p class="preregistration-status" data-preregistration-status role="status" hidden></p>
+            <button class="action-button" type="submit" data-i18n="preregistrationSubmit">사전 알림 신청하기</button>
+          </form>
+          <p class="preregistration-success" data-preregistration-success role="status" hidden data-i18n="preregistrationSuccess">신청이 완료됐어요. 모집이 시작되면 이메일로 알려드릴게요.</p>
+        </div>
       </div>
     </dialog>
     <footer class="site-footer"><div class="footer-pattern" aria-hidden="true"><svg viewBox="0 0 1000 190" focusable="false"><text x="0" y="178" textLength="1000" lengthAdjust="spacingAndGlyphs">SERIAL</text></svg></div></footer>

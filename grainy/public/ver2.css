@@ -204,6 +204,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .event-meta p { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
 .event-meta-icon { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: #f5f5f2; }
 .event-meta-icon svg { width: 16px; height: 16px; }
+.hero-copy > .action-button { margin-top: 24px; max-width: 100%; text-align: center; }
 .event-poster { margin: 0; overflow: hidden; border: 1px solid rgb(var(--ink-rgb) / .1); border-radius: 12px; }
 .event-poster img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
 .about-statement { max-width: 1100px; margin: 0; font-size: clamp(30px, 3.6vw, 52px); font-weight: 450; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
@@ -330,7 +331,7 @@ html:not([lang="en"]) .project-copy h2 { font-family: inherit; font-size: clamp(
 .story-article .manifesto-quote { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); font-size: 15px; }
 .story-article .signature { margin: 36px 0 0; color: var(--ink); font-weight: 600; }
 .story-article .signature-date { margin: 0; color: var(--body); font-size: 13px; }
-.support-dialog .dialog-surface { inset: 50% auto auto 50%; width: min(520px, calc(100% - 2 * var(--frame) - var(--safe-left) - var(--safe-right))); max-height: calc(100dvh - 2 * var(--frame) - var(--safe-top) - var(--safe-bottom)); transform: translate(-50%, -50%); }
+.support-dialog .dialog-surface, .preregistration-dialog .dialog-surface { inset: 50% auto auto 50%; width: min(520px, calc(100% - 2 * var(--frame) - var(--safe-left) - var(--safe-right))); max-height: calc(100dvh - 2 * var(--frame) - var(--safe-top) - var(--safe-bottom)); transform: translate(-50%, -50%); }
 .support-content { padding: calc(var(--dialog-head) + 16px) clamp(24px, 4vw, 48px) 44px; }
 .support-content h2 { margin: 0 0 24px; font-size: clamp(26px, 3vw, 34px); font-weight: 560; line-height: 1.4; letter-spacing: -.04em; }
 .support-content .body-copy { font-size: 16px; line-height: 1.8; }
@@ -456,7 +457,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .about-statement { font-size: 25px; }
 }
 @media (max-height: 520px) and (min-width: 701px) {
-  .hero { min-height: 480px; }
+  .hero { min-height: 560px; }
 }
 @media (prefers-reduced-motion: reduce) {
   :root body::before, .brand:hover img, .brand:focus-visible img { animation: none; transform: none; }
@@ -470,3 +471,18 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .language-menu, .mobile-menu nav, .language-toggle:active, .mobile-menu-toggle:active, .language-menu button:active { transform: none; }
   .hero-header, .hero-header::before, .hero-header .brand, .mobile-menu-toggle, .mobile-menu-toggle span, .language-toggle, .language-menu, .language-menu button, .mobile-menu nav, .about-statement span, .hero-nav a, .text-link svg, .story-row > svg { transition: none !important; }
 }
+
+.preregistration-content { padding: calc(var(--dialog-head) + 16px) clamp(24px, 4vw, 40px) 36px; }
+.preregistration-content h2 { margin: 0 0 12px; font-size: 28px; font-weight: 500; line-height: 1.3; letter-spacing: -.035em; }
+.preregistration-content .body-copy { margin-bottom: 28px; font-size: 15px; }
+.preregistration-form { display: grid; gap: 20px; }
+.preregistration-field { display: grid; gap: 8px; font-size: 14px; }
+.preregistration-field input { width: 100%; min-width: 0; min-height: 48px; padding: 12px 14px; border: 1px solid #c9cac5; border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-size: 16px; }
+.preregistration-field input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.preregistration-consent { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.7; color: var(--body); cursor: pointer; }
+.preregistration-consent input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--ink); }
+.preregistration-form .action-button { width: 100%; justify-content: center; }
+.preregistration-form .action-button:disabled { opacity: .55; cursor: wait; }
+.preregistration-status { margin: 0; color: #a12b20; font-size: 14px; line-height: 1.7; }
+.preregistration-success { padding-block: 12px; color: var(--ink); font-size: 17px; line-height: 1.8; }
+.preregistration-content [hidden] { display: none; }

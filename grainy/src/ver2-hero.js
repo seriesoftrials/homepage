@@ -6,6 +6,7 @@ import { mountCardDialogs } from './card-dialogs.js';
 import { mountIntro } from './ver2-intro.js';
 import { mountGrainMotion } from './grain-motion.js';
 import { mountEventMotion } from './event-motion.js';
+import { mountPreregistration } from './preregistration.js';
 
 const holder = document.querySelector('[data-ver2-ribbon]');
 const header = document.querySelector('[data-page-nav]');
@@ -25,6 +26,7 @@ const phrases = [...(statement?.querySelectorAll('span') || [])];
 const footer = document.querySelector('.site-footer');
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const preregistration = mountPreregistration();
 mountGrainMotion(reducedMotion);
 const eventMotion = mountEventMotion(document.querySelector('#events'), reducedMotion);
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
@@ -106,6 +108,7 @@ function savedLanguage() {
 
 function changeLanguage(value, save = false) {
   const language = applyLanguage(document, value);
+  preregistration?.syncLanguage();
   spiritLoops.forEach(loop => loop?.refresh());
   if (save) {
     try { localStorage.setItem(LANGUAGE_STORAGE_KEY, language); } catch {}
