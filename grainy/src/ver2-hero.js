@@ -5,6 +5,8 @@ import { mountSpiritLoop } from './spirit-loop.js';
 import { mountCardDialogs } from './card-dialogs.js';
 import { mountIntro } from './ver2-intro.js';
 import { mountGrainMotion } from './grain-motion.js';
+import { mountEventMotion } from './event-motion.js';
+import { mountPreregistration } from './preregistration.js';
 
 const holder = document.querySelector('[data-ver2-ribbon]');
 const header = document.querySelector('[data-page-nav]');
@@ -18,11 +20,15 @@ const dropdowns = [
   { root: languageMenu, trigger: languageToggle, panel: languageMenu.querySelector('.language-menu') },
 ];
 const navLinks = [...header.querySelectorAll('[data-section-link]')];
-const sections = [...document.querySelectorAll('.site-sections > section[id]')];
+const sections = [...document.querySelectorAll('main > .event-section, .site-sections > section[id]')];
+const statement = document.querySelector('[data-scroll-statement]');
+const phrases = [...(statement?.querySelectorAll('span') || [])];
 const footer = document.querySelector('.site-footer');
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const preregistration = mountPreregistration();
 mountGrainMotion(reducedMotion);
+const eventMotion = mountEventMotion(document.querySelector('#events'), reducedMotion);
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
@@ -46,6 +52,8 @@ if (footer) {
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
+  eventMotion?.refresh();
+  const statementTop = statement?.getBoundingClientRect().top;
   spiritLoops.forEach(loop => loop?.refresh());
   const y = Math.max(0, window.scrollY);
   const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
@@ -66,6 +74,14 @@ function updateNavigation() {
     }
   }
 
+  if (statementTop !== undefined) {
+    const readingProgress = reducedMotion.matches ? 1 : clamp(
+      (window.innerHeight * .8 - statementTop) / (window.innerHeight * .6),
+    );
+    phrases.forEach((phrase, index) => {
+      phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
+    });
+  }
 }
 
 function scheduleNavigation() {
@@ -92,6 +108,7 @@ function savedLanguage() {
 
 function changeLanguage(value, save = false) {
   const language = applyLanguage(document, value);
+  preregistration?.syncLanguage();
   spiritLoops.forEach(loop => loop?.refresh());
   if (save) {
     try { localStorage.setItem(LANGUAGE_STORAGE_KEY, language); } catch {}
