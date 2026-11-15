@@ -130,8 +130,17 @@ The `serial-homepage` Worker handles the `seriesoftrials.com/*` route in front
 of the existing `serial` Worker. It serves this repository's landing and assets;
 login, members, protected updates, APIs, Brand and other existing pages reach
 `serial` through a service binding. The member email list, D1 database, session
-secrets and mail credentials stay in the existing private backend. Join and
-support retain their email links. No database migration is part of a homepage deploy.
+secrets and mail credentials stay in the existing private backend. Hero and Join
+open the same 2027 cohort notification form; Support retains its email link.
+`POST /api/pre-registrations` persists name, normalized email and explicit consent
+in the member server's `serial_pre_registrations` table, unique per cohort/email.
+Deploy that backend migration and endpoint before publishing this form. The form
+neither creates a member account nor sends email when submitted.
+
+For local form testing, run `npm run dev:test-mail` in the sibling `serial-team`
+checkout (port 4174), then run this repository's dev server. The development-only
+Next route forwards to that local member server and its local D1;
+`SERIAL_MEMBER_API_ORIGIN` can select another loopback preview port.
 
 `/api/deployment` identifies this repository's deployed commit. `/api/health`
 continues to report the existing backend. See [deployment settings](CLAUDE.md).

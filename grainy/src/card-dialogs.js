@@ -5,6 +5,7 @@ export function mountCardDialogs(preference) {
   const entries = [
     { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '' },
     { id: 'support-dialog', trigger: document.querySelector('[data-open-support]'), rest: 'translate(-50%, -50%)' },
+    { id: 'preregistration-dialog', trigger: document.querySelector('[data-open-preregistration]'), triggers: [...document.querySelectorAll('[data-open-preregistration]')], rest: 'translate(-50%, -50%)' },
     { id: 'curriculum-dialog-1', trigger: document.querySelector('[data-open-curriculum="1"]'), rest: '' },
     { id: 'curriculum-dialog-2', trigger: document.querySelector('[data-open-curriculum="2"]'), rest: '' },
   ].map(entry => ({ ...entry, dialog: document.getElementById(entry.id) }))
@@ -131,11 +132,14 @@ export function mountCardDialogs(preference) {
   }
 
   for (const entry of entries) {
-    entry.trigger.addEventListener('click', event => {
-      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-      open(entry, event.detail === 0);
-    });
+    for (const trigger of entry.triggers || [entry.trigger]) {
+      trigger.addEventListener('click', event => {
+        if (active || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        entry.trigger = trigger;
+        open(entry, event.detail === 0);
+      });
+    }
     entry.dialog.querySelector('[data-dialog-close]').addEventListener('click', event => dismiss(entry, event.detail === 0));
     entry.dialog.addEventListener('cancel', event => { event.preventDefault(); dismiss(entry, true); });
     entry.dialog.addEventListener('click', event => { if (event.target === entry.dialog) dismiss(entry, false); });
