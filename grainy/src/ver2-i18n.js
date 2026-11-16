@@ -191,7 +191,7 @@ export const translations = {
     "spiritDescription": "We start before we have every answer. We form a hypothesis, try it, and learn from what happens. By sharing our trials and errors, we move toward the next attempt together.",
     "spiritImageAlt": "A person taking a step forward through blue motion trails",
     "heroLead": "Series of trials,",
-    "heroDescription": "SERIAL — Chung-Ang University Student Entrepreneurship Society",
+    "heroDescription": "Chung-Ang University Student Venture Society",
     "originFirst": "Students with different majors and experiences came together.",
     "originSecond": "We turn individual ideas into connections that make a shared start possible.",
     "originLink": "Why we started",
