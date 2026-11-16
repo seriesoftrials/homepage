@@ -4,7 +4,6 @@ export function mountCardDialogs(preference) {
   // `rest` is each surface's own resting transform; both rise into it.
   const entries = [
     { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '' },
-    { id: 'support-dialog', trigger: document.querySelector('[data-open-support]'), rest: 'translate(-50%, -50%)' },
     { id: 'preregistration-dialog', trigger: document.querySelector('[data-open-preregistration]'), triggers: [...document.querySelectorAll('[data-open-preregistration]')], rest: 'translate(-50%, -50%)' },
     { id: 'curriculum-dialog-1', trigger: document.querySelector('[data-open-curriculum="1"]'), rest: '' },
     { id: 'curriculum-dialog-2', trigger: document.querySelector('[data-open-curriculum="2"]'), rest: '' },
@@ -50,6 +49,9 @@ export function mountCardDialogs(preference) {
     animation?.cancel();
     clearTimeout(entry.revealTimer);
     animation = undefined;
+    const returnTarget = entry.trigger;
+    returnTarget.classList.add('dialog-focus-return');
+    returnTarget.addEventListener('blur', () => returnTarget.classList.remove('dialog-focus-return'), { once: true });
     entry.dialog.close();
     entry.trigger.setAttribute('aria-expanded', 'false');
     unlockPage();
@@ -140,7 +142,9 @@ export function mountCardDialogs(preference) {
         open(entry, event.detail === 0);
       });
     }
-    entry.dialog.querySelector('[data-dialog-close]').addEventListener('click', event => dismiss(entry, event.detail === 0));
+    for (const closeButton of entry.dialog.querySelectorAll('[data-dialog-close]')) {
+      closeButton.addEventListener('click', event => dismiss(entry, event.detail === 0));
+    }
     entry.dialog.addEventListener('cancel', event => { event.preventDefault(); dismiss(entry, true); });
     entry.dialog.addEventListener('click', event => { if (event.target === entry.dialog) dismiss(entry, false); });
   }
