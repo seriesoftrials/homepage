@@ -33,9 +33,11 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
   const animations = [];
   const cleanup = [];
   let disposed = false;
+  let eventEntrance;
   const controller = { dispose };
 
   function dispose() {
+    eventEntrance?.cancel();
     if (disposed) return;
     disposed = true;
     // Release the CSS gate before canceling its temporary animation overrides.
@@ -210,9 +212,26 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
             { opacity, visibility },
           ], { duration: REVEAL_DURATION, delay: REVEAL_DELAY, easing: EASE });
         }
-        listen(last, 'finish', dispose, { once: true });
+        const complete = () => {
+          if (disposed) return;
+          dispose();
+          const event = content.find(element => element.matches('.event-section'));
+          if (!event || motion?.matches || doc.hidden) return;
+          // Individual translate composes with the card's scroll-driven transform.
+          eventEntrance = event.animate([
+            { opacity: 0, translate: '0 24px' },
+            { opacity: 1, translate: '0 0' },
+          ], { duration: 520, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+          const stopEntrance = () => eventEntrance?.cancel();
+          motion?.addEventListener?.('change', stopEntrance, { once: true });
+          eventEntrance.finished.then(() => {}, () => {}).finally(() => {
+            motion?.removeEventListener?.('change', stopEntrance);
+            eventEntrance = undefined;
+          });
+        };
+        listen(last, 'finish', complete, { once: true });
         // Protect the gate even if an engine does not deliver a finish event.
-        timeout(dispose, REVEAL_DELAY + REVEAL_DURATION + 40);
+        timeout(complete, REVEAL_DELAY + REVEAL_DURATION + 40);
       } catch { dispose(); }
     }
 

@@ -4,7 +4,7 @@ import {createGlassMaterial,createGlassEnvironment} from './glass.js';
 
 // Mount inside a square, sized button containing a canvas and an optional poster.
 // The study viewer is deliberately excluded from this landing-page runtime.
-export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady,autoplay=true,interactive=true,maxPixelRatio=3,createMaterial=createGlassMaterial}={}){
+export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady,autoplay=true,interactive=true,maxPixelRatio=3,cameraZoom=1,createMaterial=createGlassMaterial}={}){
   const canvas=holder.querySelector('canvas');
   if(!canvas)throw new Error('The ribbon holder needs a canvas.');
   let renderer;
@@ -17,6 +17,7 @@ export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady,autop
   let environment=createGlassEnvironment(THREE,renderer);
   scene.environment=environment.texture;
   const camera=new THREE.OrthographicCamera(-1.54,1.54,1.54,-1.54,.1,30);
+  camera.zoom=cameraZoom;
   camera.position.set(0,0,6);camera.lookAt(0,0,0);
   scene.add(new THREE.HemisphereLight(0xffffff,0xb5bac5,.8));
   for(const [intensity,position] of [[1.1,[-3,4,6]],[.45,[4,-2,4]],[.6,[-4,-1,-3]]]){

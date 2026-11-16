@@ -43,8 +43,8 @@ export function mountNavRibbon(brand, preference) {
     if (!ribbon) {
       try {
         ribbon = mountRibbon(holder, {
-          initialElapsed: SEQUENCE_DURATION, autoplay: false, interactive: false, maxPixelRatio: 2,
-          // Keep the same 3D shape legible at the navigation's 30px size.
+          initialElapsed: SEQUENCE_DURATION, autoplay: false, interactive: false, maxPixelRatio: 2, cameraZoom: 1.28,
+          // Preserve the original 30px logo slot, with room for 3D deformation.
           createMaterial: THREE => new THREE.MeshPhysicalMaterial({
             color: 0x171715, metalness: .25, roughness: .3, clearcoat: 1, clearcoatRoughness: .2,
           }),
