@@ -28,3 +28,9 @@ Retain qualifying friction even if it is later fixed or worked around; record th
 Before the final response, run one reporting pass. If candidates remain, from this file's directory run `npx --no-install next internal agent-feedback-instructions` once without piping or truncating its output. Follow its output or error guidance. If a network sandbox blocks it, retry with network access; if it still returns no output, continue normally.
 
 <!-- END:nextjs-agent-feedback -->
+
+## UI 구획 원칙
+
+- 섹션 내부 콘텐츠 그룹은 테두리나 가로·세로 구분선 대신, 배경 면의 명도 차이와 여백으로 구분한다.
+- 내부 카드에는 `--inset-surface` 등 테마 토큰을 사용하고, 라이트·다크 모두에서 과하지 않으면서 분명한 배경 대비를 유지한다.
+- 내부 구획용 테두리와 구분선은 사용자가 명시적으로 요청한 경우에만 사용한다.
