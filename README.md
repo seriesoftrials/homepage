@@ -108,6 +108,20 @@ and the original article at `/intro`. Original asset URLs resolve to
 the existing React layout or Lenis scroll engine to these pages. Other Next.js
 routes and components remain in the repository.
 
+### shadcn form controls
+
+Shared Radix-based shadcn components live in `components/ui/`; `components.json`
+configures the official CLI. Add components with `npx shadcn@latest add <name>`.
+The notification form upgrades to those components on its first opening through
+`grainy/src/preregistration-controls.tsx`. Its native form, dialog history,
+submission handler, and completion animation remain in place. Values entered
+before the component chunk loads are preserved.
+
+`app/globals.css` contains the shared theme setup. `grainy/shadcn.css` compiles
+utilities without a global reset and maps the landing's light/dark colors to the
+shadcn semantic tokens. `npm run build:grainy` builds this CSS and the lazily loaded
+React chunk; generated CSS and JavaScript in `public/grainy/` are not edited.
+
 ## Production deployment
 
 GitHub Actions uses `.github/workflows/deploy.yml` and the repository Secret

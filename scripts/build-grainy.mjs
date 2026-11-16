@@ -2,12 +2,14 @@ import { access, cp, mkdir, readFile, readdir, writeFile } from "node:fs/promise
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { build } from "esbuild";
+import { execFileSync } from "node:child_process";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const source = resolve(root, "grainy");
 const output = resolve(root, "public/grainy");
 
 await mkdir(output, { recursive: true });
+execFileSync(process.execPath, [resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'), '-i', resolve(source, 'shadcn.css'), '-o', resolve(output, 'shadcn.css'), '--minify'], { cwd: root, stdio: 'inherit' });
 await cp(resolve(source, "public"), output, { recursive: true });
 const [template, intro, japaneseFonts, css] = await Promise.all([
   readFile(resolve(source, "index.html"), "utf8"),
@@ -26,9 +28,12 @@ await Promise.all([
   writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${css}`),
   build({
     entryPoints: [resolve(source, "src/ver2-hero.js")],
-    outfile: resolve(output, "ver2-hero.js"),
+    outdir: output,
     bundle: true,
-    format: "iife",
+    format: "esm",
+    splitting: true,
+    chunkNames: "chunks/[name]-[hash]",
+    define: { 'process.env.NODE_ENV': '"production"' },
     platform: "browser",
     target: "es2020",
     minify: true,

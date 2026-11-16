@@ -7,6 +7,7 @@ import { mountIntro } from './ver2-intro.js';
 import { mountGrainMotion } from './grain-motion.js';
 import { mountEventMotion } from './event-motion.js';
 import { mountPreregistration } from './preregistration.js';
+import { mountTheme } from './theme.js';
 
 const holder = document.querySelector('[data-ver2-ribbon]');
 const header = document.querySelector('[data-page-nav]');
@@ -25,7 +26,18 @@ const statement = document.querySelector('[data-scroll-statement]');
 const phrases = [...(statement?.querySelectorAll('span') || [])];
 const footer = document.querySelector('.site-footer');
 const themeColor = document.querySelector('meta[name="theme-color"]');
+const peopleGrid = document.querySelector('.people-grid');
+if (peopleGrid) {
+  const cards = [...peopleGrid.querySelectorAll('.person-card')];
+  // Shuffle complete cards once per page load so portraits and captions stay together.
+  for (let index = cards.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [cards[index], cards[randomIndex]] = [cards[randomIndex], cards[index]];
+  }
+  peopleGrid.append(...cards);
+}
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const theme = mountTheme();
 const preregistration = mountPreregistration();
 mountGrainMotion(reducedMotion);
 const eventMotion = mountEventMotion(document.querySelector('#events'), reducedMotion);
@@ -108,6 +120,7 @@ function savedLanguage() {
 
 function changeLanguage(value, save = false) {
   const language = applyLanguage(document, value);
+  theme?.syncLanguage();
   preregistration?.syncLanguage();
   spiritLoops.forEach(loop => loop?.refresh());
   if (save) {
