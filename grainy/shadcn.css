@@ -1,0 +1,49 @@
+/* Utilities only: the static landing keeps its existing reset and typography. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "shadcn/tailwind.css";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@source "../components/ui";
+@source "./src/preregistration-controls.tsx";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+}
+
+.preregistration-content {
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--visual-paper);
+  --secondary-foreground: var(--ink);
+  --muted: var(--visual-paper);
+  --muted-foreground: var(--body);
+  --border: var(--line);
+  --input: color-mix(in srgb, var(--ink) 25%, var(--paper));
+  --ring: var(--ink);
+  --destructive: #b54435;
+}
+.preregistration-content [data-slot="field-label"] { font-size: 14px; font-weight: 400; }
+.preregistration-content .preregistration-consent [data-slot="field-label"] { font-size: 13px; line-height: 1.7; }
+.preregistration-content [data-slot="input"] { background: var(--background); }
+.preregistration-content [data-slot="button"] { font-size: 14px; font-weight: 500; }
+.preregistration-content [data-slot="checkbox"] { margin-top: 0; }
+.preregistration-content [data-slot="checkbox"]:focus { outline: none; }
+.preregistration-content [data-slot="checkbox-indicator"] { animation: consent-check-in 160ms ease-out both; }
+.preregistration-content [data-slot="checkbox-indicator"] path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: consent-check-draw 300ms 40ms linear both; }
+@keyframes consent-check-in { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+@keyframes consent-check-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .preregistration-content [data-slot="checkbox-indicator"], .preregistration-content [data-slot="checkbox-indicator"] path { animation: none; } }

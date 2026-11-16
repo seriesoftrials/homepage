@@ -4,9 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#fafaf8" />
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('serial-theme') === 'dark' ? 'dark' : 'light'; } catch { document.documentElement.dataset.theme = 'light'; }</script>
     <meta name="robots" content="index, follow" />
     <meta name="description" content="중앙대학교 학생창업 네트워크 SERIAL. 창업 동료와 선배를 연결하고, 함께 다음 시도를 시작합니다." />
-    <meta property="og:title" content="SERIAL — 중앙대학교 학생창업 네트워크" />
+    <meta property="og:title" content="SERIAL — 중앙대학교 실전창업학회" />
     <meta property="og:description" content="창업 동료와 선배를 연결하고, 함께 다음 시도를 시작합니다." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://seriesoftrials.com/" />
@@ -18,7 +19,7 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="중앙대학교 학생창업 네트워크 SERIAL의 S 리본 로고" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="SERIAL — 중앙대학교 학생창업 네트워크" />
+    <meta name="twitter:title" content="SERIAL — 중앙대학교 실전창업학회" />
     <meta name="twitter:description" content="창업 동료와 선배를 연결하고, 함께 다음 시도를 시작합니다." />
     <meta name="twitter:image" content="https://seriesoftrials.com/og-image-v1.png" />
     <meta name="twitter:image:alt" content="중앙대학교 학생창업 네트워크 SERIAL의 S 리본 로고" />
@@ -26,26 +27,27 @@
     <link rel="icon" href="/favicon.svg?v=8" type="image/svg+xml" />
     <link rel="preload" href="/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/brand-assets/pretendard-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="/action-button.css?v=2" />
-    <link rel="stylesheet" href="/ver2.css?v=81" />
-    <link rel="stylesheet" href="/ver2-intro.css?v=3" />
+    <link rel="stylesheet" href="/action-button.css?v=3" />
+    <link rel="stylesheet" href="/ver2.css?v=97" />
+    <link rel="stylesheet" href="/shadcn.css?v=5" />
+    <link rel="stylesheet" href="/ver2-intro.css?v=4" />
     <script src="/image-protection.js" defer></script>
-    <script src="/ver2-hero.js?v=45" defer></script>
-    <title>SERIAL — 중앙대학교 학생창업 네트워크</title>
+    <script src="/ver2-hero.js?v=55" type="module"></script>
+    <title>SERIAL — 중앙대학교 실전창업학회</title>
   </head>
   <body>
     <a class="skip-link" href="#about" data-i18n="skipLabel">본문으로 바로 가기</a>
     <header class="hero-header" data-page-nav>
       <a class="brand" href="#top" aria-label="SERIAL 맨 위로" data-i18n-aria="homeLabel"><img src="/favicon-light.svg?v=8" alt="" width="30" height="30" /></a>
       <nav class="hero-nav" aria-label="사이트 메뉴" data-i18n-aria="mainNavigation"><a href="#about" data-section-link="about" data-i18n="about">소개</a>
-<a href="#spirit" data-section-link="spirit" data-i18n="spirit">Spirit</a>
+<a href="#spirit" data-section-link="spirit" data-i18n="spirit">철학</a>
 <a href="#curriculum" data-section-link="curriculum" data-i18n="curriculum">커리큘럼</a>
 <a href="#members" data-section-link="members" data-i18n="members">멤버</a>
 <a href="#projects" data-section-link="projects" data-i18n="projects">프로젝트</a></nav>
       <div class="mobile-menu" data-open="false">
         <button type="button" class="mobile-menu-toggle" aria-expanded="false" aria-label="사이트 메뉴" data-i18n-aria="menuLabel" aria-controls="mobile-navigation"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
         <nav id="mobile-navigation" aria-hidden="true" inert aria-label="모바일 사이트 메뉴" data-i18n-aria="mobileNavigation"><a href="#about" data-section-link="about" data-i18n="about">소개</a>
-<a href="#spirit" data-section-link="spirit" data-i18n="spirit">Spirit</a>
+<a href="#spirit" data-section-link="spirit" data-i18n="spirit">철학</a>
 <a href="#curriculum" data-section-link="curriculum" data-i18n="curriculum">커리큘럼</a>
 <a href="#members" data-section-link="members" data-i18n="members">멤버</a>
 <a href="#projects" data-section-link="projects" data-i18n="projects">프로젝트</a>
@@ -93,13 +95,16 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <button type="button" lang="zh-Hans" data-language-choice="zh" aria-pressed="false">简体中文</button>
           </div>
         </div>
-        <a class="action-button action-button--quiet action-button--compact nav-join" href="#join" data-i18n="join">함께하기</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="다크 모드로 전환" aria-pressed="false">
+          <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z" /></svg>
+          <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></svg>
+        </button>
       </div>
     </header>
 
     <main id="ver2">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="hero-copy"><h1 id="hero-title" lang="ko"><span data-i18n="heroLead">계속되는 시도,</span><br /> <span class="hero-brand" lang="en">Serial.</span></h1><p class="hero-description" data-i18n="heroDescription">중앙대학교 실전창업학회 SERIAL</p><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="preregistrationAction">2027 1기 사전 알림 신청하기</button></div>
+        <div class="hero-copy"><h1 id="hero-title" lang="ko"><span data-i18n="heroLead">계속되는 시도,</span><br /> <span class="hero-brand" lang="en">Serial.</span></h1><p class="hero-description" data-i18n="heroDescription">중앙대학교 실전창업학회 SERIAL</p><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="preregistrationAction">2027 1기 모집 알림 신청하기</button></div>
         <div class="hero-visual" aria-hidden="true">
           <div class="hero-ribbon" data-ver2-ribbon>
             <img class="hero-ribbon-poster" src="/serial-ribbon-front-transparent.png" alt="" width="1600" height="1600" fetchpriority="high" aria-hidden="true" />
@@ -117,7 +122,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
               <p class="body-copy" data-i18n="eventDescription">창업가의 실제 경험을 듣는 강연과 새로운 동료를 만나는 네트워킹</p>
               <div class="event-meta">
                 <p><span class="event-meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></svg></span><time datetime="2026-11-24T18:30:00+09:00" data-i18n="eventDate">2026. 11. 24. 화요일 · 18:30–21:00</time></p>
-                <p><span class="event-meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span data-i18n="eventLocation">중앙대학교 서울캠퍼스 · 무료</span></p>
+                <p><span class="event-meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><span data-i18n="eventLocation">중앙대학교 서울캠퍼스 310관 B502호</span></p>
               </div>
               <a class="action-button" href="https://luma.com/zwzb1ag5" target="_blank" rel="noopener noreferrer"><span data-i18n="eventApply">참가신청</span></a>
             </div>
@@ -190,8 +195,23 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
 
         <section class="section-tile project-section" id="projects" aria-labelledby="projects-title" tabindex="-1">
           <div class="content-shell project-content">
-            <div class="project-copy"><p class="section-caption" data-i18n="projects">프로젝트</p><h2 id="projects-title" lang="ko"><span data-i18n="projectLineOne">다음 시도는</span><br /><span data-i18n="projectLineTwo">여기서 시작됩니다.</span></h2><p class="body-copy"><span data-i18n="projectFirst">첫 프로젝트를 준비하고 있습니다.</span><br /><span data-i18n="projectSecond">문제를 함께 발견하고, 작은 실험부터 시작합니다.</span></p></div>
-            <figure class="project-visual"><img src="/brand-assets/614-147-image-s.png" alt="하나의 띠로 이어지는 SERIAL의 S 리본" data-i18n-alt="ribbonAlt" width="2048" height="2048" loading="lazy" decoding="async" /></figure>
+            <div class="section-heading"><h2 id="projects-title" lang="ko" data-i18n="projects">프로젝트</h2></div>
+            <ul class="project-grid">
+              <li class="project-card">
+                <span class="project-number" aria-hidden="true">01</span>
+                <div class="project-details">
+                  <div class="project-brand"><img class="project-logo" src="/events/awake-2026-icon.png" alt="" width="56" height="56" loading="lazy" decoding="async" /><h3 lang="en">Awake 2026</h3></div>
+                  <p class="project-description" data-i18n="awakeDescription">SERIAL이 여는 창업가 강연과 네트워킹 행사.</p>
+                </div>
+              </li>
+              <li class="project-card">
+                <span class="project-number" aria-hidden="true">02</span>
+                <div class="project-details">
+                  <div class="project-brand"><img class="project-logo" src="/brand-assets/cauway-logo.svg" alt="" width="56" height="56" loading="lazy" decoding="async" /><h3 lang="en">cauway</h3></div>
+                  <p class="project-description" data-i18n="cauwayDescription">지도·시간표·학식을 한곳에서 보는 중앙대학교 캠퍼스 앱.</p>
+                </div>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -199,7 +219,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="content-shell join-content">
             <div class="join-copy">
               <p class="section-caption" data-i18n="join">함께하기</p><h2 id="join-title" data-i18n="joinTitle">다음 시도를, 함께.</h2><p class="body-copy"><span data-i18n="joinFirst">창업에 대한 생각이 있다면, 지금 시작해보려 한다면.</span><br /><span data-i18n="joinSecond">중앙대학교에서 다음 연결을 만들어갑니다.</span></p>
-              <div class="join-actions"><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="emailAction">함께하기</button><button class="action-button action-button--secondary" type="button" data-open-support aria-haspopup="dialog" aria-controls="support-dialog" data-i18n="support">후원하기</button></div>
+              <div class="join-actions"><button class="action-button" type="button" data-open-preregistration aria-haspopup="dialog" aria-controls="preregistration-dialog" aria-expanded="false" data-i18n="emailAction">함께하기</button><a class="action-button action-button--secondary" href="mailto:me@creativeminseo.com" data-i18n="support">후원하기</a></div>
             </div>
             <figure class="spirit-art join-art" data-spirit-art>
               <img src="/spirit-coral-v1.webp" alt="따뜻한 코랄빛 잔상 속에서 한 걸음을 내딛는 사람" data-i18n-alt="joinImageAlt" width="1122" height="1402" loading="lazy" decoding="async" />
@@ -244,26 +264,28 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
         <div class="dialog-scroll" tabindex="0"><div class="story-article" lang="ko"><figure class="story-cover"><img src="/endurance.png" alt="얼음 사이에 멈춰 선 범선" width="1440" height="816" loading="lazy" decoding="async" /></figure><!-- SPIRIT_ORIGIN_ARTICLE --></div></div>
       </div>
     </dialog>
-    <dialog class="card-dialog support-dialog" id="support-dialog" aria-labelledby="support-dialog-title">
-      <div class="dialog-surface" data-dialog-surface>
-        <header class="dialog-header"><span class="dialog-label" data-i18n="support">후원하기</span><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
-        <div class="dialog-scroll support-content"><h2 id="support-dialog-title" data-i18n="supportTitle">다음 시도를 응원해주세요.</h2><p class="body-copy" data-i18n="supportDescription">SERIAL의 다음 시도를 함께 만들어주세요. 후원과 협업에 관한 이야기는 이메일로 편하게 남겨주세요.</p><a class="action-button" href="mailto:me@creativeminseo.com?subject=SERIAL%20Support" data-i18n="supportContact">이메일로 문의하기</a></div>
-      </div>
-    </dialog>
     <dialog class="card-dialog preregistration-dialog" id="preregistration-dialog" aria-labelledby="preregistration-title">
       <div class="dialog-surface" data-dialog-surface>
-        <header class="dialog-header"><span class="dialog-label" data-i18n="preregistrationLabel">2027 1기 사전 알림</span><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
+        <header class="dialog-header"><span class="dialog-label" data-i18n="preregistrationLabel">2027 1기 모집 알림</span><button class="dialog-close" type="button" data-dialog-close aria-label="닫기" data-i18n-aria="closeDialog" autofocus><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></button></header>
         <div class="dialog-scroll preregistration-content">
+          <div data-preregistration-entry>
           <h2 id="preregistration-title" data-i18n="preregistrationTitle">다음 시도를 함께.</h2>
-          <p class="body-copy" data-i18n="preregistrationDescription">2027년 1기 모집이 시작되면 이메일로 알려드릴게요.</p>
+          <p class="body-copy" data-i18n="preregistrationDescription">2027년 1기 모집이 시작되면 남겨주신 연락처로 알려드릴게요.</p>
           <form class="preregistration-form" data-preregistration-form>
-            <label class="preregistration-field" for="preregistration-name"><span data-i18n="preregistrationName">이름</span><input id="preregistration-name" name="name" type="text" autocomplete="name" maxlength="80" required /></label>
-            <label class="preregistration-field" for="preregistration-email"><span data-i18n="preregistrationEmail">이메일</span><input id="preregistration-email" name="email" type="email" autocomplete="email" maxlength="254" required /></label>
-            <label class="preregistration-consent"><input type="checkbox" name="consent" required /><span data-i18n="preregistrationConsent">이름·이메일 수집 및 2027 1기 모집 알림 이메일 수신에 동의합니다.</span></label>
+            <label class="preregistration-field" for="preregistration-name"><span data-i18n="preregistrationName">이름</span><input id="preregistration-name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="김민서" data-member-name-placeholder required /></label>
+            <label class="preregistration-field" for="preregistration-email"><span data-i18n="preregistrationEmail">이메일</span><input id="preregistration-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required /></label>
+            <label class="preregistration-field" for="preregistration-phone"><span data-i18n="preregistrationPhone">휴대폰 번호</span><input id="preregistration-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" minlength="10" maxlength="32" placeholder="010-1234-5678" required /></label>
+            <label class="preregistration-consent"><input type="checkbox" name="consent" required /><span data-i18n="preregistrationConsent">이름·이메일·휴대폰 번호 수집 및 2027 1기 모집 알림 수신에 동의합니다.</span></label>
             <p class="preregistration-status" data-preregistration-status role="status" hidden></p>
-            <button class="action-button" type="submit" data-i18n="preregistrationSubmit">사전 알림 신청하기</button>
+            <button class="action-button" type="submit" data-i18n="preregistrationSubmit">모집 알림 신청하기</button>
           </form>
-          <p class="preregistration-success" data-preregistration-success role="status" hidden data-i18n="preregistrationSuccess">신청이 완료됐어요. 모집이 시작되면 이메일로 알려드릴게요.</p>
+          </div>
+          <div class="preregistration-success" data-preregistration-success role="status" tabindex="-1" hidden>
+            <div class="preregistration-success-mark" aria-hidden="true"><svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path class="preregistration-success-check" d="m23 36 9 9 18-19" pathLength="1" stroke-width="3" /></svg></div>
+            <h2 id="preregistration-success-title" data-i18n="preregistrationSuccessTitle">신청이 완료됐어요.</h2>
+            <p class="body-copy" data-i18n="preregistrationSuccess">2027년 1기 모집이 시작되면 남겨주신 연락처로 알려드릴게요.</p>
+            <button class="action-button" type="button" data-dialog-close data-i18n="closeDialog">닫기</button>
+          </div>
         </div>
       </div>
     </dialog>
