@@ -153,7 +153,7 @@ export const translations = {
     "studentDescription": "함께 시작할 창업 동료를 만납니다."
   },
   "en": {
-    "preregistrationAction": "Notify me about the first cohort of 2027",
+    "preregistrationAction": "Notify me",
     "preregistrationLabel": "2027 cohort notifications",
     "preregistrationTitle": "Start the next trial together.",
     "preregistrationDescription": "Leave your contact details to hear when applications open for the first cohort of 2027.",
