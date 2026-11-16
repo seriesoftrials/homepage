@@ -153,7 +153,7 @@ export const translations = {
     "studentDescription": "함께 시작할 창업 동료를 만납니다."
   },
   "en": {
-    "preregistrationAction": "Notify me about the first cohort of 2027",
+    "preregistrationAction": "Notify me",
     "preregistrationLabel": "2027 cohort notifications",
     "preregistrationTitle": "Start the next trial together.",
     "preregistrationDescription": "Leave your contact details to hear when applications open for the first cohort of 2027.",
@@ -191,7 +191,7 @@ export const translations = {
     "spiritDescription": "We start before we have every answer. We form a hypothesis, try it, and learn from what happens. By sharing our trials and errors, we move toward the next attempt together.",
     "spiritImageAlt": "A person taking a step forward through blue motion trails",
     "heroLead": "Series of trials,",
-    "heroDescription": "SERIAL — Chung-Ang University Student Entrepreneurship Society",
+    "heroDescription": "Chung-Ang University Student Venture Society",
     "originFirst": "Students with different majors and experiences came together.",
     "originSecond": "We turn individual ideas into connections that make a shared start possible.",
     "originLink": "Why we started",
