@@ -121,7 +121,7 @@ body::before {
   animation-play-state: paused;
 }
 /* Light particles keep the same texture visible over dark surfaces. */
-:root[data-theme="dark"] body::before { filter: invert(1); opacity: .45; }
+:root[data-theme="dark"] body::before { filter: invert(1); opacity: .60; }
 .grain-running body::before { animation-name: grain-shift; animation-play-state: running; }
 :root.has-card-dialog body::before,
 :root.has-card-dialog .spirit-art::after { animation-play-state: paused; }
@@ -313,7 +313,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .project-card h3 { margin: 48px 0 0; font-size: clamp(28px, 3vw, 38px); font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
 .project-details { flex: 1; margin-top: 40px; }
 .project-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.project-logo { display: block; box-sizing: border-box; flex: 0 0 56px; width: 56px; height: 56px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
+.project-logo { display: block; box-sizing: border-box; flex: 0 0 48px; width: 48px; height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
 .project-logo { background-image: var(--grain-texture), var(--grain-texture), var(--grain-texture); background-size: 112px 112px, 80px 80px, 56px 56px; background-position: 0 0, 17px 11px, 7px 29px; background-repeat: repeat; }
 .project-card .project-brand h3 { margin: 0; font-size: clamp(24px, 2.5vw, 30px); }
 .project-description { max-width: 30ch; margin: 14px 0 0; color: var(--body); font-size: 14px; line-height: 1.7; word-break: keep-all; text-wrap: pretty; }
