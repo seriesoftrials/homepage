@@ -203,6 +203,8 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
         // on navigation; its existing fixed-position transform belongs to the parent.
         let last;
         for (const { element, opacity, visibility } of finalContent) {
+          // The floating event card must stay gated until the entire intro ends.
+          if (element.matches('.event-section')) continue;
           last = animate(element, [
             { opacity: '0', visibility },
             { opacity, visibility },

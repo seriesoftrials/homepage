@@ -8,6 +8,7 @@ import { mountGrainMotion } from './grain-motion.js';
 import { mountEventMotion } from './event-motion.js';
 import { mountPreregistration } from './preregistration.js';
 import { mountTheme } from './theme.js';
+import { mountNavRibbon } from './nav-ribbon.js';
 
 const holder = document.querySelector('[data-ver2-ribbon]');
 const header = document.querySelector('[data-page-nav]');
@@ -44,6 +45,7 @@ const eventMotion = mountEventMotion(document.querySelector('#events'), reducedM
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
+let navRibbon;
 let elapsed = SEQUENCE_DURATION;
 let scheduledFrame = 0;
 let activeSection;
@@ -101,6 +103,7 @@ function scheduleNavigation() {
 }
 
 function mountPage() {
+  navRibbon ??= mountNavRibbon(header.querySelector('.brand'), reducedMotion);
   try {
     if (holder && !ribbon) {
       ribbon = mountRibbon(holder, { initialElapsed: elapsed });
@@ -185,6 +188,8 @@ window.addEventListener('resize', scheduleNavigation, { passive: true });
 window.addEventListener('hashchange', scheduleNavigation);
 reducedMotion.addEventListener('change', scheduleNavigation);
 window.addEventListener('pagehide', () => {
+  navRibbon?.dispose();
+  navRibbon = undefined;
   intro?.dispose();
   cancelAnimationFrame(scheduledFrame);
   scheduledFrame = 0;
