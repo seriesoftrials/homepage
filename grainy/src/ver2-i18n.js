@@ -55,6 +55,9 @@ export const translations = {
     "originFirst": "다른 전공, 다른 경험을 가진 학생들이 모였습니다.",
     "originSecond": "혼자 품었던 생각을 함께 해볼 수 있는 연결로 바꿉니다.",
     "originLink": "우리가 시작한 이유",
+    "shareStory": "공유하기",
+    "storyLinkCopied": "링크를 복사했어요.",
+    "storyCopyPrompt": "아래 링크를 복사해 공유해주세요.",
     "connectionsCaption": "우리가 잇는 것",
     "people": "사람들",
     "majorBusiness": "경영학",
@@ -195,6 +198,9 @@ export const translations = {
     "originFirst": "Students with different majors and experiences came together.",
     "originSecond": "We turn individual ideas into connections that make a shared start possible.",
     "originLink": "Why we started",
+    "shareStory": "Share",
+    "storyLinkCopied": "Link copied.",
+    "storyCopyPrompt": "Copy the link below to share.",
     "connectionsCaption": "What we connect",
     "people": "People",
     "majorBusiness": "Business Administration",
@@ -335,6 +341,9 @@ export const translations = {
     "originFirst": "異なる専攻や経験を持つ学生が集まりました。",
     "originSecond": "一人で温めていたアイデアを、ともに挑戦できるつながりに変えます。",
     "originLink": "私たちが始めた理由",
+    "shareStory": "共有する",
+    "storyLinkCopied": "リンクをコピーしました。",
+    "storyCopyPrompt": "下のリンクをコピーして共有してください。",
     "connectionsCaption": "私たちがつなぐもの",
     "people": "メンバー",
     "majorBusiness": "経営学",
@@ -475,6 +484,9 @@ export const translations = {
     "originFirst": "来自不同专业、拥有不同经历的学生相聚于此。",
     "originSecond": "把独自酝酿的想法，变成能够共同实践的连接。",
     "originLink": "我们为何开始",
+    "shareStory": "分享",
+    "storyLinkCopied": "链接已复制。",
+    "storyCopyPrompt": "请复制下方链接进行分享。",
     "connectionsCaption": "我们连接的事物",
     "people": "成员",
     "majorBusiness": "经营学",
@@ -583,7 +595,7 @@ export function applyLanguage(document, value) {
   const language = normalizeLanguage(value);
   const copy = translations[language];
   document.documentElement.lang = copy.htmlLanguage;
-  document.title = copy.pageTitle;
+  document.title = document.querySelector('#origin-story')?.open ? `${copy.originLink} · SERIAL` : copy.pageTitle;
   for (const element of document.querySelectorAll('[data-i18n]')) {
     element.textContent = copy[element.dataset.i18n];
   }

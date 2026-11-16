@@ -3,6 +3,7 @@ import { SEQUENCE_DURATION } from '../assets/serial-ribbon-sequence/sequence.js'
 import { applyLanguage, LANGUAGE_STORAGE_KEY } from './ver2-i18n.js';
 import { mountSpiritLoop } from './spirit-loop.js';
 import { mountCardDialogs } from './card-dialogs.js';
+import { mountStoryShare } from './story-share.js';
 import { mountIntro } from './ver2-intro.js';
 import { mountGrainMotion } from './grain-motion.js';
 import { mountEventMotion } from './event-motion.js';
@@ -207,4 +208,5 @@ window.addEventListener('pageshow', event => {
 document.fonts.ready.then(scheduleNavigation);
 changeLanguage(savedLanguage());
 mountCardDialogs(reducedMotion);
+mountStoryShare();
 mountPage();

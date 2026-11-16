@@ -1,9 +1,11 @@
+import { normalizeLanguage, translations } from './ver2-i18n.js';
+
 export function mountCardDialogs(preference) {
   if (typeof HTMLDialogElement === 'undefined') return;
   const root = document.documentElement;
   // `rest` is each surface's own resting transform; both rise into it.
   const entries = [
-    { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '' },
+    { id: 'origin-story', trigger: document.querySelector('[data-open-story]'), rest: '', url: '/intro' },
     { id: 'preregistration-dialog', trigger: document.querySelector('[data-open-preregistration]'), triggers: [...document.querySelectorAll('[data-open-preregistration]')], rest: 'translate(-50%, -50%)' },
     { id: 'curriculum-dialog-1', trigger: document.querySelector('[data-open-curriculum="1"]'), rest: '' },
     { id: 'curriculum-dialog-2', trigger: document.querySelector('[data-open-curriculum="2"]'), rest: '' },
@@ -53,6 +55,7 @@ export function mountCardDialogs(preference) {
     returnTarget.classList.add('dialog-focus-return');
     returnTarget.addEventListener('blur', () => returnTarget.classList.remove('dialog-focus-return'), { once: true });
     entry.dialog.close();
+    document.title = translations[normalizeLanguage(root.lang)].pageTitle;
     entry.trigger.setAttribute('aria-expanded', 'false');
     unlockPage();
     active = undefined;
@@ -71,12 +74,13 @@ export function mountCardDialogs(preference) {
     if (active) return;
     lockPage();
     active = entry;
+    if (entry.id === 'origin-story') document.title = `${translations[normalizeLanguage(root.lang)].originLink} · SERIAL`;
     entry.dialog.dataset.state = 'opening';
     entry.dialog.showModal();
     entry.surface = entry.dialog.querySelector('[data-dialog-surface]');
     entry.dialog.querySelector('.dialog-scroll').scrollTop = 0;
     entry.trigger.setAttribute('aria-expanded', 'true');
-    if (push) history.pushState({ ...history.state, serialDialog: entry.id, serialDialogRestoration: savedRestoration }, '');
+    if (push) history.pushState({ ...history.state, serialDialog: entry.id, serialDialogRestoration: savedRestoration }, '', entry.url ?? window.location.href);
     if (instant || preference.matches || !entry.surface.animate) {
       entry.dialog.dataset.state = 'open';
       return;
@@ -157,5 +161,16 @@ export function mountCardDialogs(preference) {
   preference.addEventListener('change', () => {
     if (preference.matches) animation?.finish();
   });
+  const initial = byId.get(root.dataset.initialDialog);
+  if (initial && !byId.has(history.state?.serialDialog)) {
+    // Give a direct visit a home entry to dismiss into, without leaving the site.
+    // Reloads retain the existing dialog entry instead of growing the history stack.
+    const storyUrl = window.location.href;
+    const homeUrl = new URL('/', storyUrl);
+    homeUrl.search = window.location.search;
+    homeUrl.hash = 'about';
+    history.replaceState(history.state, '', homeUrl);
+    history.pushState({ ...history.state, serialDialog: initial.id }, '', storyUrl);
+  }
   void syncHistory();
 }
