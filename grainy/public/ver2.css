@@ -121,7 +121,7 @@ body::before {
   animation-play-state: paused;
 }
 /* Light particles keep the same texture visible over dark surfaces. */
-:root[data-theme="dark"] body::before { filter: invert(1); opacity: .45; }
+:root[data-theme="dark"] body::before { filter: invert(1); opacity: .60; }
 .grain-running body::before { animation-name: grain-shift; animation-play-state: running; }
 :root.has-card-dialog body::before,
 :root.has-card-dialog .spirit-art::after { animation-play-state: paused; }
@@ -255,16 +255,15 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-break: normal; }
 .about-statement span { color: #85877f; transition: color 220ms ease; }
 .about-statement span.is-read { color: var(--ink); }
-.about-columns { display: grid; grid-template-columns: 1fr 1fr; margin-top: 60px; border-top: 1px solid var(--line); }
-.about-origin, .about-connections { min-width: 0; padding-top: 32px; }
-.about-origin { padding-right: 40px; }
-.about-connections { padding-left: 40px; border-left: 1px solid var(--line); }
+.about-connections { min-width: 0; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
 .body-copy { margin: 0; color: var(--body); font-size: 15px; line-height: 1.9; word-break: keep-all; text-wrap: pretty; }
 .text-link { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; margin-top: 28px; font-size: 13px; }
 .text-link svg { flex: 0 0 auto; transition: transform 180ms var(--nav-ease); }
-.connection-list { margin: 0; padding: 0; list-style: none; }
-.connection-list li { padding: 0 0 20px; }
-.connection-list li + li { padding-top: 20px; border-top: 1px solid var(--line); }
+.connection-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.connection-list li { min-width: 0; padding: 0 24px; }
+.connection-list li:first-child { padding-left: 0; }
+.connection-list li:last-child { padding-right: 0; }
+.connection-list li + li { border-left: 1px solid var(--line); }
 .connection-list span { font-size: clamp(20px, 2.1vw, 28px); letter-spacing: -.04em; }
 .connection-list p { margin: 8px 0 0; color: var(--body); font-size: 13px; line-height: 1.7; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 38px; }
@@ -287,7 +286,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .person-college { display: block; margin-bottom: 3px; }
 
 .spirit-section { padding: clamp(20px, 2.4vw, 32px); overflow: hidden; }
-.spirit-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 56px); }
+.spirit-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: clamp(28px, 4vw, 56px); }
 .spirit-art { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5; margin: 0; border-radius: 0; background: #d7e8e4; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .spirit-art img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
 .spirit-art .spirit-frame { position: absolute; inset: 0; opacity: 0; transition: opacity 180ms cubic-bezier(.23, 1, .32, 1); }
@@ -303,7 +302,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
   75% { transform: translate(5%, -6%); }
   87.5% { transform: translate(-2%, 4%); }
 }
-.spirit-copy { min-width: 0; align-self: center; padding: 0; }
+.spirit-copy { min-width: 0; align-self: start; padding: 0; }
 .spirit-copy h2 { margin: 0 0 24px; font-size: clamp(27px, 3vw, 42px); font-weight: 450; line-height: 1.4; letter-spacing: -.045em; text-wrap: balance; word-break: keep-all; }
 
 .project-section { padding: var(--section-inset); overflow: hidden; }
@@ -313,7 +312,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .project-card h3 { margin: 48px 0 0; font-size: clamp(28px, 3vw, 38px); font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
 .project-details { flex: 1; margin-top: 40px; }
 .project-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.project-logo { display: block; box-sizing: border-box; flex: 0 0 56px; width: 56px; height: 56px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
+.project-logo { display: block; box-sizing: border-box; flex: 0 0 48px; width: 48px; height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
 .project-logo { background-image: var(--grain-texture), var(--grain-texture), var(--grain-texture); background-size: 112px 112px, 80px 80px, 56px 56px; background-position: 0 0, 17px 11px, 7px 29px; background-repeat: repeat; }
 .project-card .project-brand h3 { margin: 0; font-size: clamp(24px, 2.5vw, 30px); }
 .project-description { max-width: 30ch; margin: 14px 0 0; color: var(--body); font-size: 14px; line-height: 1.7; word-break: keep-all; text-wrap: pretty; }
@@ -415,8 +414,6 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
 }
 @media (max-width: 900px) {
   .hero-nav { gap: 17px; }
-  .about-origin { padding-right: 28px; }
-  .about-connections { padding-left: 28px; }
   .people-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .person-card, .person-card:first-child, .person-card:nth-child(4) { grid-column: auto; }
 }
@@ -446,9 +443,11 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .section-tile { padding-top: 34px; padding-bottom: 34px; scroll-margin-top: calc(94px + var(--safe-top)); }
   .section-caption { margin-bottom: 20px; font-size: 11px; }
   .about-statement { font-size: 28px; line-height: 1.3; }
-  .about-columns { grid-template-columns: 1fr; margin-top: 34px; }
-  .about-origin { padding: 26px 0 30px; }
-  .about-connections { padding: 26px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+  .about-connections { margin-top: 34px; padding-top: 26px; }
+  .connection-list { grid-template-columns: minmax(0, 1fr); }
+  .connection-list li { padding: 0 0 24px; }
+  .connection-list li + li { padding: 24px 0; border-top: 1px solid var(--line); border-left: 0; }
+  .connection-list li:last-child { padding-bottom: 0; }
   .body-copy { font-size: 13px; line-height: 1.85; }
   .desktop-break { display: none; }
   .connection-list span { font-size: 22px; }
