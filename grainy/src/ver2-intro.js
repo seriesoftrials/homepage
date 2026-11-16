@@ -108,7 +108,7 @@ export function mountIntro({ holder, header, hero, preference, ribbon } = {}) {
     }
 
     const content = [...new Set([
-      header, copy, ...doc.querySelectorAll('.site-sections, .site-footer'),
+      header, copy, ...doc.querySelectorAll('.event-section, .site-sections, .site-footer'),
     ])];
     if (content.some(element => typeof element.animate !== 'function')) {
       dispose();

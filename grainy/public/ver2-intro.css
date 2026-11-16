@@ -8,6 +8,7 @@
   html.intro-pending :is(
     [data-page-nav],
     .hero-copy,
+    .event-section,
     .site-sections,
     .site-footer,
     .skip-link
@@ -17,7 +18,7 @@
     pointer-events: none;
   }
 
-  html.intro-pending:not([data-intro-active]) :is([data-page-nav], .hero-copy, .site-sections, .site-footer, .skip-link) {
+  html.intro-pending:not([data-intro-active]) :is([data-page-nav], .hero-copy, .event-section, .site-sections, .site-footer, .skip-link) {
     animation: intro-release 0s 3200ms forwards;
   }
   html.intro-pending:not([data-intro-active]) .hero-visual { animation: intro-background-fallback 0s 3200ms forwards; }
