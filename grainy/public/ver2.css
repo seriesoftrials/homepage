@@ -364,6 +364,11 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .dialog-close { display: grid; flex: 0 0 40px; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; color: var(--ink); background: rgb(var(--ink-rgb) / .045); cursor: pointer; transition: background-color 160ms ease, transform 160ms var(--nav-ease); }
 .dialog-close:hover { background: rgb(var(--ink-rgb) / .1); }
 .dialog-close:active { transform: scale(.94); }
+.dialog-share:disabled { cursor: wait; opacity: .5; }
+#origin-story .dialog-header { gap: 8px; }
+#origin-story .dialog-header h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dialog-share-status { position: absolute; z-index: 4; top: calc(var(--dialog-head) + 4px); right: 24px; max-width: calc(100% - 48px); margin: 0; padding: 10px 16px; border: 1px solid var(--line); border-radius: 16px; color: var(--ink); background: var(--nav-surface); font-size: 13px; -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px); }
+.dialog-share-status:empty { display: none; }
 .dialog-scroll { position: relative; z-index: 1; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgb(var(--ink-rgb) / .2) transparent; -webkit-mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); mask-image: linear-gradient(transparent 24px, #000 calc(var(--dialog-head) + 4px)); }
 .dialog-header, .dialog-scroll { opacity: 1; transition: opacity 140ms ease; }
 .card-dialog[data-state="opening"] .dialog-header, .card-dialog[data-state="opening"] .dialog-scroll,
@@ -496,6 +501,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
 @media (max-width: 360px) {
   :root { --section-inset: 20px; }
   .about-statement { font-size: 25px; }
+  #origin-story .dialog-mark { display: none; }
 }
 @media (max-height: 520px) and (min-width: 701px) {
   .hero { min-height: 560px; }

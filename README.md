@@ -87,7 +87,7 @@ npm start
 | Content | Source |
 | --- | --- |
 | Landing HTML | `grainy/index.html` |
-| Original article and full Intro page | `grainy/intro.html` |
+| Original article and sharing metadata | `grainy/intro.html` |
 | Layout, background and typography | `grainy/public/ver2.css` |
 | Entrance and shared buttons | `grainy/public/ver2-intro.css`, `grainy/public/action-button.css` |
 | Ribbon, navigation, languages and dialogs | `grainy/src/` |
@@ -102,11 +102,12 @@ checks the HTML, CSS and Spirit frame references for missing local assets.
 After editing the landing during development, rerun `npm run build:grainy` and
 refresh the browser. Restart `npm run dev` after adding a new top-level asset path.
 
-Next.js `beforeFiles` rewrites serve the landing at `/`, `/index.html`, and `/ver2`,
-and the original article at `/intro`. Original asset URLs resolve to
-`public/grainy/`. This preserves the original HTML, CSS and motion without applying
-the existing React layout or Lenis scroll engine to these pages. Other Next.js
-routes and components remain in the repository.
+Next.js `beforeFiles` rewrites serve the landing at `/`, `/index.html`, and `/ver2`.
+`/intro` renders the homepage with the origin-story dialog initially open and article
+metadata from `grainy/intro.html`. Original asset URLs resolve to `public/grainy/`.
+This preserves the landing HTML, CSS and motion without applying the existing
+React layout or Lenis scroll engine to these pages. Other Next.js routes and
+components remain in the repository.
 
 ### shadcn form controls
 

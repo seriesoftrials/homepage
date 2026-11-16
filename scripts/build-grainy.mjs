@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { build } from "esbuild";
 import { execFileSync } from "node:child_process";
+import { buildStoryPage } from "./story-page.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const source = resolve(root, "grainy");
@@ -22,9 +23,10 @@ if (!article || !template.includes("<!-- SPIRIT_ORIGIN_ARTICLE -->")) {
   throw new Error("The Spirit reader needs the original intro article.");
 }
 const html = template.replace("<!-- SPIRIT_ORIGIN_ARTICLE -->", article);
+const story = buildStoryPage(html, intro);
 await Promise.all([
   writeFile(resolve(output, "index.html"), html),
-  writeFile(resolve(output, "intro.html"), intro),
+  writeFile(resolve(output, "intro.html"), story),
   writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${css}`),
   build({
     entryPoints: [resolve(source, "src/ver2-hero.js")],
@@ -44,7 +46,7 @@ await Promise.all([
 // Catch incomplete asset transfers before development or production starts.
 const routes = new Set(["/", "/index.html", "/ver2", "/intro"]);
 const references = new Set();
-for (const page of [html, intro]) {
+for (const page of [html, story]) {
   for (const match of page.matchAll(/(?:src|href)=["'](\/[^"']*)["']/g)) {
     references.add(match[1]);
   }
