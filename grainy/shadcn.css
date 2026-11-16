@@ -39,7 +39,7 @@
 .preregistration-content [data-slot="field-label"] { font-size: 14px; font-weight: 400; }
 .preregistration-content .preregistration-consent [data-slot="field-label"] { font-size: 13px; line-height: 1.7; }
 .preregistration-content [data-slot="input"] { background: var(--background); }
-.preregistration-content [data-slot="button"] { font-size: 13px; font-weight: 500; }
+.preregistration-content [data-slot="button"] { font-size: 14px; font-weight: 500; }
 .preregistration-content [data-slot="checkbox"] { margin-top: 0; }
 .preregistration-content [data-slot="checkbox"]:focus { outline: none; }
 .preregistration-content [data-slot="checkbox-indicator"] { animation: consent-check-in 160ms ease-out both; }

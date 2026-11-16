@@ -521,16 +521,18 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .hero-header, .hero-header::before, .hero-header .brand, .mobile-menu-toggle, .mobile-menu-toggle span, .language-toggle, .language-menu, .language-menu button, .mobile-menu nav, .about-statement span, .hero-nav a, .text-link svg, .story-row > svg { transition: none !important; }
 }
 
+.preregistration-dialog .dialog-surface { background: color-mix(in oklab, var(--paper) 88%, transparent); }
 .preregistration-content { padding: calc(var(--dialog-head) + 16px) clamp(24px, 4vw, 40px) 36px; }
 .preregistration-content h2 { margin: 0 0 12px; font-size: 28px; font-weight: 500; line-height: 1.3; letter-spacing: -.035em; }
 .preregistration-content .body-copy { margin-bottom: 28px; font-size: 15px; }
 .preregistration-form { display: grid; gap: 20px; }
 .preregistration-field { display: grid; gap: 8px; font-size: 14px; }
 .preregistration-field input { width: 100%; min-width: 0; min-height: 48px; padding: 12px 14px; border: 1px solid #c9cac5; border-radius: 14px; background: #fff; color: var(--ink); font: inherit; font-size: 16px; }
-.preregistration-field input:focus { outline: none; border-color: var(--ink); }
+.preregistration-field input:focus { outline: none; border-color: var(--primary, var(--ink)); }
 .preregistration-consent { display: flex; align-items: center; gap: 10px; font-size: 13px; line-height: 1.7; color: var(--body); cursor: pointer; }
 .preregistration-consent .serial-checkbox { margin-top: 2px; }
-.preregistration-form .action-button { width: 100%; justify-content: center; }
+.preregistration-form .action-button { width: 100%; justify-content: center; font-size: 14px; }
+.preregistration-form [type="submit"] { margin-top: 8px; }
 .preregistration-form .action-button:disabled { opacity: .55; cursor: wait; }
 .preregistration-status { margin: 0; color: #a12b20; font-size: 14px; line-height: 1.7; }
 .preregistration-success { padding-block: 12px; text-align: center; }
@@ -558,7 +560,8 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
 :root[data-theme="dark"] .hero-ribbon { filter: invert(1); }
 :root[data-theme="dark"] .event-meta-icon { color: #b5c4cf; background: #29333c; border-color: #3a4853; }
 :root[data-theme="dark"] .dialog-surface { border-color: rgb(255 255 255 / .14); box-shadow: 0 30px 90px rgb(0 0 0 / .3), inset 0 1px 0 rgb(255 255 255 / .08); }
-:root[data-theme="dark"] .preregistration-field input { color: var(--ink); background: var(--paper); border-color: #565d62; }
+:root[data-theme="dark"] .preregistration-field input { color: var(--ink); background: var(--paper); }
+:root[data-theme="dark"] .preregistration-field input:not(:focus) { border-color: #34393d; }
 :root[data-theme="dark"] .preregistration-status { color: #f3aaa0; }
 :root[data-theme="dark"] .action-button:not(.action-button--quiet):not(.action-button--secondary) {
   --button-background: #f0f0eb; --button-foreground: #171719; --button-border: #f0f0eb;
