@@ -4,7 +4,7 @@ import {createGlassMaterial,createGlassEnvironment} from './glass.js';
 
 // Mount inside a square, sized button containing a canvas and an optional poster.
 // The study viewer is deliberately excluded from this landing-page runtime.
-export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady}={}){
+export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady,autoplay=true,interactive=true,maxPixelRatio=3,createMaterial=createGlassMaterial}={}){
   const canvas=holder.querySelector('canvas');
   if(!canvas)throw new Error('The ribbon holder needs a canvas.');
   let renderer;
@@ -22,12 +22,12 @@ export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady}={}){
   for(const [intensity,position] of [[1.1,[-3,4,6]],[.45,[4,-2,4]],[.6,[-4,-1,-3]]]){
     const light=new THREE.DirectionalLight(0xffffff,intensity);light.position.set(...position);scene.add(light);
   }
-  const model=createSequence({material:createGlassMaterial(THREE)});scene.add(model.group);
+  const model=createSequence({material:createMaterial(THREE)});scene.add(model.group);
   const outline=createOutline?.(THREE,model.group);
   const preference=matchMedia('(prefers-reduced-motion: reduce)');
   const hoverPreference=matchMedia('(hover: hover) and (pointer: fine)');
   const state={elapsed:preference.matches?SEQUENCE_DURATION:Math.max(0,initialElapsed),
-    playing:!preference.matches,userPaused:false,stopAt:Infinity,visible:true,
+    playing:autoplay&&!preference.matches,userPaused:!autoplay,stopAt:Infinity,visible:true,
     hovered:hoverPreference.matches&&holder.matches(':hover'),focused:false,
     lineProgress:0,contextLost:false,disposed:false,ready:false};
   let frame=0,last=performance.now();
@@ -53,17 +53,19 @@ export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady}={}){
     renderer.render(scene,camera);holder.classList.add('is-ready');
     if(!state.ready){state.ready=true;onReady?.();}
     holder.dataset.ribbonPhase=sample.phase;
-    holder.setAttribute('aria-pressed',String(state.playing));
-    const english=holder.ownerDocument?.documentElement.lang==='en';
-    holder.setAttribute('aria-label',english
-      ?(state.playing?'Pause SERIAL logo animation':'Play SERIAL logo animation')
-      :(state.playing?'SERIAL 로고 애니메이션 일시정지':'SERIAL 로고 애니메이션 재생'));
+    if(interactive){
+      holder.setAttribute('aria-pressed',String(state.playing));
+      const english=holder.ownerDocument?.documentElement.lang==='en';
+      holder.setAttribute('aria-label',english
+        ?(state.playing?'Pause SERIAL logo animation':'Play SERIAL logo animation')
+        :(state.playing?'SERIAL 로고 애니메이션 일시정지':'SERIAL 로고 애니메이션 재생'));
+    }
     if(state.playing||unsettled)schedule();
   }
   function resize(){
     const rect=holder.getBoundingClientRect(),width=Math.max(1,rect.width),height=Math.max(1,rect.height);
     // Supersample 1x previews and retain native iPhone density within a 2048px budget.
-    renderer.setPixelRatio(Math.min(Math.max(devicePixelRatio||1,2),3,2048/Math.max(width,height)));
+    renderer.setPixelRatio(Math.min(Math.max(devicePixelRatio||1,2),maxPixelRatio,2048/Math.max(width,height)));
     renderer.setSize(width,height,false);outline?.resize(width,height);
     camera.left=-1.54*width/height;camera.right=1.54*width/height;camera.updateProjectionMatrix();resetClock();
   }
@@ -99,10 +101,13 @@ export function mountRibbon(holder,{initialElapsed=0,createOutline,onReady}={}){
     state.visible=entry.isIntersecting;last=performance.now();if(state.visible)schedule();else stopFrame();
   });intersection.observe(holder);
   const listeners=[
-    [holder,'click',toggle],[canvas,'webglcontextlost',contextLost],[canvas,'webglcontextrestored',contextRestored],
+    [canvas,'webglcontextlost',contextLost],[canvas,'webglcontextrestored',contextRestored],
+    [document,'visibilitychange',visibility],[preference,'change',reduced],
+    ...(interactive?[
+    [holder,'click',toggle],
     [holder,'pointerenter',pointerEnter],[holder,'pointerleave',pointerLeave],[holder,'pointercancel',pointerLeave],
     [holder,'focus',focus],[holder,'blur',blur],[holder,'pointerdown',pointerDown],[holder,'keydown',keyDown],
-    [document,'visibilitychange',visibility],[preference,'change',reduced],
+    ]:[]),
   ];
   for(const [target,type,listener] of listeners)target.addEventListener(type,listener);
   resize();

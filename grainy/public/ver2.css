@@ -178,15 +178,12 @@ img { max-width: 100%; }
 .hero-header.nav-ready::before { transition: opacity 240ms ease, background-color var(--theme-duration) ease, border-color var(--theme-duration) ease; }
 .hero-header.is-compact { width: min(780px, calc(100% - var(--page-gutter-left) - var(--page-gutter-right) - 24px)); transform: translate(-50%, 0); }
 .hero-header.is-compact::before { opacity: 1; }
-.brand { grid-column: 1; grid-row: 1; display: inline-flex; align-items: center; justify-self: start; min-width: 44px; min-height: 44px; perspective: 160px; transform-style: preserve-3d; pointer-events: auto; }
-.brand img { display: block; transform-origin: center; backface-visibility: visible; filter: invert(var(--logo-invert)); transition: filter var(--theme-duration) ease; }
-@media (hover: hover) and (pointer: fine) {
-  .brand:hover img { animation: brand-turn 3s linear infinite; }
-}
-@keyframes brand-turn {
-  0% { transform: rotateY(0deg); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
-  60%, 100% { transform: rotateY(360deg); }
-}
+.brand { position: relative; grid-column: 1; grid-row: 1; display: inline-flex; align-items: center; justify-self: start; min-width: 44px; min-height: 44px; pointer-events: auto; }
+.brand img { display: block; filter: invert(var(--logo-invert)); transition: filter var(--theme-duration) ease; }
+.brand [data-nav-ribbon] { position: absolute; left: 0; top: 50%; width: 30px; height: 30px; transform: translateY(-50%); opacity: 0; pointer-events: none; filter: invert(var(--logo-invert)); }
+.brand [data-nav-ribbon] canvas { display: block; width: 100%; height: 100%; }
+.brand.has-ribbon img { opacity: 0; }
+.brand.has-ribbon [data-nav-ribbon].is-ready { opacity: 1; }
 .hero-nav { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 24px; pointer-events: auto; }
 .hero-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 0 3px; color: var(--body); font-size: 13px; transition: color 150ms ease; white-space: nowrap; }
 .hero-nav a[aria-current="location"] { color: var(--ink); }
@@ -509,7 +506,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .hero { min-height: 560px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root body::before, .brand:hover img, .brand:focus-visible img { animation: none; transform: none; }
+  :root body::before { animation: none; transform: none; }
   .dialog-header, .dialog-scroll, .card-dialog::backdrop, .dialog-close { transition: none; }
   .hero-ribbon-poster, .hero-ribbon-canvas { transition: none; }
   .dialog-close:active { transform: none; }
