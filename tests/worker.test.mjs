@@ -4,7 +4,13 @@ import worker from "../worker/index.mjs";
 
 const revision = "a".repeat(40);
 test("landing aliases and query strings serve the new assets", async () => {
-  for (const [path, expected] of [["/?lang=ko", "/index.html?lang=ko"], ["/ver2/", "/index.html"], ["/intro", "/intro.html"]]) {
+  for (const [path, expected] of [
+    ["/?lang=ko", "/index.html?lang=ko"],
+    ["/ver2/", "/index.html"],
+    ["/intro", "/intro.html"],
+    ["/support?ref=alumni", "/support.html?ref=alumni"],
+    ["/support/", "/support.html"],
+  ]) {
     const response = await worker.fetch(new Request(`https://seriesoftrials.com${path}`), {
       DEPLOYMENT_SHA: revision,
       ASSETS: { fetch: async (request) => {

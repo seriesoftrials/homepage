@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
           destination: "/grainy/index.html",
         })),
         { source: "/intro", destination: "/grainy/intro.html" },
+        { source: "/support", destination: "/grainy/support.html" },
+        { source: "/support.js", destination: "/grainy/support.js" },
         { source: "/ver2-hero.js", destination: "/grainy/ver2-hero.js" },
         { source: "/shadcn.css", destination: "/grainy/shadcn.css" },
         { source: "/chunks/:path*", destination: "/grainy/chunks/:path*" },

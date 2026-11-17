@@ -16,6 +16,7 @@ async function verify() {
   assert.equal(status.revision, revision, "Deployed homepage commit");
   for (const [path, file] of [
     ["/", "index.html"], ["/ver2", "index.html"], ["/intro", "intro.html"],
+    ["/support", "support.html"], ["/support.css", "support.css"], ["/support.js", "support.js"],
     ["/ver2.css", "ver2.css"], ["/ver2-hero.js", "ver2-hero.js"],
     ["/profiles/hyoseok-v2-cutout.webp", "profiles/hyoseok-v2-cutout.webp"],
   ]) {

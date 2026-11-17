@@ -242,7 +242,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .event-copy > .section-caption { margin-bottom: 24px; }
 .event-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 280px); align-items: center; gap: clamp(32px, 4vw, 56px); }
 .event-copy { min-width: 0; }
-.event-copy h2 { margin: 0; font-family: inherit; font-size: clamp(28px, calc(3.8vw - 8px), 44px); font-weight: 500; line-height: 1.08; letter-spacing: -.03em; }
+.event-copy h2 { margin: 0; font-family: inherit; font-size: 28px; font-weight: 500; line-height: 1.08; letter-spacing: -.03em; }
 .event-subtitle { margin: 6px 0 18px; font-size: 18px; font-weight: 450; line-height: 1.4; letter-spacing: -.035em; word-break: keep-all; }
 .event-copy > .body-copy { line-height: 1.5; }
 .event-meta { display: grid; gap: 6px; margin: 20px 0; font-size: 14px; line-height: 1.4; }
@@ -252,7 +252,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .hero-copy > .action-button { margin-top: 24px; max-width: 100%; text-align: center; }
 .event-poster { margin: 0; overflow: hidden; border: 1px solid rgb(var(--ink-rgb) / .1); border-radius: 12px; }
 .event-poster img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
-.about-section::after { content: ""; position: absolute; z-index: 0; right: 24px; bottom: 24px; width: min(42%, 420px); aspect-ratio: 1; background: var(--ink); opacity: .05; -webkit-mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; pointer-events: none; }
+.about-section::after { content: ""; position: absolute; z-index: 0; right: 24px; bottom: 24px; width: min(42%, 420px); aspect-ratio: 1; background: var(--ink); opacity: .09; -webkit-mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; pointer-events: none; }
 .about-statement { max-width: 1100px; margin: 0; font-size: clamp(26px, calc(3.6vw - 4px), 48px); font-weight: 500; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
 html[lang="ko"] .about-statement span { display: block; }
 .about-section .about-description { max-width: 760px; margin: 24px 0 0; }
@@ -491,7 +491,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .event-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(0px, calc(100svh - max(352px, var(--event-hero-clearance, 352px))), 552px); width: calc(100% - 16px); padding: 24px 20px; border-radius: 24px; }
   .event-copy > .section-caption { margin-bottom: 20px; }
-  .event-copy h2 { font-size: 36px; }
+  .event-copy h2 { font-size: 24px; }
   .event-poster { order: -1; width: min(100%, 280px); justify-self: center; }
   .curriculum-heading h2 { font-size: 27px; }
   .curriculum-list li { grid-template-columns: 62px minmax(0, 1fr); gap: 10px 16px; padding: 22px 0; }
