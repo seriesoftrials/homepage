@@ -235,15 +235,15 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .hero::before { content: ""; position: absolute; z-index: 0; inset: 38% 0 0; background: radial-gradient(ellipse 78% 95% at 10% 100%, rgb(129 151 173 / .22), rgb(129 151 173 / .08) 46%, transparent 78%), radial-gradient(ellipse 74% 100% at 100% 100%, rgb(179 151 127 / .20), rgb(179 151 127 / .07) 48%, transparent 80%); pointer-events: none; }
 .section-tile > .content-shell { position: relative; z-index: 1; }
 .section-caption { display: flex; align-items: center; gap: 10px; margin: 0 0 26px; color: var(--body); font-size: 12px; font-weight: 500; letter-spacing: .02em; }
-.event-section { --event-motion-room: 160px; --event-overlap: clamp(112px, calc(100svh - max(380px, var(--event-hero-clearance, 380px)) - 32px), 480px); position: relative; z-index: 2; width: min(calc(100% - 2 * var(--inset)), 1120px); margin: calc(-1 * var(--event-overlap)) auto max(var(--frame), calc(var(--event-overlap) - var(--event-height, 380px) + var(--frame))); padding: 32px clamp(24px, 3vw, 40px); background: var(--tile-surface); box-shadow: 0 18px 48px -28px rgb(0 0 0 / .32), 0 3px 12px -5px rgb(0 0 0 / .12); }
+.event-section { --event-motion-room: 160px; --event-overlap: clamp(112px, calc(100svh - max(380px, var(--event-hero-clearance, 380px)) - 32px), 480px); position: relative; z-index: 2; width: min(calc(100% - 2 * var(--inset)), 1120px); margin: calc(-1 * var(--event-overlap)) auto max(var(--frame), calc(var(--event-overlap) - var(--event-height, 380px) + var(--frame))); padding: 32px clamp(24px, 3vw, 40px); border-radius: 32px; background: var(--tile-surface); box-shadow: 0 18px 48px -28px rgb(0 0 0 / .32), 0 3px 12px -5px rgb(0 0 0 / .12); }
 :root.has-event-motion .event-section { margin-bottom: max(32px, calc(var(--event-overlap) - var(--event-height, 380px) + var(--frame))); transform: translateY(var(--event-motion-offset, 0px)); transition: transform 680ms cubic-bezier(.25, .8, .25, 1), background-color var(--theme-duration) ease, border-color var(--theme-duration) ease; }
 :root.has-event-motion .event-section.event-motion-reset { transition: none; }
 .event-section.event-motion-active { will-change: transform; }
 .event-copy > .section-caption { margin-bottom: 24px; }
 .event-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 280px); align-items: center; gap: clamp(32px, 4vw, 56px); }
 .event-copy { min-width: 0; }
-.event-copy h2 { margin: 0; font-family: inherit; font-size: clamp(36px, 3.8vw, 52px); font-weight: 500; line-height: 1.08; letter-spacing: -.03em; }
-.event-subtitle { margin: 14px 0 18px; font-size: 18px; font-weight: 450; line-height: 1.4; letter-spacing: -.035em; word-break: keep-all; }
+.event-copy h2 { margin: 0; font-family: inherit; font-size: clamp(28px, calc(3.8vw - 8px), 44px); font-weight: 500; line-height: 1.08; letter-spacing: -.03em; }
+.event-subtitle { margin: 6px 0 18px; font-size: 18px; font-weight: 450; line-height: 1.4; letter-spacing: -.035em; word-break: keep-all; }
 .event-copy > .body-copy { line-height: 1.5; }
 .event-meta { display: grid; gap: 6px; margin: 20px 0; font-size: 14px; line-height: 1.4; }
 .event-meta p { display: flex; align-items: center; gap: 10px; margin: 0; }
@@ -252,7 +252,10 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .hero-copy > .action-button { margin-top: 24px; max-width: 100%; text-align: center; }
 .event-poster { margin: 0; overflow: hidden; border: 1px solid rgb(var(--ink-rgb) / .1); border-radius: 12px; }
 .event-poster img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
-.about-statement { max-width: 1100px; margin: 0; font-size: clamp(30px, 3.6vw, 52px); font-weight: 500; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
+.about-section::after { content: ""; position: absolute; z-index: 0; right: 24px; bottom: 24px; width: min(42%, 420px); aspect-ratio: 1; background: var(--ink); opacity: .05; -webkit-mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; mask: url("/brand-assets/cau-emblem.png") center / contain no-repeat; pointer-events: none; }
+.about-statement { max-width: 1100px; margin: 0; font-size: clamp(26px, calc(3.6vw - 4px), 48px); font-weight: 500; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; text-wrap: pretty; }
+html[lang="ko"] .about-statement span { display: block; }
+.about-section .about-description { max-width: 760px; margin: 24px 0 0; }
 html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-break: normal; }
 .about-statement span { color: #85877f; transition: color 220ms ease; }
 .about-statement span.is-read { color: var(--ink); }
@@ -261,7 +264,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .text-link { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; margin-top: 28px; font-size: 13px; }
 .text-link svg { flex: 0 0 auto; transition: transform 180ms var(--nav-ease); }
 .connection-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
-.connection-list li { min-width: 0; padding: 24px; border-radius: 14px; background: var(--inset-surface); }
+.connection-list li { min-width: 0; padding: 24px; border-radius: 14px; background: color-mix(in srgb, var(--inset-surface) 65%, transparent); }
 .connection-list span { font-size: clamp(20px, 2.1vw, 28px); letter-spacing: -.04em; }
 .connection-list p { margin: 8px 0 0; color: var(--body); font-size: 13px; line-height: 1.7; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 38px; }
@@ -300,7 +303,8 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
   75% { transform: translate(5%, -6%); }
   87.5% { transform: translate(-2%, 4%); }
 }
-.spirit-copy { min-width: 0; align-self: start; padding: 0; }
+.spirit-copy { min-width: 0; align-self: start; padding: 24px 0 0; }
+.spirit-copy > .section-caption { margin-bottom: 12px; }
 .spirit-copy h2 { margin: 0 0 24px; font-size: clamp(27px, 3vw, 42px); font-weight: 450; line-height: 1.4; letter-spacing: -.045em; text-wrap: balance; word-break: keep-all; }
 
 .project-section { padding: var(--section-inset); overflow: hidden; }
@@ -310,9 +314,9 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .project-card h3 { margin: 48px 0 0; font-size: clamp(28px, 3vw, 38px); font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
 .project-details { flex: 1; margin-top: 40px; }
 .project-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.project-logo { display: block; box-sizing: border-box; flex: 0 0 48px; width: 48px; height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
+.project-logo { display: block; box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 44px; padding: 4px; border: 1px solid var(--line); border-radius: 50%; background-color: #fff; object-fit: contain; }
 .project-logo { background-image: var(--grain-texture), var(--grain-texture), var(--grain-texture); background-size: 112px 112px, 80px 80px, 56px 56px; background-position: 0 0, 17px 11px, 7px 29px; background-repeat: repeat; }
-.project-card .project-brand h3 { margin: 0; font-size: clamp(24px, 2.5vw, 30px); }
+.project-card .project-brand h3 { margin: 0; font-size: clamp(20px, calc(2.5vw - 4px), 26px); }
 .project-description { max-width: 30ch; margin: 14px 0 0; color: var(--body); font-size: 14px; line-height: 1.7; word-break: keep-all; text-wrap: pretty; }
 .story-count { padding-bottom: 6px; color: var(--body); font-family: "Newsreader", serif; font-size: 25px; }
 .story-list { border-top: 1px solid var(--line); }
@@ -424,6 +428,8 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   :root { --section-inset: 25px; }
   .hero, .section-tile { border-radius: 16px; }
   .hero-header { grid-template-columns: 1fr auto auto; gap: 8px; padding: 7px 10px; }
+  .hero-header.nav-ready .brand { transition: transform 620ms var(--nav-ease); }
+  .hero-header.is-compact .brand { transform: translateX(8px); }
   .hero-nav { display: none; }
   .brand img { width: 29px; height: 29px; }
   .nav-actions { grid-column: 2; }
@@ -445,7 +451,9 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .hero-ribbon { width: min(132vw, 720px); }
   .section-tile { padding-top: 34px; padding-bottom: 34px; scroll-margin-top: calc(94px + var(--safe-top)); }
   .section-caption { margin-bottom: 20px; font-size: 11px; }
-  .about-statement { font-size: 28px; line-height: 1.3; }
+  .about-section::after { right: 16px; bottom: 20px; width: 78%; }
+  .about-statement { font-size: 24px; line-height: 1.3; }
+  html[lang="ko"] .about-statement span { display: inline; }
   .about-connections { margin-top: 34px; }
   .connection-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .connection-list li { padding: 20px; }
@@ -481,9 +489,9 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .join-content { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .curriculum-heading { grid-template-columns: minmax(0, 1fr); gap: 20px; margin-bottom: 28px; }
   .event-content { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(0px, calc(100svh - max(352px, var(--event-hero-clearance, 352px))), 552px); width: calc(100% - 16px); padding: 24px 20px; }
+  .section-tile.event-section { --event-motion-room: 96px; --event-overlap: clamp(0px, calc(100svh - max(352px, var(--event-hero-clearance, 352px))), 552px); width: calc(100% - 16px); padding: 24px 20px; border-radius: 24px; }
   .event-copy > .section-caption { margin-bottom: 20px; }
-  .event-copy h2 { font-size: 42px; }
+  .event-copy h2 { font-size: 36px; }
   .event-poster { order: -1; width: min(100%, 280px); justify-self: center; }
   .curriculum-heading h2 { font-size: 27px; }
   .curriculum-list li { grid-template-columns: 62px minmax(0, 1fr); gap: 10px 16px; padding: 22px 0; }
@@ -500,7 +508,7 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
 }
 @media (max-width: 360px) {
   :root { --section-inset: 20px; }
-  .about-statement { font-size: 25px; }
+  .about-statement { font-size: 21px; }
   #origin-story .dialog-mark { display: none; }
 }
 @media (max-height: 520px) and (min-width: 701px) {
