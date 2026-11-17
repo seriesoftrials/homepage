@@ -88,6 +88,7 @@ npm start
 | --- | --- |
 | Landing HTML | `grainy/index.html` |
 | Original article and sharing metadata | `grainy/intro.html` |
+| Sponsor information page (`/support`) | `grainy/support.html`, `grainy/public/support.css`, `grainy/src/support.js`, `grainy/src/support-i18n.js` |
 | Layout, background and typography | `grainy/public/ver2.css` |
 | Entrance and shared buttons | `grainy/public/ver2-intro.css`, `grainy/public/action-button.css` |
 | Ribbon, navigation, languages and dialogs | `grainy/src/` |
@@ -108,6 +109,7 @@ metadata from `grainy/intro.html`. Original asset URLs resolve to `public/grainy
 This preserves the landing HTML, CSS and motion without applying the existing
 React layout or Lenis scroll engine to these pages. Other Next.js routes and
 components remain in the repository.
+The sponsor information page is served separately at `/support`.
 
 ### shadcn form controls
 

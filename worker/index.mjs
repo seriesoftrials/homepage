@@ -4,6 +4,8 @@ const pagePaths = new Map([
   ["/ver2/", "/index.html"],
   ["/intro", "/intro.html"],
   ["/intro/", "/intro.html"],
+  ["/support", "/support.html"],
+  ["/support/", "/support.html"],
 ]);
 
 const worker = {

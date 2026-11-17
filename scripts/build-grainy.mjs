@@ -12,9 +12,10 @@ const output = resolve(root, "public/grainy");
 await mkdir(output, { recursive: true });
 execFileSync(process.execPath, [resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'), '-i', resolve(source, 'shadcn.css'), '-o', resolve(output, 'shadcn.css'), '--minify'], { cwd: root, stdio: 'inherit' });
 await cp(resolve(source, "public"), output, { recursive: true });
-const [template, intro, japaneseFonts, css] = await Promise.all([
+const [template, intro, supportTemplate, japaneseFonts, css] = await Promise.all([
   readFile(resolve(source, "index.html"), "utf8"),
   readFile(resolve(source, "intro.html"), "utf8"),
+  readFile(resolve(source, "support.html"), "utf8"),
   readFile(resolve(source, "public/fonts/pretendard-jp/font-face.css"), "utf8"),
   readFile(resolve(source, "public/ver2.css"), "utf8"),
 ]);
@@ -24,12 +25,22 @@ if (!article || !template.includes("<!-- SPIRIT_ORIGIN_ARTICLE -->")) {
 }
 const html = template.replace("<!-- SPIRIT_ORIGIN_ARTICLE -->", article);
 const story = buildStoryPage(html, intro);
+const header = template.match(/<header class="hero-header" data-page-nav>[\s\S]*?<\/header>/)?.[0];
+if (!header || !supportTemplate.includes("<!-- SUPPORT_SITE_HEADER -->")) {
+  throw new Error("The support page needs the shared homepage navigation.");
+}
+const supportHeader = header
+  .replace('href="#top"', 'href="/"')
+  .replace('aria-label="SERIAL 맨 위로" data-i18n-aria="homeLabel"', 'aria-label="SERIAL 홈으로" data-i18n-aria="supportHomeLabel"')
+  .replaceAll('href="#', 'href="/#');
+const support = supportTemplate.replace("<!-- SUPPORT_SITE_HEADER -->", supportHeader);
 await Promise.all([
   writeFile(resolve(output, "index.html"), html),
   writeFile(resolve(output, "intro.html"), story),
+  writeFile(resolve(output, "support.html"), support),
   writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${css}`),
   build({
-    entryPoints: [resolve(source, "src/ver2-hero.js")],
+    entryPoints: [resolve(source, "src/ver2-hero.js"), resolve(source, "src/support.js")],
     outdir: output,
     bundle: true,
     format: "esm",
@@ -44,9 +55,9 @@ await Promise.all([
 ]);
 
 // Catch incomplete asset transfers before development or production starts.
-const routes = new Set(["/", "/index.html", "/ver2", "/intro"]);
+const routes = new Set(["/", "/index.html", "/ver2", "/intro", "/support"]);
 const references = new Set();
-for (const page of [html, story]) {
+for (const page of [html, story, support]) {
   for (const match of page.matchAll(/(?:src|href)=["'](\/[^"']*)["']/g)) {
     references.add(match[1]);
   }
