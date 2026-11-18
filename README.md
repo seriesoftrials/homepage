@@ -111,6 +111,13 @@ React layout or Lenis scroll engine to these pages. Other Next.js routes and
 components remain in the repository.
 The sponsor information page is served separately at `/support`.
 
+The homepage, origin-story reader and support page prefer a language explicitly
+chosen in the language menu (`serial-language` in local storage). Otherwise they
+use the first supported language in the browser's language preferences: Korean,
+English, Japanese or Chinese. Regional tags such as `en-US` and `zh-Hans-CN` map
+to the corresponding translation; if none match, Korean is used. Browser detection
+does not save a manual preference, and still works when local storage is blocked.
+
 ### shadcn form controls
 
 Shared Radix-based shadcn components live in `components/ui/`; `components.json`

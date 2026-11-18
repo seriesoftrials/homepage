@@ -590,9 +590,27 @@ export const translations = {
   }
 };
 
-export function normalizeLanguage(value) {
+function supportedLanguage(value) {
   const language = typeof value === 'string' ? value.trim().toLowerCase().split('-')[0] : '';
-  return SUPPORTED_LANGUAGES.includes(language) ? language : 'ko';
+  return SUPPORTED_LANGUAGES.includes(language) ? language : undefined;
+}
+
+export function normalizeLanguage(value) {
+  return supportedLanguage(value) || 'ko';
+}
+
+export function preferredLanguage() {
+  let saved;
+  try { saved = localStorage.getItem(LANGUAGE_STORAGE_KEY); } catch {}
+  const selected = supportedLanguage(saved);
+  if (selected) return selected;
+
+  const languages = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const value of languages) {
+    const language = supportedLanguage(value);
+    if (language) return language;
+  }
+  return 'ko';
 }
 
 export function applyLanguage(document, value) {
