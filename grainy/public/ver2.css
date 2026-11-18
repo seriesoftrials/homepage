@@ -136,6 +136,18 @@ body::before {
   75% { transform: translate3d(10px, -10px, 0); }
   87.5% { transform: translate3d(-4px, 8px, 0); }
 }
+/* Paint iOS grain with the document so expanding browser bars cannot expose an
+   untextured strip beyond a fixed layer. Keep this full-document layer static. */
+@supports (font: -apple-system-body) {
+  @media (hover: none) and (pointer: coarse) {
+    :root body::before {
+      position: absolute;
+      inset: 0;
+      animation: none;
+      transform: none;
+    }
+  }
+}
 main, .site-footer { position: relative; z-index: 1; }
 .content-shell { width: 100%; max-width: var(--content-width); min-width: 0; margin-inline: auto; }
 a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
