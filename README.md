@@ -12,6 +12,9 @@ The page texture is limited to the viewport; card textures pause outside the vie
 behind dialogs, in hidden tabs, and for reduced-motion preferences. Only texture
 transforms animate. Cards use a 64% white translucent fill, a subtle local gradient,
 and a clearer edge and shadow without extra backdrop blur.
+On touch-based Apple browsers, the page grain is a static document layer so the
+texture continues behind expanding browser controls instead of ending at a fixed
+viewport boundary. Desktop browsers retain the animated viewport layer.
 When the footer enters view, the root/body fallback and browser theme color match
 the gradient's final color. This fills Safari's safe-area and overscroll background;
 scrolling back restores the light top color without animating the page background.
