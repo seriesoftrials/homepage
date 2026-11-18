@@ -1,7 +1,7 @@
 import { mountNavRibbon } from './nav-ribbon.js';
 import { applySupportLanguage } from './support-i18n.js';
 import { mountTheme } from './theme.js';
-import { LANGUAGE_STORAGE_KEY } from './ver2-i18n.js';
+import { LANGUAGE_STORAGE_KEY, preferredLanguage } from './ver2-i18n.js';
 
 const header = document.querySelector('[data-page-nav]');
 const progress = header.querySelector('.nav-progress');
@@ -37,10 +37,6 @@ function setDropdown(root, open, instant = false) {
     dropdown.panel.setAttribute('aria-hidden', String(!expanded));
     dropdown.panel.inert = !expanded;
   }
-}
-
-function savedLanguage() {
-  try { return localStorage.getItem(LANGUAGE_STORAGE_KEY); } catch { return 'ko'; }
 }
 
 function changeLanguage(value, save = false) {
@@ -92,7 +88,7 @@ document.addEventListener('keydown', event => {
   }
 });
 window.addEventListener('storage', event => {
-  if (event.key === LANGUAGE_STORAGE_KEY) changeLanguage(event.newValue);
+  if (event.key === LANGUAGE_STORAGE_KEY || event.key === null) changeLanguage(preferredLanguage());
 });
 window.addEventListener('scroll', scheduleNavigation, { passive: true });
 window.addEventListener('resize', scheduleNavigation, { passive: true });
@@ -104,10 +100,10 @@ window.addEventListener('pagehide', () => {
 });
 window.addEventListener('pageshow', event => {
   if (event.persisted) {
-    changeLanguage(savedLanguage());
+    changeLanguage(preferredLanguage());
     mountNavigation();
   }
 });
 document.fonts.ready.then(scheduleNavigation);
-changeLanguage(savedLanguage());
+changeLanguage(preferredLanguage());
 mountNavigation();

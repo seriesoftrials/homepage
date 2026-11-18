@@ -1,6 +1,6 @@
 import { mountRibbon } from '../assets/serial-ribbon-sequence/landing.js';
 import { SEQUENCE_DURATION } from '../assets/serial-ribbon-sequence/sequence.js';
-import { applyLanguage, LANGUAGE_STORAGE_KEY } from './ver2-i18n.js';
+import { applyLanguage, LANGUAGE_STORAGE_KEY, preferredLanguage } from './ver2-i18n.js';
 import { mountSpiritLoop } from './spirit-loop.js';
 import { mountCardDialogs } from './card-dialogs.js';
 import { mountStoryShare } from './story-share.js';
@@ -118,10 +118,6 @@ function mountPage() {
   header.classList.add('nav-ready');
 }
 
-function savedLanguage() {
-  try { return localStorage.getItem(LANGUAGE_STORAGE_KEY); } catch { return 'ko'; }
-}
-
 function changeLanguage(value, save = false) {
   const language = applyLanguage(document, value);
   theme?.syncLanguage();
@@ -182,7 +178,7 @@ document.addEventListener('keydown', event => {
   }
 });
 window.addEventListener('storage', event => {
-  if (event.key === LANGUAGE_STORAGE_KEY) changeLanguage(event.newValue);
+  if (event.key === LANGUAGE_STORAGE_KEY || event.key === null) changeLanguage(preferredLanguage());
 });
 window.addEventListener('scroll', scheduleNavigation, { passive: true });
 window.addEventListener('resize', scheduleNavigation, { passive: true });
@@ -201,12 +197,12 @@ window.addEventListener('pagehide', () => {
 });
 window.addEventListener('pageshow', event => {
   if (event.persisted) {
-    changeLanguage(savedLanguage());
+    changeLanguage(preferredLanguage());
     mountPage();
   }
 });
 document.fonts.ready.then(scheduleNavigation);
-changeLanguage(savedLanguage());
+changeLanguage(preferredLanguage());
 mountCardDialogs(reducedMotion);
 mountStoryShare();
 mountPage();
