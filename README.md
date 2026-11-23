@@ -21,12 +21,13 @@ scrolling back restores the light top color without animating the page backgroun
 The About essay and Support use the floating glass dialogs from the pre-restoration
 homepage, including browser-back dismissal, focus return and scroll restoration.
 Outer cards span the page; their content is centered at a maximum of 1120px.
-The curriculum follows the latest Figma school presentation: a one-year programme
-with seven first-semester stages (weeks 1–15), seasonal seminars, and second-semester
-startup, industry and research tracks. It is labelled as a draft with adjustable
-weeks and dates. Curriculum copy is maintained in all four landing languages.
-Source: [Curriculum I](https://www.figma.com/design/Mguy5QX2Tyc8pI7HQgRVWd?node-id=1618-2162)
-and [Curriculum II](https://www.figma.com/design/Mguy5QX2Tyc8pI7HQgRVWd?node-id=1618-2237).
+The opening projects are Cereal Project, Validation and Final Project. The
+2027 schedule includes exam breaks, Demo Day and Homecoming Day.
+Members then choose a startup internship, starting their own business, or
+helping run SERIAL.
+The site leaves detailed dates, eligibility and other pending recruitment terms
+for the official announcement. Curriculum and recruitment copy are maintained
+in all four landing languages.
 
 ## 브랜치 전략
 
