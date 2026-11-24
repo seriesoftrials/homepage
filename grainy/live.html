@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="live-document">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#fafaf8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=auto" />
+    <meta name="theme-color" content="#f4f5f1" />
     <script src="/serial-page-theme.js"></script>
     <meta name="robots" content="noindex" />
-    <title>Serial Live</title>
+    <title>Live</title>
     <link rel="icon" href="/favicon.svg?v=8" type="image/svg+xml" />
     <link rel="stylesheet" href="/action-button.css?v=3" />
     <link rel="stylesheet" href="/ver2.css?v=117" />
     <link rel="stylesheet" href="/serial-shell.css?v=3" />
-    <link rel="stylesheet" href="/live.css?v=24" />
-    <script type="module" src="/live.js?v=16"></script>
+    <link rel="stylesheet" href="/live.css?v=25" />
+    <script type="module" src="/live.js?v=18"></script>
   </head>
   <body class="serial-shell live-page">
     <header class="masthead">
@@ -44,7 +44,7 @@
           <p class="feedback" role="status"></p>
         </form>
         <section class="panel event-directory" aria-labelledby="event-directory-title">
-          <h2 id="event-directory-title">만든 행사</h2>
+          <h2 id="event-directory-title" tabindex="-1">만든 행사</h2>
           <p id="event-directory-status" class="feedback" role="status">행사를 불러오는 중…</p>
           <ol id="event-directory-list"></ol>
           <button id="retry-event-directory" class="action-button action-button--quiet action-button--compact" type="button" hidden>다시 불러오기</button>
@@ -122,6 +122,21 @@
       <a href="/">중앙대학교 실전창업학회 Serial</a>
     </footer>
     <dialog id="compose-dialog" class="compose-dialog" aria-labelledby="compose-title"></dialog>
+    <dialog id="event-action-dialog" class="panel event-action-dialog" aria-labelledby="event-action-title" aria-describedby="event-action-description">
+      <form id="event-action-form">
+        <h2 id="event-action-title"></h2>
+        <p id="event-action-description" class="hint" hidden></p>
+        <div id="event-action-name-field">
+          <label for="event-action-name">행사 이름</label>
+          <input id="event-action-name" name="title" maxlength="80" />
+        </div>
+        <div class="event-action-buttons">
+          <button id="cancel-event-action" class="action-button action-button--quiet" type="button">취소</button>
+          <button id="submit-event-action" class="action-button" type="submit">저장</button>
+        </div>
+        <p class="feedback" role="status"></p>
+      </form>
+    </dialog>
     <noscript>Serial Live를 사용하려면 JavaScript를 켜 주세요.</noscript>
   </body>
 </html>

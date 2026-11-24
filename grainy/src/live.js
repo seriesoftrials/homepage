@@ -193,7 +193,7 @@ function render(next) {
     !state.posts.some(({ id }) => id === newest.id));
   state = next;
   const { room, posts, total } = state;
-  document.title = `${room.title} | Serial Live`;
+  document.title = `${room.title} | Live`;
   eventTitle.textContent = room.title;
   intro.hidden = view === "join";
   eventImage.hidden = !room.imageUrl;
@@ -305,10 +305,13 @@ function liveUpdates() {
       else render(next);
       connection("online", view === "join" ? "Live" : "실시간 연결");
     });
-    socket.addEventListener("close", () => {
+    socket.addEventListener("close", ({ code }) => {
       typing?.reset();
       clearInterval(heartbeat);
       if (stopped) return;
+      if (code === 4004) {
+        return handleError(Object.assign(new Error("삭제된 행사입니다."), { status: 404 }));
+      }
       connection("connecting", "다시 연결 중");
       if (!fallback || failures === 0) {
         clearInterval(fallback);
@@ -500,46 +503,144 @@ byId("open-form").addEventListener("submit", async (event) => {
   }
 });
 
-async function loadRooms() {
+function setupDirectory() {
   const status = byId("event-directory-status");
   const retry = byId("retry-event-directory");
   const list = byId("event-directory-list");
-  retry.hidden = true;
-  feedback(status, "행사를 불러오는 중…");
-  try {
-    const rooms = [];
-    let after;
-    do {
-      const page = await api(`/api/live/rooms${after ? `?after=${after}` : ""}`);
-      rooms.push(...page.rooms);
-      after = page.next;
-    } while (after);
-    rooms.sort((a, b) => a.title.localeCompare(b.title, "ko") || a.code.localeCompare(b.code));
-    const items = rooms.map((room) => {
-      const item = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = `/live/${room.code}/manage`;
-      const title = document.createElement("strong");
-      title.textContent = room.title;
-      const meta = document.createElement("span");
-      meta.textContent = `${room.open ? "접수 중" : "접수 마감"} · ${room.code}`;
-      link.append(title, meta);
-      item.append(link);
-      return item;
-    });
-    list.replaceChildren(...items);
-    feedback(status, items.length ? "" : "아직 만든 행사가 없어요.");
-  } catch (error) {
-    if ([401, 403].includes(error.status)) return showError(error);
-    feedback(status, error.message, true);
-    retry.hidden = false;
-  }
-}
+  const dialog = byId("event-action-dialog");
+  const form = byId("event-action-form");
+  const name = byId("event-action-name");
+  const description = byId("event-action-description");
+  const cancel = byId("cancel-event-action");
+  const submit = byId("submit-event-action");
+  const actionStatus = form.querySelector(".feedback");
+  let rooms = [];
+  let action;
 
-byId("retry-event-directory").addEventListener("click", loadRooms);
-window.addEventListener("pageshow", (event) => {
-  if (view === "setup" && event.persisted && !byId("create").hidden) loadRooms();
-});
+  function openAction(room, remove, trigger) {
+    action = { room, remove };
+    trigger.parentElement.open = false;
+    trigger.focus();
+    byId("event-action-title").textContent = remove ? "행사 삭제" : "이름 변경";
+    byId("event-action-name-field").hidden = remove;
+    name.required = !remove;
+    name.value = remove ? "" : room.title;
+    description.hidden = !remove;
+    description.textContent = remove ? `‘${room.title}’ 행사를 삭제할까요? 참가 및 발표 링크가 닫혀요.` : "";
+    submit.textContent = remove ? "삭제" : "저장";
+    submit.toggleAttribute("data-delete", remove);
+    feedback(actionStatus);
+    dialog.showModal();
+    if (remove) cancel.focus();
+    else name.select();
+  }
+
+  function roomItem(room) {
+    const item = document.createElement("li");
+    item.dataset.room = room.code;
+    const link = document.createElement("a");
+    link.href = `/live/${room.code}/manage`;
+    const title = document.createElement("strong");
+    title.textContent = room.title;
+    const meta = document.createElement("span");
+    meta.textContent = `${room.open ? "접수 중" : "접수 마감"} · ${room.code}`;
+    link.append(title, meta);
+
+    const options = document.createElement("details");
+    options.className = "event-options";
+    options.name = "live-event-options";
+    const trigger = document.createElement("summary");
+    trigger.textContent = "⋯";
+    trigger.setAttribute("aria-label", `${room.title} 관리 메뉴`);
+    const menu = document.createElement("div");
+    menu.className = "event-options-menu";
+    for (const [label, remove] of [["이름 변경", false], ["삭제", true]]) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      if (remove) button.className = "event-delete";
+      button.addEventListener("click", () => openAction(room, remove, trigger));
+      menu.append(button);
+    }
+    options.append(trigger, menu);
+    item.append(link, options);
+    return item;
+  }
+
+  function renderRooms() {
+    rooms.sort((a, b) => a.title.localeCompare(b.title, "ko") || a.code.localeCompare(b.code));
+    list.replaceChildren(...rooms.map(roomItem));
+    feedback(status, rooms.length ? "" : "아직 만든 행사가 없어요.");
+  }
+
+  async function load() {
+    retry.hidden = true;
+    feedback(status, "행사를 불러오는 중…");
+    try {
+      const loaded = [];
+      let after;
+      do {
+        const page = await api(`/api/live/rooms${after ? `?after=${after}` : ""}`);
+        loaded.push(...page.rooms);
+        after = page.next;
+      } while (after);
+      rooms = loaded;
+      renderRooms();
+    } catch (error) {
+      if ([401, 403].includes(error.status)) return showError(error);
+      feedback(status, error.message, true);
+      retry.hidden = false;
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    for (const menu of list.querySelectorAll(".event-options[open]")) {
+      if (!menu.contains(event.target)) menu.open = false;
+    }
+  });
+  list.addEventListener("keydown", (event) => {
+    const menu = event.target.closest(".event-options[open]");
+    if (event.key !== "Escape" || !menu) return;
+    menu.open = false;
+    menu.querySelector("summary").focus();
+  });
+  cancel.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("cancel", (event) => {
+    if (submit.disabled) event.preventDefault();
+  });
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (submit.disabled) return;
+    const { room, remove } = action;
+    const path = `/api/live/${room.code}/manage`;
+    feedback(actionStatus);
+    submit.disabled = cancel.disabled = true;
+    name.readOnly = true;
+    try {
+      if (remove) {
+        await api(path, "DELETE");
+        rooms = rooms.filter(({ code }) => code !== room.code);
+      } else {
+        const { room: updated } = await api(path, "PATCH", { title: name.value });
+        rooms = rooms.map((item) => item.code === room.code ? updated : item);
+      }
+      dialog.close();
+      renderRooms();
+      const next = list.querySelector(`[data-room="${room.code}"] summary`) ?? byId("event-directory-title");
+      next.focus({ preventScroll: true });
+    } catch (error) {
+      feedback(actionStatus, error.message, true);
+    } finally {
+      submit.disabled = cancel.disabled = false;
+      name.readOnly = false;
+    }
+  });
+  retry.addEventListener("click", load);
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && !byId("create").hidden) load();
+  });
+  return load();
+}
 
 async function start() {
   if (view === "setup") {
@@ -548,7 +649,7 @@ async function start() {
     if (member?.role !== "admin") throw new Error("SERIAL 관리자만 사용할 수 있습니다.");
     eventTitle.textContent = "행사 운영";
     byId("create").hidden = false;
-    await loadRooms();
+    await setupDirectory();
     return;
   }
   if (!roomCode.test(code)) throw Object.assign(new Error("참가 링크를 확인해 주세요."), { status: 404 });
