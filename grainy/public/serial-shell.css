@@ -3,6 +3,7 @@
 
 .serial-shell {
   --gutter: clamp(10px, 4vw, 52px);
+  --muted: var(--body);
   min-height: 100dvh;
   padding: calc(clamp(12px, 2vw, 24px) + var(--safe-top))
     max(var(--gutter), var(--safe-right)) calc(40px + var(--safe-bottom)) max(var(--gutter), var(--safe-left));
@@ -27,3 +28,19 @@
   box-shadow: 0 8px 30px rgb(0 0 0 / .035);
 }
 .masthead .brand { justify-content: center; }
+
+.serial-shell .member-field input {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--inset-surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.serial-shell .member-field input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.serial-shell .member-field input::placeholder { color: var(--body); opacity: 1; }
+.serial-shell .member-status:empty { display: none; }
+.serial-shell .member-status[data-state="error"] { color: var(--form-error-color); }

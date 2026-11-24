@@ -81,6 +81,15 @@ test("deployment identity is uncached and does not intercept backend health", as
   assert.equal(await head.text(), "");
 });
 
+test("the Live entry redirects to the event management page", async () => {
+  for (const [method, path] of [["GET", "/live"], ["HEAD", "/live/?ref=home"]]) {
+    const url = new URL(path, "https://seriesoftrials.com");
+    const response = await worker.fetch(new Request(url, { method }), {});
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get("location"), `/live/manage${url.search}`);
+  }
+});
+
 test("live participant, stage and admin views serve the same standalone page", async () => {
   for (const path of ["/live/manage", "/live/0123456789", "/live/0123456789/screen", "/live/0123456789/manage"]) {
     const response = await worker.fetch(new Request(`https://seriesoftrials.com${path}`), {
