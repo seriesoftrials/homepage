@@ -11,14 +11,14 @@
     <link rel="stylesheet" href="/action-button.css?v=3" />
     <link rel="stylesheet" href="/ver2.css?v=117" />
     <link rel="stylesheet" href="/serial-shell.css?v=3" />
-    <link rel="stylesheet" href="/live.css?v=25" />
-    <script type="module" src="/live.js?v=18"></script>
+    <link rel="stylesheet" href="/live.css?v=29" />
+    <script type="module" src="/live.js?v=26"></script>
   </head>
   <body class="serial-shell live-page">
     <header class="masthead">
       <div class="masthead-brand">
         <a class="brand" href="/" aria-label="SERIAL 홈"><img src="/nav-ribbon-rest.png" alt="" width="40" height="40" /></a>
-        <p id="section-name">Serial Live</p>
+        <p id="section-name" hidden>Serial Live 운영</p>
       </div>
       <div class="masthead-actions">
         <span id="connection" class="connection" data-state="connecting" role="status" hidden>연결 중</span>
@@ -93,6 +93,7 @@
             <span id="typing-dots" class="typing-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
             <span id="typing-status" role="status"></span>
           </div>
+          <p id="reaction-feedback" class="feedback" role="status"></p>
         </section>
 
         <div id="compose-slot" tabindex="-1" hidden>
@@ -118,9 +119,6 @@
         <p id="closed" class="panel empty" hidden>글 접수가 마감되었습니다.</p>
       </div>
     </main>
-    <footer id="live-footer" class="live-footer" hidden>
-      <a href="/">중앙대학교 실전창업학회 Serial</a>
-    </footer>
     <dialog id="compose-dialog" class="compose-dialog" aria-labelledby="compose-title"></dialog>
     <dialog id="event-action-dialog" class="panel event-action-dialog" aria-labelledby="event-action-title" aria-describedby="event-action-description">
       <form id="event-action-form">
