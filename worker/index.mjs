@@ -1,5 +1,5 @@
 import { handleLive, isLivePage } from "./live.mjs";
-import { styleLoginPage } from "./login.mjs";
+import { styleMemberPage } from "./member-page.mjs";
 
 export { LiveRoom } from "./live.mjs";
 
@@ -32,12 +32,17 @@ const worker = {
 
     // Preserve the complete request, including session cookies and POST bodies.
     // Protected pages always reach the member server, even if an asset is added.
-    if (request.method === "GET" && /^\/login\/?$/.test(url.pathname)) {
-      return styleLoginPage(await env.BACKEND.fetch(request));
+    const memberPage = /^\/(login|members)\/?$/.exec(url.pathname)?.[1];
+    if (request.method === "GET" && memberPage) {
+      return styleMemberPage(await env.BACKEND.fetch(request), memberPage);
     }
     if (!["GET", "HEAD"].includes(request.method) ||
         /^\/(?:api|login|members|updates)(?:\/|$)/.test(url.pathname)) {
       return env.BACKEND.fetch(request);
+    }
+
+    if (url.pathname === "/live" || url.pathname === "/live/") {
+      return new Response(null, { status: 302, headers: { location: `/live/manage${url.search}` } });
     }
 
     const assetUrl = new URL(url);
