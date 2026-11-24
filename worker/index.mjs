@@ -1,3 +1,8 @@
+import { handleLive, isLivePage } from "./live.mjs";
+import { styleLoginPage } from "./login.mjs";
+
+export { LiveRoom } from "./live.mjs";
+
 const pagePaths = new Map([
   ["/", "/index.html"],
   ["/ver2", "/index.html"],
@@ -11,6 +16,7 @@ const pagePaths = new Map([
 const worker = {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (/^\/api\/live(?:\/|$)/.test(url.pathname)) return handleLive(request, env, url);
     if (url.pathname === "/api/deployment") {
       if (request.method !== "GET" && request.method !== "HEAD") {
         return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
@@ -26,13 +32,17 @@ const worker = {
 
     // Preserve the complete request, including session cookies and POST bodies.
     // Protected pages always reach the member server, even if an asset is added.
+    if (request.method === "GET" && /^\/login\/?$/.test(url.pathname)) {
+      return styleLoginPage(await env.BACKEND.fetch(request));
+    }
     if (!["GET", "HEAD"].includes(request.method) ||
         /^\/(?:api|login|members|updates)(?:\/|$)/.test(url.pathname)) {
       return env.BACKEND.fetch(request);
     }
 
     const assetUrl = new URL(url);
-    assetUrl.pathname = pagePaths.get(url.pathname) || url.pathname;
+    const live = isLivePage(url.pathname) || url.pathname === "/live.html";
+    assetUrl.pathname = live ? "/live.html" : pagePaths.get(url.pathname) || url.pathname;
     const asset = await env.ASSETS.fetch(new Request(assetUrl, request));
     if (asset.status === 404) return env.BACKEND.fetch(request);
 
@@ -47,6 +57,7 @@ const worker = {
     response.headers.set("x-content-type-options", "nosniff");
     response.headers.set("x-frame-options", "DENY");
     response.headers.set("referrer-policy", "strict-origin-when-cross-origin");
+    if (live) response.headers.set("x-robots-tag", "noindex");
     response.headers.set("x-serial-homepage-revision", env.DEPLOYMENT_SHA || "local");
     return response;
   },

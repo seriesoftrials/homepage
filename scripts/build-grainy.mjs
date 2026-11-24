@@ -12,10 +12,11 @@ const output = resolve(root, "public/grainy");
 await mkdir(output, { recursive: true });
 execFileSync(process.execPath, [resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'), '-i', resolve(source, 'shadcn.css'), '-o', resolve(output, 'shadcn.css'), '--minify'], { cwd: root, stdio: 'inherit' });
 await cp(resolve(source, "public"), output, { recursive: true });
-const [template, intro, supportTemplate, japaneseFonts, css] = await Promise.all([
+const [template, intro, supportTemplate, live, japaneseFonts, css] = await Promise.all([
   readFile(resolve(source, "index.html"), "utf8"),
   readFile(resolve(source, "intro.html"), "utf8"),
   readFile(resolve(source, "support.html"), "utf8"),
+  readFile(resolve(source, "live.html"), "utf8"),
   readFile(resolve(source, "public/fonts/pretendard-jp/font-face.css"), "utf8"),
   readFile(resolve(source, "public/ver2.css"), "utf8"),
 ]);
@@ -38,9 +39,10 @@ await Promise.all([
   writeFile(resolve(output, "index.html"), html),
   writeFile(resolve(output, "intro.html"), story),
   writeFile(resolve(output, "support.html"), support),
+  writeFile(resolve(output, "live.html"), live),
   writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${css}`),
   build({
-    entryPoints: [resolve(source, "src/ver2-hero.js"), resolve(source, "src/support.js")],
+    entryPoints: [resolve(source, "src/ver2-hero.js"), resolve(source, "src/support.js"), resolve(source, "src/live.js")],
     outdir: output,
     bundle: true,
     format: "esm",
@@ -55,9 +57,9 @@ await Promise.all([
 ]);
 
 // Catch incomplete asset transfers before development or production starts.
-const routes = new Set(["/", "/index.html", "/ver2", "/intro", "/support"]);
+const routes = new Set(["/", "/index.html", "/ver2", "/intro", "/support", "/login", "/live/manage"]);
 const references = new Set();
-for (const page of [html, story, support]) {
+for (const page of [html, story, support, live]) {
   for (const match of page.matchAll(/(?:src|href)=["'](\/[^"']*)["']/g)) {
     references.add(match[1]);
   }
