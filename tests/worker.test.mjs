@@ -80,3 +80,34 @@ test("deployment identity is uncached and does not intercept backend health", as
   const head = await worker.fetch(new Request("https://seriesoftrials.com/api/deployment", { method: "HEAD" }), { DEPLOYMENT_SHA: revision });
   assert.equal(await head.text(), "");
 });
+
+test("live participant, stage and admin views serve the same standalone page", async () => {
+  for (const path of ["/live/manage", "/live/0123456789", "/live/0123456789/screen", "/live/0123456789/manage"]) {
+    const response = await worker.fetch(new Request(`https://seriesoftrials.com${path}`), {
+      ASSETS: { fetch: async (request) => {
+        assert.equal(new URL(request.url).pathname, "/live.html");
+        return new Response("live");
+      } },
+    });
+    assert.equal(await response.text(), "live");
+    assert.equal(response.headers.get("x-robots-tag"), "noindex");
+  }
+});
+
+test("live manager permissions come from the verified member session", async () => {
+  const origin = "https://seriesoftrials.com";
+  const url = `${origin}/api/live/0123456789/manage`;
+  const env = {
+    LIVE_ROOMS: { idFromName: () => assert.fail("Unauthorized requests must not reach live rooms") },
+    BACKEND: { fetch: async (request) => {
+      assert.equal(request.url, `${origin}/api/me`);
+      assert.equal(request.headers.get("cookie"), "session=member");
+      assert.equal(request.headers.get("oai-authenticated-user-id"), null);
+      return Response.json({ member: { role: "member" } });
+    } },
+  };
+  assert.equal((await worker.fetch(new Request(url), env)).status, 401);
+  const headers = { cookie: "session=member", "oai-authenticated-user-id": "fake-admin" };
+  assert.equal((await worker.fetch(new Request(url, { headers }), env)).status, 403);
+  assert.equal((await worker.fetch(new Request(url, { method: "PATCH", headers: { ...headers, origin: "https://other.example" } }), env)).status, 403);
+});
