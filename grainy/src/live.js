@@ -52,6 +52,10 @@ function connection(status, label) {
   indicator.hidden = false;
 }
 
+function postAction(id, action) {
+  return postList.querySelector(`[data-id="${id}"] [data-post-action="${action}"]`);
+}
+
 function makePost(post) {
   const item = document.createElement("li");
   item.className = "post";
@@ -69,13 +73,24 @@ function makePost(post) {
   if (view === "manage") {
     const actions = document.createElement("div");
     actions.className = "post-actions";
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "action-button action-button--quiet action-button--compact";
-    button.textContent = post.hidden ? "다시 표시" : "숨기기";
-    button.disabled = managing;
-    button.addEventListener("click", () => updateRoom({ id: post.id, hidden: !post.hidden }, post.id));
-    actions.append(button);
+    const visibility = document.createElement("button");
+    visibility.type = "button";
+    visibility.className = "action-button action-button--quiet action-button--compact";
+    visibility.dataset.postAction = "visibility";
+    visibility.textContent = post.hidden ? "다시 표시" : "숨기기";
+    visibility.disabled = managing;
+    visibility.addEventListener("click", () => updateRoom({ id: post.id, hidden: !post.hidden }, "visibility"));
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "action-button action-button--quiet action-button--compact post-delete";
+    remove.dataset.postAction = "delete";
+    remove.textContent = "삭제";
+    remove.disabled = managing;
+    remove.addEventListener("click", () => {
+      if (window.confirm("이 글을 영구 삭제할까요?")) updateRoom({ id: post.id, remove: true }, "delete");
+    });
+    actions.append(visibility, remove);
     item.append(actions);
   }
   return item;
@@ -93,9 +108,10 @@ function render(next) {
   byId("feed-title").textContent = view === "manage" ? "들어온 글" : "올라온 글";
   byId("post-count").textContent = `${total}개`;
   byId("empty-feed").hidden = Boolean(posts.length);
+  const focusedAction = document.activeElement?.dataset.postAction;
   const focusedId = document.activeElement?.closest(".post")?.dataset.id;
   postList.replaceChildren(...(view === "screen" ? posts.slice(0, 5) : posts).map(makePost));
-  if (focusedId) postList.querySelector(`[data-id="${focusedId}"] button`)?.focus({ preventScroll: true });
+  if (focusedId && focusedAction) postAction(focusedId, focusedAction)?.focus({ preventScroll: true });
 
   if (view === "manage") {
     byId("controls").hidden = false;
@@ -226,10 +242,14 @@ compose.addEventListener("submit", async (event) => {
   }
 });
 
-async function updateRoom(changes, focusedId) {
+async function updateRoom(changes, action) {
   if (managing) return;
   const status = byId("manage-feedback");
   const toggle = byId("toggle-room");
+  let focusId = changes.id;
+  let focusAction = action;
+  const removedRow = changes.remove ? postAction(focusId, focusAction)?.closest(".post") : null;
+  const adjacentPost = removedRow?.nextElementSibling ?? removedRow?.previousElementSibling;
   function setBusy(busy) {
     managing = toggle.disabled = busy;
     for (const button of postList.querySelectorAll("button")) button.disabled = busy;
@@ -237,15 +257,23 @@ async function updateRoom(changes, focusedId) {
   setBusy(true);
   feedback(status, "변경 중…");
   try {
-    render(await api(`${endpoint}/manage`, "PATCH", changes));
-    feedback(status, focusedId ? (changes.hidden ? "글을 숨겼어요." : "글을 다시 표시했어요.") : byId("room-status").textContent);
+    const next = await api(`${endpoint}/manage`, "PATCH", changes);
+    if (changes.remove) {
+      focusId = adjacentPost?.dataset.id;
+      focusAction = "visibility";
+    }
+    render(next);
+    const message = changes.remove ? "글을 삭제했어요."
+      : changes.id ? (changes.hidden ? "글을 숨겼어요." : "글을 다시 표시했어요.")
+      : byId("room-status").textContent;
+    feedback(status, message);
   } catch (error) {
     if ([401, 403].includes(error.status)) showError(error);
     feedback(status, error.message, true);
   } finally {
     setBusy(false);
-    if (focusedId) postList.querySelector(`[data-id="${focusedId}"] button`)?.focus({ preventScroll: true });
-    else toggle.focus({ preventScroll: true });
+    const target = focusId ? postAction(focusId, focusAction) : null;
+    (target ?? toggle).focus({ preventScroll: true });
   }
 }
 
