@@ -54,6 +54,9 @@ async function verify() {
   assert.equal(liveAdmin.status, 401, "Live administration requires a session");
   assert.equal(liveAdmin.headers.get("content-type")?.split(";")[0], "application/json");
   await liveAdmin.body?.cancel();
+  const liveDirectory = await request("/api/live/rooms");
+  assert.equal(liveDirectory.status, 401, "The Live room list requires an administrator session");
+  await liveDirectory.body?.cancel();
 }
 
 for (let attempt = 1; attempt <= 6; attempt++) {

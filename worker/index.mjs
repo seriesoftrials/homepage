@@ -2,6 +2,7 @@ import { handleLive, isLivePage } from "./live.mjs";
 import { styleMemberPage } from "./member-page.mjs";
 
 export { LiveRoom } from "./live.mjs";
+export { LiveRoomDirectory } from "./live-directory.mjs";
 
 const pagePaths = new Map([
   ["/", "/index.html"],

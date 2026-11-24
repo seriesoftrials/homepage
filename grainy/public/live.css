@@ -44,13 +44,24 @@ h2 { font-size: 21px; font-weight: 600; letter-spacing: -.035em; }
 .panel { min-width: 0; padding: clamp(18px, 3vw, 28px); border-radius: 18px; background: var(--tile-surface); }
 .setup form, .compose, .controls { display: grid; gap: 14px; }
 .setup form .action-button { justify-self: start; }
+.event-directory { display: grid; gap: 12px; }
+.event-directory ol { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.event-directory ol:empty { display: none; }
+.event-directory li a { display: grid; gap: 4px; padding: 12px; border-radius: 12px; background: var(--inset-surface); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.event-directory li a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.event-directory li a span { color: var(--body); font-size: 13px; }
+.event-directory > button { justify-self: start; }
+.open-event summary { width: fit-content; padding-block: 6px; color: var(--body); font-size: 14px; cursor: pointer; }
+.open-event form { margin-top: 8px; }
 .compose-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .compose-dialog {
+  --compose-safe-top: max(12px, var(--safe-top));
+  --compose-safe-bottom: max(12px, var(--safe-bottom));
   position: fixed;
-  inset: calc(var(--compose-viewport-top, 0px) + var(--compose-viewport-height, 100dvh) / 2) 0 auto;
+  inset: calc(var(--compose-viewport-top, 0px) + (var(--compose-viewport-height, 100dvh) + var(--compose-safe-top) - var(--compose-safe-bottom)) / 2) 0 auto;
   width: min(calc(100% - max(var(--gutter), var(--safe-left)) - max(var(--gutter), var(--safe-right))), 560px);
   max-width: none;
-  max-height: calc(var(--compose-viewport-height, 100dvh) - 24px);
+  max-height: calc(var(--compose-viewport-height, 100dvh) - var(--compose-safe-top) - var(--compose-safe-bottom));
   margin: 0 auto;
   padding: 0;
   overflow: auto;
@@ -181,13 +192,13 @@ body[data-view="join"] .feed { position: relative; display: flex; flex: 1; flex-
   display: flex;
   flex: none;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  min-height: 28px;
-  margin-block-start: 12px;
   padding-inline: 4px;
   color: var(--body);
   font-size: 12px;
 }
+.typing-row:has(.typing-dots:not([hidden])) { min-height: 28px; margin-block-start: 12px; }
 .typing-dots {
   display: inline-flex;
   align-items: center;
@@ -218,6 +229,22 @@ body[data-view="join"] .posts {
 body[data-view="join"] .posts:not(:empty) { padding-block-start: var(--live-feed-inset); }
 body[data-view="join"] .posts:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 14px; }
 body[data-view="join"] .post-text { font-size: 15px; font-weight: 500; }
+.new-questions {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: var(--live-feed-inset);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  min-height: 40px;
+  box-shadow: 0 3px 12px rgb(0 0 0 / .12);
+}
+@media (prefers-reduced-motion: no-preference) {
+  body[data-view="join"] .post-arriving { animation: live-question-arrival 240ms ease-out; }
+  @keyframes live-question-arrival {
+    from { opacity: .45; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
 .live-footer {
   position: fixed;
   z-index: 2;

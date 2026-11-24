@@ -123,3 +123,13 @@ test("live manager permissions come from the verified member session", async () 
   assert.equal((await worker.fetch(deletion, env)).status, 403);
   assert.equal((await worker.fetch(new Request(url, { method: "PATCH", headers: { ...headers, origin: "https://other.example" } }), env)).status, 403);
 });
+
+test("the Live room list keeps room discovery behind the administrator session", async () => {
+  const url = "https://seriesoftrials.com/api/live/rooms";
+  const env = {
+    LIVE_ROOM_DIRECTORY: { idFromName: () => assert.fail("Unauthorized requests must not reach the room directory") },
+    BACKEND: { fetch: () => Response.json({ member: { role: "member" } }) },
+  };
+  assert.equal((await worker.fetch(new Request(url), env)).status, 401);
+  assert.equal((await worker.fetch(new Request(url, { headers: { cookie: "session=member" } }), env)).status, 403);
+});
