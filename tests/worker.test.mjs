@@ -118,5 +118,8 @@ test("live manager permissions come from the verified member session", async () 
   assert.equal((await worker.fetch(new Request(url), env)).status, 401);
   const headers = { cookie: "session=member", "oai-authenticated-user-id": "fake-admin" };
   assert.equal((await worker.fetch(new Request(url, { headers }), env)).status, 403);
+  const body = JSON.stringify({ id: "a".repeat(32), remove: true });
+  const deletion = new Request(url, { method: "PATCH", headers: { ...headers, origin, "content-type": "application/json" }, body });
+  assert.equal((await worker.fetch(deletion, env)).status, 403);
   assert.equal((await worker.fetch(new Request(url, { method: "PATCH", headers: { ...headers, origin: "https://other.example" } }), env)).status, 403);
 });
