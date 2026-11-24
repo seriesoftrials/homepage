@@ -1,7 +1,8 @@
 import { readRoomSummary, roomDirectory, trackRoom } from "./live-directory.mjs";
 
 const roomCode = "[a-f0-9]{10}";
-const apiPath = new RegExp(`^/api/live/(${roomCode})(?:/(stream|posts|manage|image))?$`);
+const apiPath = new RegExp(`^/api/live/(${roomCode})(?:/(stream|posts|manage|image|reactions))?$`);
+const anonymousId = /^[a-f0-9]{32}$/;
 const pagePath = new RegExp(`^/live/(?:${roomCode})(?:/(?:screen|manage))?/?$`);
 const postLimit = 1000;
 const imageLimit = 96 * 1024;
@@ -119,7 +120,7 @@ export async function handleLive(request, env, url) {
   const allowed = collection ? ["GET", "POST"]
     : remembering || view === "posts" ? ["POST"]
     : view === "manage" ? ["GET", "PATCH", "DELETE"]
-    : view === "image" ? ["GET", "PUT"]
+    : view === "image" || view === "reactions" ? ["GET", "PUT"]
     : ["GET"];
   if (!allowed.includes(method)) return error("지원하지 않는 요청입니다.", 405);
   if ((method !== "GET" || view === "stream") && request.headers.get("origin") !== url.origin) {
@@ -194,10 +195,18 @@ export async function handleLive(request, env, url) {
       return error("실시간 연결을 시작할 수 없습니다.", 426);
     }
     const stream = new URL("/stream", url.origin);
-    if (url.searchParams.get("typing") === "1") stream.searchParams.set("typing", "1");
+    for (const tag of ["typing", "reactions"]) {
+      if (url.searchParams.get(tag) === "1") stream.searchParams.set(tag, "1");
+    }
     return room.fetch(stream, { headers: { upgrade: "websocket" } });
   }
-  if (method === "GET" || method === "DELETE") return room.fetch(`${url.origin}/${view}`, { method });
+  const headers = new Headers();
+  if (view === "reactions" || (view === "posts" && request.headers.has("x-live-voter"))) {
+    const voter = request.headers.get("x-live-voter");
+    if (!anonymousId.test(voter ?? "")) return error("새로고침한 뒤 다시 시도해 주세요.", 400);
+    headers.set("x-live-voter", voter);
+  }
+  if (method === "GET" || method === "DELETE") return room.fetch(`${url.origin}/${view}`, { method, headers });
   if (view === "image") {
     const body = await readImage(request);
     if (!body) return error("이미지를 처리할 수 없어요. 다른 사진을 선택해 주세요.", 400);
@@ -206,7 +215,7 @@ export async function handleLive(request, env, url) {
 
   const input = await readInput(request);
   if (!input || typeof input !== "object" || Array.isArray(input)) return error("입력 내용을 확인해 주세요.", 400);
-  return room.fetch(`${url.origin}/${view}`, { method, body: JSON.stringify(input) });
+  return room.fetch(`${url.origin}/${view}`, { method, headers, body: JSON.stringify(input) });
 }
 
 export class LiveRoom {
@@ -231,15 +240,24 @@ export class LiveRoom {
     }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS posts (
       sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, text TEXT NOT NULL,
-      createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, speaker TEXT NOT NULL DEFAULT ''
+      createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, speaker TEXT NOT NULL DEFAULT '',
+      legacyAuthorLike INTEGER NOT NULL DEFAULT 1
     )`);
-    if (!this.sql.exec("PRAGMA table_info(posts)").toArray().some(({ name }) => name === "speaker")) {
+    const postColumns = this.sql.exec("PRAGMA table_info(posts)").toArray().map(({ name }) => name);
+    if (!postColumns.includes("speaker")) {
       this.sql.exec("ALTER TABLE posts ADD COLUMN speaker TEXT NOT NULL DEFAULT ''");
+    }
+    if (!postColumns.includes("legacyAuthorLike")) {
+      this.sql.exec("ALTER TABLE posts ADD COLUMN legacyAuthorLike INTEGER NOT NULL DEFAULT 1");
     }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS event_image (
       singleton INTEGER PRIMARY KEY CHECK (singleton = 1), version INTEGER NOT NULL, data BLOB NOT NULL
     )`);
     this.sql.exec("CREATE TABLE IF NOT EXISTS deleted_posts (id TEXT PRIMARY KEY)");
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS post_reactions (
+      postId TEXT NOT NULL, voter TEXT NOT NULL, PRIMARY KEY (postId, voter)
+    )`);
+    this.sql.exec("CREATE INDEX IF NOT EXISTS post_reactions_by_voter ON post_reactions (voter)");
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
   }
 
@@ -250,7 +268,9 @@ export class LiveRoom {
   snapshot({ code, title, open, version, speakerPreset }, admin = false) {
     const posts = admin
       ? this.sql.exec("SELECT id, text, createdAt, hidden, speaker FROM posts ORDER BY sequence DESC").toArray()
-      : this.sql.exec("SELECT id, text, createdAt, speaker FROM posts WHERE hidden = 0 ORDER BY sequence DESC LIMIT 50").toArray();
+      : this.sql.exec(`SELECT id, text, createdAt, speaker,
+          legacyAuthorLike + (SELECT COUNT(*) FROM post_reactions WHERE postId = posts.id) AS likes
+        FROM posts WHERE hidden = 0 ORDER BY sequence DESC LIMIT 50`).toArray();
     const total = this.sql.exec(admin ? "SELECT COUNT(*) AS count FROM posts" : "SELECT COUNT(*) AS count FROM posts WHERE hidden = 0").one().count;
     const speakers = speakersFor(speakerPreset);
     const image = this.sql.exec("SELECT version FROM event_image WHERE singleton = 1").toArray()[0];
@@ -277,11 +297,15 @@ export class LiveRoom {
     if (path === "/image") return this.eventImage(request);
     if (path === "/stream") {
       const [client, server] = Object.values(new WebSocketPair());
-      const typing = url.searchParams.get("typing") === "1";
-      this.ctx.acceptWebSocket(server, typing ? ["typing"] : []);
-      if (typing) server.serializeAttachment({ id: crypto.randomUUID(), active: false, lastStarted: 0 });
+      const tags = ["typing", "reactions"].filter((tag) => url.searchParams.get(tag) === "1");
+      this.ctx.acceptWebSocket(server, tags);
+      if (tags.includes("typing")) server.serializeAttachment({ id: crypto.randomUUID(), active: false, lastStarted: 0 });
       server.send(JSON.stringify(this.snapshot(room)));
       return new Response(null, { status: 101, webSocket: client });
+    }
+    if (path === "/reactions" && request.method === "GET") {
+      const votes = this.sql.exec("SELECT postId FROM post_reactions WHERE voter = ?", request.headers.get("x-live-voter")).toArray();
+      return json({ liked: votes.map(({ postId }) => postId) });
     }
     if (request.method === "GET") return json(this.snapshot(room, path === "/manage"));
 
@@ -289,7 +313,8 @@ export class LiveRoom {
     // Read after the body await so a concurrent pause or deletion takes effect.
     const latest = this.current();
     if (latest.deleted) return missingRoom();
-    if (path === "/posts") return this.submit(input, latest);
+    if (path === "/posts") return this.submit(input, latest, request.headers.get("x-live-voter"));
+    if (path === "/reactions") return this.react(input, request.headers.get("x-live-voter"));
     if (path === "/manage") return this.update(input);
     return error("주소를 다시 확인해 주세요.", 404);
   }
@@ -314,37 +339,69 @@ export class LiveRoom {
     return json(this.snapshot(room, true));
   }
 
-  submit({ id, text, speaker = "" }, room) {
+  submit({ id, text, speaker = "" }, room, voter) {
     const message = typeof text === "string" ? text.trim() : "";
-    if (typeof id !== "string" || !/^[a-f0-9]{32}$/.test(id) || !message || message.length > 280) {
+    if (typeof id !== "string" || !anonymousId.test(id) || !message || message.length > 280) {
       return error("글을 1~280자로 입력해 주세요.", 400);
     }
     if (speaker !== "" && !speakersFor(room.speakerPreset).some(({ id }) => id === speaker)) {
       return error("질문 대상을 다시 선택해 주세요.", 400);
     }
-    const existing = this.sql.exec("SELECT text, speaker FROM posts WHERE id = ?", id).toArray()[0];
-    if (existing) return existing.text === message && existing.speaker === speaker ? json({ id }) : error("다시 입력해 주세요.", 409);
-    if (this.wasDeleted(id)) return json({ id });
+    const existing = this.sql.exec(`SELECT text, speaker,
+        EXISTS (SELECT 1 FROM post_reactions WHERE postId = posts.id AND voter = ?) AS liked
+      FROM posts WHERE id = ?`, voter, id).toArray()[0];
+    if (existing) {
+      if (existing.text !== message || existing.speaker !== speaker) return error("다시 입력해 주세요.", 409);
+      return json({ id, liked: Boolean(existing.liked) });
+    }
+    if (this.wasDeleted(id)) return json({ id, liked: false });
     if (!room.open) return error("이 행사의 글 접수가 마감되었습니다.", 409);
     const count = this.sql.exec("SELECT COUNT(*) AS count FROM posts").one().count;
     if (count >= postLimit) return error("이 행사에서 받을 수 있는 글이 모두 찼습니다.", 409);
     this.ctx.storage.transactionSync(() => {
-      this.sql.exec("INSERT INTO posts (id, text, createdAt, speaker) VALUES (?, ?, ?, ?)", id, message, Date.now(), speaker);
+      this.sql.exec("INSERT INTO posts (id, text, createdAt, speaker, legacyAuthorLike) VALUES (?, ?, ?, ?, ?)",
+        id, message, Date.now(), speaker, Number(!voter));
+      if (voter) this.sql.exec("INSERT INTO post_reactions (postId, voter) VALUES (?, ?)", id, voter);
       this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1");
     });
     this.broadcast(this.current());
-    return json({ id }, 201);
+    return json({ id, liked: Boolean(voter) }, 201);
   }
 
   wasDeleted(id) {
     return this.sql.exec("SELECT id FROM deleted_posts WHERE id = ?", id).toArray().length > 0;
   }
 
+  react({ id, active }, voter) {
+    if (typeof id !== "string" || !anonymousId.test(id) || typeof active !== "boolean") {
+      return error("따봉을 반영하지 못했어요. 다시 시도해 주세요.", 400);
+    }
+    const post = this.sql.exec("SELECT legacyAuthorLike FROM posts WHERE id = ? AND hidden = 0", id).toArray()[0];
+    if (!post) {
+      return error("이 질문은 더 이상 볼 수 없어요.", 404);
+    }
+    const { changed, version, likes } = this.ctx.storage.transactionSync(() => {
+      const query = active
+        ? "INSERT INTO post_reactions (postId, voter) VALUES (?, ?) ON CONFLICT DO NOTHING RETURNING postId"
+        : "DELETE FROM post_reactions WHERE postId = ? AND voter = ? RETURNING postId";
+      const changed = this.sql.exec(query, id, voter).toArray().length > 0;
+      const { version } = changed
+        ? this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1 RETURNING version").one()
+        : this.current();
+      const { likes } = this.sql.exec("SELECT COUNT(*) AS likes FROM post_reactions WHERE postId = ?", id).one();
+      return { changed, version, likes };
+    });
+    const update = { id, version, likes: likes + post.legacyAuthorLike };
+    if (changed) this.sendToSockets(this.ctx.getWebSockets("reactions"), { type: "reaction", ...update });
+    return json({ ...update, active });
+  }
+
   deletePost(id) {
-    if (typeof id !== "string" || !/^[a-f0-9]{32}$/.test(id)) return error("입력 내용을 확인해 주세요.", 400);
+    if (typeof id !== "string" || !anonymousId.test(id)) return error("입력 내용을 확인해 주세요.", 400);
     const removed = this.ctx.storage.transactionSync(() => {
       const post = this.sql.exec("DELETE FROM posts WHERE id = ? RETURNING id", id).toArray()[0];
       if (!post) return false;
+      this.sql.exec("DELETE FROM post_reactions WHERE postId = ?", id);
       // Keep the receipt ID so a retry cannot bring the deleted post back.
       this.sql.exec("INSERT INTO deleted_posts (id) VALUES (?)", id);
       this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1");
@@ -390,10 +447,13 @@ export class LiveRoom {
 
   broadcast(room) {
     const sockets = this.ctx.getWebSockets();
-    if (!sockets.length) return;
-    const message = JSON.stringify(this.snapshot(room));
+    if (sockets.length) this.sendToSockets(sockets, this.snapshot(room));
+  }
+
+  sendToSockets(sockets, payload, sender) {
+    const message = JSON.stringify(payload);
     for (const socket of sockets) {
-      if (socket.readyState !== WebSocket.OPEN) continue;
+      if (socket === sender || socket.readyState !== WebSocket.OPEN) continue;
       try { socket.send(message); } catch { socket.close(1011, "Reconnect"); }
     }
   }
@@ -412,11 +472,7 @@ export class LiveRoom {
   }
 
   broadcastTyping(sender, id, active) {
-    const message = JSON.stringify({ type: "typing", id, active });
-    for (const socket of this.ctx.getWebSockets("typing")) {
-      if (socket === sender || socket.readyState !== WebSocket.OPEN) continue;
-      try { socket.send(message); } catch { socket.close(1011, "Reconnect"); }
-    }
+    this.sendToSockets(this.ctx.getWebSockets("typing"), { type: "typing", id, active }, sender);
   }
 
   webSocketClose(socket) {

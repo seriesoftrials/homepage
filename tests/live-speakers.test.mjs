@@ -3,7 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { handleLive, LiveRoom } from "../worker/live.mjs";
 
-function openRoom(db) {
+function openRoom(db, getWebSockets = () => []) {
   globalThis.WebSocketRequestResponsePair ??= class {};
   return new LiveRoom({
     storage: {
@@ -25,7 +25,7 @@ function openRoom(db) {
         }
       },
     },
-    getWebSockets: () => [],
+    getWebSockets,
     setWebSocketAutoResponse() {},
   });
 }
@@ -58,6 +58,7 @@ test("an existing AWAKE room keeps its questions and accepts new speaker-specifi
     assert.deepEqual(initial.room.speakers.map(({ name }) => name), ["박이철", "임지훈", "김민서"]);
     assert.equal(initial.posts[0].speaker, "");
     assert.equal(initial.posts[0].text, "기존 질문");
+    assert.equal(initial.posts[0].likes, 1);
 
     const post = { id: "a".repeat(32), text: "어떻게 시작하셨나요?", speaker: "ichel" };
     assert.equal((await request(room, "posts", post)).status, 201);
@@ -70,6 +71,62 @@ test("an existing AWAKE room keeps its questions and accepts new speaker-specifi
       assert.equal(snapshot.total, 3);
       assert.deepEqual(snapshot.posts.map(({ speaker }) => speaker), ["", "ichel", ""]);
     }
+  } finally {
+    db.close();
+  }
+});
+
+test("author reactions start selected and changes broadcast only the new count", async () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const messages = [];
+    const room = openRoom(db, (tag) => tag === "reactions" ? [{
+      readyState: WebSocket.OPEN,
+      send: (message) => messages.push(JSON.parse(message)),
+    }] : []);
+    const code = "0123456789";
+    const id = "a".repeat(32);
+    const author = "b".repeat(32);
+    const second = "c".repeat(32);
+    await request(room, "create", { code, title: "Test event" });
+    const env = { LIVE_ROOMS: {
+      idFromName: (name) => name,
+      get: () => ({ fetch: (url, init) => room.fetch(new Request(url, init)) }),
+    } };
+    const url = new URL(`https://example.test/api/live/${code}/reactions`);
+    const postsUrl = new URL(`https://example.test/api/live/${code}/posts`);
+    const submit = () => handleLive(new Request(postsUrl, {
+      method: "POST",
+      headers: { origin: url.origin, "content-type": "application/json", "x-live-voter": author },
+      body: JSON.stringify({ id, text: "Question" }),
+    }), env, postsUrl);
+    const reaction = (voter, active, origin = url.origin) => handleLive(new Request(url, {
+      method: active === undefined ? "GET" : "PUT",
+      headers: { origin, "content-type": "application/json", "x-live-voter": voter },
+      body: active === undefined ? undefined : JSON.stringify({ id, active }),
+    }), env, url);
+
+    assert.deepEqual(await (await submit()).json(), { id, liked: true });
+    assert.equal((await (await request(room, "state")).json()).posts[0].likes, 1);
+    assert.deepEqual(await (await reaction(author)).json(), { liked: [id] });
+    assert.deepEqual(await (await reaction(second)).json(), { liked: [] });
+    assert.equal((await reaction("wrong", true)).status, 400);
+    assert.equal((await reaction(author, true, "https://other.test")).status, 403);
+    const added = await (await reaction(second, true)).json();
+    assert.deepEqual(added, { id, version: 2, likes: 2, active: true });
+    assert.deepEqual(await (await reaction(second, true)).json(), added);
+    assert.deepEqual(messages, [{ type: "reaction", id, version: 2, likes: 2 }]);
+    assert.equal((await (await reaction(author, false)).json()).likes, 1);
+    assert.deepEqual(await (await reaction(author)).json(), { liked: [] });
+    assert.deepEqual(await (await submit()).json(), { id, liked: false });
+    assert.deepEqual(await (await reaction(second)).json(), { liked: [id] });
+    assert.equal((await (await request(openRoom(db), "state")).json()).posts[0].likes, 1);
+
+    await request(room, "manage", { id, hidden: true });
+    assert.equal((await reaction(author, true)).status, 404);
+    await request(room, "manage", { id, remove: true });
+    assert.deepEqual(await (await reaction(second)).json(), { liked: [] });
+    assert.equal((await reaction(author, true)).status, 404);
   } finally {
     db.close();
   }
