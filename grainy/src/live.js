@@ -1,3 +1,6 @@
+import { setupComposer } from "./live-composer.js";
+import { setupTyping } from "./live-typing.js";
+
 const byId = (id) => document.getElementById(id);
 const [, , code, mode] = location.pathname.replace(/\/$/, "").split("/");
 const view = code === "manage" ? "setup" : mode || "join";
@@ -5,7 +8,15 @@ const endpoint = `/api/live/${code}`;
 const roomCode = /^[a-f0-9]{10}$/;
 const clock = new Intl.DateTimeFormat("ko-KR", { hour: "numeric", minute: "2-digit" });
 const compose = byId("compose");
+const composeSlot = byId("compose-slot");
 const text = byId("post-text");
+const questionTargets = byId("question-targets");
+const speakerOptions = byId("speaker-options");
+const eventTitle = byId("title");
+const intro = eventTitle.closest(".intro");
+const eventImage = byId("event-image");
+const eventImageFile = byId("event-image-file");
+const chooseEventImage = byId("choose-event-image");
 const postList = byId("posts");
 let state;
 let sending = false;
@@ -15,6 +26,13 @@ let syncing = false;
 let requestedVersion = 0;
 
 document.body.dataset.view = view;
+if (view === "join") {
+  byId("section-name").replaceWith(eventTitle.parentElement);
+  intro.hidden = true;
+  byId("live-footer").hidden = false;
+  byId("typing-row").hidden = false;
+}
+const closeComposer = view === "join" ? setupComposer(compose, composeSlot, text) : () => {};
 
 async function api(path, method = "GET", data) {
   const response = await fetch(path, {
@@ -35,7 +53,10 @@ function feedback(node, message = "", error = false) {
 }
 
 function showError(error) {
-  byId("title").textContent = error.status === 404 ? "행사를 찾을 수 없어요" : "화면을 열 수 없어요";
+  closeComposer(false);
+  intro.hidden = false;
+  eventImage.hidden = true;
+  eventTitle.textContent = error.status === 404 ? "행사를 찾을 수 없어요" : "화면을 열 수 없어요";
   byId("page-message").textContent = error.status === 401 ? "SERIAL 관리자 계정으로 로그인한 뒤 이 화면을 새로고침해 주세요." : error.message;
   byId("page-message").hidden = false;
   byId("login").hidden = error.status !== 401;
@@ -56,6 +77,32 @@ function postAction(id, action) {
   return postList.querySelector(`[data-id="${id}"] [data-post-action="${action}"]`);
 }
 
+function showSpeakerOptions(speakers) {
+  if (!speakers.length || speakerOptions.childElementCount) return;
+  for (const { id, name, photo } of [{ id: "", name: "전체" }, ...speakers]) {
+    const option = document.createElement("label");
+    option.className = "speaker-option";
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "speaker";
+    radio.value = id;
+    radio.defaultChecked = id === "";
+    option.append(radio);
+    if (photo) {
+      const image = document.createElement("img");
+      image.src = photo;
+      image.alt = "";
+      image.width = image.height = 44;
+      option.append(image);
+    }
+    const label = document.createElement("span");
+    label.textContent = name;
+    option.append(label);
+    speakerOptions.append(option);
+  }
+  questionTargets.hidden = false;
+}
+
 function makePost(post) {
   const item = document.createElement("li");
   item.className = "post";
@@ -64,7 +111,13 @@ function makePost(post) {
   const content = document.createElement("div");
   const meta = document.createElement("p");
   meta.className = "post-meta";
-  meta.textContent = `${post.hidden ? "숨김 · " : ""}익명 · ${clock.format(post.createdAt)}`;
+  const speakers = state.room.speakers ?? [];
+  const speaker = speakers.find(({ id }) => id === post.speaker);
+  const target = speakers.length ? `${speaker?.name ?? "전체"} · ` : "";
+  const time = clock.format(post.createdAt);
+  meta.textContent = view === "join"
+    ? `${speaker?.name ?? "전체"}에게 · ${time}`
+    : `${post.hidden ? "숨김 · " : ""}${target}익명 · ${time}`;
   const copy = document.createElement("p");
   copy.className = "post-text";
   copy.textContent = post.text;
@@ -96,32 +149,57 @@ function makePost(post) {
   return item;
 }
 
+function renderPosts(posts) {
+  const focusedAction = document.activeElement?.dataset.postAction;
+  const focusedId = document.activeElement?.closest(".post")?.dataset.id;
+  const scrollTop = postList.scrollTop;
+  const listTop = scrollTop > 1 ? postList.getBoundingClientRect().top : 0;
+  const anchor = view === "join" && scrollTop > 1
+    ? Array.from(postList.children).find((item) => item.getBoundingClientRect().bottom > listTop)
+    : null;
+  const anchorOffset = anchor ? anchor.getBoundingClientRect().top - listTop : 0;
+
+  postList.replaceChildren(...(view === "screen" ? posts.slice(0, 5) : posts).map(makePost));
+  if (view === "join") {
+    postList.tabIndex = posts.length ? 0 : -1;
+    if (anchor) {
+      const current = postList.querySelector(`[data-id="${anchor.dataset.id}"]`);
+      const currentOffset = current && current.getBoundingClientRect().top - postList.getBoundingClientRect().top;
+      postList.scrollTop = current ? postList.scrollTop + currentOffset - anchorOffset : scrollTop;
+    }
+  }
+  if (focusedId && focusedAction) postAction(focusedId, focusedAction)?.focus({ preventScroll: true });
+}
+
 function render(next) {
   if (!next.room || next.room.version <= (state?.room.version ?? -1)) return;
   state = next;
   const { room, posts, total } = state;
   document.title = `${room.title} | Serial Live`;
-  byId("title").textContent = room.title;
+  eventTitle.textContent = room.title;
+  intro.hidden = view === "join";
+  eventImage.hidden = !room.imageUrl;
+  if (room.imageUrl && eventImage.getAttribute("src") !== room.imageUrl) eventImage.src = room.imageUrl;
   byId("page-message").hidden = true;
   byId("login").hidden = true;
   byId("workspace").hidden = false;
   byId("feed-title").textContent = view === "manage" ? "들어온 글" : "올라온 글";
   byId("post-count").textContent = `${total}개`;
   byId("empty-feed").hidden = Boolean(posts.length);
-  const focusedAction = document.activeElement?.dataset.postAction;
-  const focusedId = document.activeElement?.closest(".post")?.dataset.id;
-  postList.replaceChildren(...(view === "screen" ? posts.slice(0, 5) : posts).map(makePost));
-  if (focusedId && focusedAction) postAction(focusedId, focusedAction)?.focus({ preventScroll: true });
+  renderPosts(posts);
 
   if (view === "manage") {
     byId("controls").hidden = false;
     byId("join-link").value = `${location.origin}/live/${room.code}`;
     byId("screen-link").href = `/live/${room.code}/screen`;
+    chooseEventImage.textContent = room.imageUrl ? "행사 이미지 변경" : "행사 이미지 올리기";
     byId("room-status").textContent = room.open ? "글을 받고 있어요" : "글 접수가 마감되었어요";
     byId("toggle-room").textContent = room.open ? "접수 마감" : "접수 다시 열기";
   }
   if (view === "join") {
-    compose.hidden = !room.open;
+    showSpeakerOptions(room.speakers ?? []);
+    composeSlot.hidden = !room.open;
+    if (!room.open) closeComposer(false);
     byId("closed").hidden = Boolean(room.open);
   }
   if (view === "screen" && document.documentElement.requestFullscreen) byId("fullscreen").hidden = false;
@@ -147,9 +225,21 @@ function liveUpdates() {
   let fallback;
   let failures = 0;
   let stopped = false;
+  const typing = view === "join" ? setupTyping((message) => {
+    if (socket?.readyState !== WebSocket.OPEN) return false;
+    socket.send(message);
+    return true;
+  }) : null;
+
+  if (typing) {
+    text.addEventListener("input", () => typing.input(Boolean(text.value.trim() && state?.room.open && !sending)));
+    text.addEventListener("blur", typing.stop);
+    compose.addEventListener("submit", typing.stop);
+  }
 
   function stop() {
     stopped = true;
+    typing?.reset();
     clearTimeout(reconnect);
     clearInterval(heartbeat);
     clearInterval(fallback);
@@ -171,6 +261,7 @@ function liveUpdates() {
     if (stopped) return;
     const url = new URL(`${endpoint}/stream`, location.href);
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    if (typing) url.searchParams.set("typing", "1");
     socket = new WebSocket(url);
     let lastReceived = Date.now();
     socket.addEventListener("open", () => {
@@ -187,11 +278,17 @@ function liveUpdates() {
       lastReceived = Date.now();
       if (data === "pong") return;
       const next = JSON.parse(data);
+      if (next.type === "typing") {
+        if (state?.room.open) typing?.receive(next);
+        return;
+      }
+      if (!next.room?.open) typing?.reset();
       if (view === "manage") syncManager(next.room.version).catch(handleError);
       else render(next);
-      connection("online", "실시간 연결");
+      connection("online", view === "join" ? "Live" : "실시간 연결");
     });
     socket.addEventListener("close", () => {
+      typing?.reset();
       clearInterval(heartbeat);
       if (stopped) return;
       connection("connecting", "다시 연결 중");
@@ -217,28 +314,75 @@ const charCount = () => { byId("char-count").textContent = `${text.value.length}
 text.addEventListener("input", charCount);
 compose.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const button = compose.querySelector("button");
+  const button = compose.querySelector('button[type="submit"]');
   const status = compose.querySelector(".feedback");
+  const success = byId("compose-success");
   const message = text.value.trim();
+  const speaker = compose.elements.speaker?.value ?? "";
   if (sending) return;
   if (!message) return feedback(status, "남길 글을 입력해 주세요.", true);
-  if (submission?.message !== message) {
+  if (submission?.message !== message || submission.speaker !== speaker) {
     const bytes = crypto.getRandomValues(new Uint8Array(16));
-    submission = { id: Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(""), message };
+    submission = { id: Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(""), message, speaker };
   }
-  sending = button.disabled = true;
+  sending = button.disabled = questionTargets.disabled = true;
+  success.textContent = "";
   feedback(status, "보내는 중…");
   try {
-    await api(`${endpoint}/posts`, "POST", { id: submission.id, text: message });
+    await api(`${endpoint}/posts`, "POST", { id: submission.id, text: message, speaker });
     if (text.value.trim() === message) text.value = "";
     submission = null;
     charCount();
-    feedback(status, "글을 보냈어요.");
+    feedback(status);
+    success.textContent = "글을 보냈어요.";
+    if (!text.value) closeComposer();
     refresh().catch(() => {});
   } catch (error) {
     feedback(status, error.message, true);
   } finally {
-    sending = button.disabled = false;
+    sending = button.disabled = questionTargets.disabled = false;
+  }
+});
+
+async function squareEventImage(file) {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 256;
+    const context = canvas.getContext("2d", { alpha: false });
+    const size = Math.min(bitmap.width, bitmap.height);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, (bitmap.width - size) / 2, (bitmap.height - size) / 2, size, size, 0, 0, canvas.width, canvas.height);
+    const image = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    if (!image) throw new Error("이미지 변환에 실패했습니다.");
+    return image;
+  } finally {
+    bitmap.close();
+  }
+}
+
+chooseEventImage.addEventListener("click", () => eventImageFile.click());
+eventImageFile.addEventListener("change", async () => {
+  const file = eventImageFile.files[0];
+  eventImageFile.value = "";
+  if (!file) return;
+  const status = byId("manage-feedback");
+  chooseEventImage.disabled = true;
+  feedback(status, "이미지 올리는 중…");
+  try {
+    const image = await squareEventImage(file).catch(() => {
+      throw new Error("이미지를 열 수 없어요. JPG, PNG 또는 WebP 파일을 선택해 주세요.");
+    });
+    const response = await fetch(`${endpoint}/image`, { method: "PUT", body: image, headers: { "Content-Type": image.type } });
+    const next = await response.json();
+    if (!response.ok) throw new Error(next.error || "이미지를 올리지 못했어요.");
+    render(next);
+    feedback(status, "행사 이미지를 변경했어요.");
+  } catch (error) {
+    feedback(status, error.message, true);
+  } finally {
+    chooseEventImage.disabled = false;
   }
 });
 
@@ -333,12 +477,12 @@ async function start() {
     byId("section-name").textContent = "Serial Live 운영";
     const { member } = await api("/api/me");
     if (member?.role !== "admin") throw new Error("SERIAL 관리자만 사용할 수 있습니다.");
-    byId("title").textContent = "행사 운영";
+    eventTitle.textContent = "행사 운영";
     byId("create").hidden = false;
     return;
   }
   if (!roomCode.test(code)) throw Object.assign(new Error("참가 링크를 확인해 주세요."), { status: 404 });
-  byId("section-name").textContent = { manage: "Serial Live 운영", screen: "Serial Live 발표", join: "Serial Live" }[view];
+  if (view !== "join") byId("section-name").textContent = view === "manage" ? "Serial Live 운영" : "Serial Live 발표";
   connection("connecting", "연결 중");
   await refresh();
   liveUpdates();

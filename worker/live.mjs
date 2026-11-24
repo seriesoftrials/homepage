@@ -1,7 +1,18 @@
 const roomCode = "[a-f0-9]{10}";
-const apiPath = new RegExp(`^/api/live/(${roomCode})(?:/(stream|posts|manage))?$`);
+const apiPath = new RegExp(`^/api/live/(${roomCode})(?:/(stream|posts|manage|image))?$`);
 const pagePath = new RegExp(`^/live/(?:${roomCode})(?:/(?:screen|manage))?/?$`);
 const postLimit = 1000;
+const imageLimit = 96 * 1024;
+const awakeImage = "/events/awake-2026-icon.png";
+const awakeSpeakers = [
+  { id: "ichel", name: "박이철", photo: "/events/awake-speakers/ichel.webp" },
+  { id: "jihoon", name: "임지훈", photo: "/events/awake-speakers/jihoon.webp" },
+  { id: "minseo", name: "김민서", photo: "/events/awake-speakers/minseo.webp" },
+];
+
+function speakersFor(title) {
+  return /\bawake\b|어웨이크/i.test(title) ? awakeSpeakers : [];
+}
 
 export function isLivePage(pathname) {
   return /^\/live\/manage\/?$/.test(pathname) || pagePath.test(pathname);
@@ -41,6 +52,30 @@ async function readInput(request) {
   }
 }
 
+async function readImage(request) {
+  if (request.headers.get("content-type") !== "image/jpeg" || !request.body) return null;
+  const reader = request.body.getReader();
+  const bytes = new Uint8Array(imageLimit);
+  let size = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (size + value.byteLength > imageLimit) {
+        await reader.cancel();
+        return null;
+      }
+      bytes.set(value, size);
+      size += value.byteLength;
+    }
+    if (size < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 ||
+        bytes[size - 2] !== 0xff || bytes[size - 1] !== 0xd9) return null;
+    return bytes.subarray(0, size);
+  } catch {
+    return null;
+  }
+}
+
 async function adminAccess(request, env, origin) {
   const cookie = request.headers.get("cookie");
   if (!cookie) return error("SERIAL 관리자 로그인이 필요합니다.", 401);
@@ -65,13 +100,16 @@ export async function handleLive(request, env, url) {
   if (!creating && !route) return error("주소를 다시 확인해 주세요.", 404);
   const [, code, view = "state"] = route || [];
   const { method } = request;
-  const allowed = creating || view === "posts" ? ["POST"] : view === "manage" ? ["GET", "PATCH"] : ["GET"];
+  const allowed = creating || view === "posts" ? ["POST"]
+    : view === "manage" ? ["GET", "PATCH"]
+    : view === "image" ? ["GET", "PUT"]
+    : ["GET"];
   if (!allowed.includes(method)) return error("지원하지 않는 요청입니다.", 405);
   if ((method !== "GET" || view === "stream") && request.headers.get("origin") !== url.origin) {
     return error("이 페이지에서 다시 시도해 주세요.", 403);
   }
 
-  if (creating || view === "manage") {
+  if (creating || view === "manage" || (view === "image" && method === "PUT")) {
     const denial = await adminAccess(request, env, url.origin);
     if (denial) return denial;
   }
@@ -97,9 +135,16 @@ export async function handleLive(request, env, url) {
     if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
       return error("실시간 연결을 시작할 수 없습니다.", 426);
     }
-    return room.fetch(`${url.origin}/stream`, { headers: { upgrade: "websocket" } });
+    const stream = new URL("/stream", url.origin);
+    if (url.searchParams.get("typing") === "1") stream.searchParams.set("typing", "1");
+    return room.fetch(stream, { headers: { upgrade: "websocket" } });
   }
   if (method === "GET") return room.fetch(`${url.origin}/${view}`);
+  if (view === "image") {
+    const body = await readImage(request);
+    if (!body) return error("이미지를 처리할 수 없어요. 다른 사진을 선택해 주세요.", 400);
+    return room.fetch(`${url.origin}/image`, { method, body });
+  }
 
   const input = await readInput(request);
   if (!input || typeof input !== "object" || Array.isArray(input)) return error("입력 내용을 확인해 주세요.", 400);
@@ -116,7 +161,13 @@ export class LiveRoom {
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS posts (
       sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, text TEXT NOT NULL,
-      createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0
+      createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, speaker TEXT NOT NULL DEFAULT ''
+    )`);
+    if (!this.sql.exec("PRAGMA table_info(posts)").toArray().some(({ name }) => name === "speaker")) {
+      this.sql.exec("ALTER TABLE posts ADD COLUMN speaker TEXT NOT NULL DEFAULT ''");
+    }
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS event_image (
+      singleton INTEGER PRIMARY KEY CHECK (singleton = 1), version INTEGER NOT NULL, data BLOB NOT NULL
     )`);
     this.sql.exec("CREATE TABLE IF NOT EXISTS deleted_posts (id TEXT PRIMARY KEY)");
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
@@ -128,15 +179,19 @@ export class LiveRoom {
 
   snapshot(room, admin = false) {
     const posts = admin
-      ? this.sql.exec("SELECT id, text, createdAt, hidden FROM posts ORDER BY sequence DESC").toArray()
-      : this.sql.exec("SELECT id, text, createdAt FROM posts WHERE hidden = 0 ORDER BY sequence DESC LIMIT 50").toArray();
+      ? this.sql.exec("SELECT id, text, createdAt, hidden, speaker FROM posts ORDER BY sequence DESC").toArray()
+      : this.sql.exec("SELECT id, text, createdAt, speaker FROM posts WHERE hidden = 0 ORDER BY sequence DESC LIMIT 50").toArray();
     const total = this.sql.exec(admin ? "SELECT COUNT(*) AS count FROM posts" : "SELECT COUNT(*) AS count FROM posts WHERE hidden = 0").one().count;
-    return { room, posts, total };
+    const speakers = speakersFor(room.title);
+    const image = this.sql.exec("SELECT version FROM event_image WHERE singleton = 1").toArray()[0];
+    const imageUrl = image ? `/api/live/${room.code}/image?v=${image.version}` : speakers.length ? awakeImage : null;
+    return { room: { ...room, speakers, imageUrl }, posts, total };
   }
 
   async fetch(request) {
     const room = this.current();
-    const path = new URL(request.url).pathname;
+    const url = new URL(request.url);
+    const path = url.pathname;
     if (path === "/create") {
       if (room) return error("이미 사용 중인 행사 링크입니다.", 409);
       const { code, title } = await request.json();
@@ -145,9 +200,12 @@ export class LiveRoom {
       return json(this.snapshot(this.current(), true), 201);
     }
     if (!room) return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
+    if (path === "/image") return this.eventImage(request);
     if (path === "/stream") {
       const [client, server] = Object.values(new WebSocketPair());
-      this.ctx.acceptWebSocket(server);
+      const typing = url.searchParams.get("typing") === "1";
+      this.ctx.acceptWebSocket(server, typing ? ["typing"] : []);
+      if (typing) server.serializeAttachment({ id: crypto.randomUUID(), active: false, lastStarted: 0 });
       server.send(JSON.stringify(this.snapshot(room)));
       return new Response(null, { status: 101, webSocket: client });
     }
@@ -160,19 +218,41 @@ export class LiveRoom {
     return error("주소를 다시 확인해 주세요.", 404);
   }
 
-  submit({ id, text }, room) {
+  async eventImage(request) {
+    if (request.method === "GET") {
+      const image = this.sql.exec("SELECT data FROM event_image WHERE singleton = 1").toArray()[0];
+      if (!image) return error("행사 이미지가 없어요.", 404);
+      return new Response(image.data, {
+        headers: { "content-type": "image/jpeg", "cache-control": "no-cache", "x-content-type-options": "nosniff" },
+      });
+    }
+    const data = await request.arrayBuffer();
+    this.ctx.storage.transactionSync(() => {
+      const { version } = this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1 RETURNING version").one();
+      this.sql.exec(`INSERT INTO event_image (singleton, version, data) VALUES (1, ?, ?)
+        ON CONFLICT (singleton) DO UPDATE SET version = excluded.version, data = excluded.data`, version, data);
+    });
+    const room = this.current();
+    this.broadcast(room);
+    return json(this.snapshot(room, true));
+  }
+
+  submit({ id, text, speaker = "" }, room) {
     const message = typeof text === "string" ? text.trim() : "";
     if (typeof id !== "string" || !/^[a-f0-9]{32}$/.test(id) || !message || message.length > 280) {
       return error("글을 1~280자로 입력해 주세요.", 400);
     }
-    const existing = this.sql.exec("SELECT id, text FROM posts WHERE id = ?", id).toArray()[0];
-    if (existing) return existing.text === message ? json({ id }) : error("다시 입력해 주세요.", 409);
+    if (speaker !== "" && !speakersFor(room.title).some(({ id }) => id === speaker)) {
+      return error("질문 대상을 다시 선택해 주세요.", 400);
+    }
+    const existing = this.sql.exec("SELECT text, speaker FROM posts WHERE id = ?", id).toArray()[0];
+    if (existing) return existing.text === message && existing.speaker === speaker ? json({ id }) : error("다시 입력해 주세요.", 409);
     if (this.wasDeleted(id)) return json({ id });
     if (!room.open) return error("이 행사의 글 접수가 마감되었습니다.", 409);
     const count = this.sql.exec("SELECT COUNT(*) AS count FROM posts").one().count;
     if (count >= postLimit) return error("이 행사에서 받을 수 있는 글이 모두 찼습니다.", 409);
     this.ctx.storage.transactionSync(() => {
-      this.sql.exec("INSERT INTO posts (id, text, createdAt) VALUES (?, ?, ?)", id, message, Date.now());
+      this.sql.exec("INSERT INTO posts (id, text, createdAt, speaker) VALUES (?, ?, ?, ?)", id, message, Date.now(), speaker);
       this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1");
     });
     this.broadcast(this.current());
@@ -228,7 +308,29 @@ export class LiveRoom {
     }
   }
 
-  webSocketMessage(socket) {
-    socket.close(1008, "Read only");
+  webSocketMessage(socket, message) {
+    const sender = socket.deserializeAttachment();
+    if (!sender || (message !== "typing" && message !== "typing-stop")) {
+      socket.close(1008, "Unsupported message");
+      return;
+    }
+    const active = message === "typing";
+    const now = Date.now();
+    if (active ? now - sender.lastStarted < 1000 || !this.current()?.open : !sender.active) return;
+    socket.serializeAttachment({ ...sender, active, lastStarted: active ? now : sender.lastStarted });
+    this.broadcastTyping(socket, sender.id, active);
+  }
+
+  broadcastTyping(sender, id, active) {
+    const message = JSON.stringify({ type: "typing", id, active });
+    for (const socket of this.ctx.getWebSockets("typing")) {
+      if (socket === sender || socket.readyState !== WebSocket.OPEN) continue;
+      try { socket.send(message); } catch { socket.close(1011, "Reconnect"); }
+    }
+  }
+
+  webSocketClose(socket) {
+    const sender = socket.deserializeAttachment();
+    if (sender?.active) this.broadcastTyping(socket, sender.id, false);
   }
 }
