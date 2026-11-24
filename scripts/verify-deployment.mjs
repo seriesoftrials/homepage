@@ -20,7 +20,7 @@ async function verify() {
     ["/ver2.css", "ver2.css"], ["/ver2-hero.js", "ver2-hero.js"],
     ["/live/manage", "live.html"], ["/live.css", "live.css"], ["/live.js", "live.js"],
     ["/serial-shell.css", "serial-shell.css"], ["/serial-page-theme.js", "serial-page-theme.js"],
-    ["/member-login.css", "member-login.css"],
+    ["/member-login.css", "member-login.css"], ["/member-account.css", "member-account.css"],
     ["/profiles/hyoseok-v2-cutout.webp", "profiles/hyoseok-v2-cutout.webp"],
   ]) {
     const response = await request(path);
@@ -46,6 +46,10 @@ async function verify() {
   const auth = await request("/api/auth/ready");
   assert.equal(auth.status, 200, "Authentication readiness");
   assert.equal((await auth.json()).available, true);
+  const liveEntry = await request("/live");
+  assert.equal(liveEntry.status, 302, "Live entry redirects to event management");
+  assert.equal(liveEntry.headers.get("location"), "/live/manage");
+  await liveEntry.body?.cancel();
   const liveAdmin = await request("/api/live/0000000000/manage");
   assert.equal(liveAdmin.status, 401, "Live administration requires a session");
   assert.equal(liveAdmin.headers.get("content-type")?.split(";")[0], "application/json");
