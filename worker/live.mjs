@@ -1,3 +1,5 @@
+import { readRoomSummary, roomDirectory, trackRoom } from "./live-directory.mjs";
+
 const roomCode = "[a-f0-9]{10}";
 const apiPath = new RegExp(`^/api/live/(${roomCode})(?:/(stream|posts|manage|image))?$`);
 const pagePath = new RegExp(`^/live/(?:${roomCode})(?:/(?:screen|manage))?/?$`);
@@ -95,12 +97,14 @@ async function adminAccess(request, env, origin) {
 }
 
 export async function handleLive(request, env, url) {
-  const creating = url.pathname === "/api/live/rooms";
+  const collection = url.pathname === "/api/live/rooms";
+  const remembering = url.pathname === "/api/live/rooms/remember";
   const route = apiPath.exec(url.pathname);
-  if (!creating && !route) return error("주소를 다시 확인해 주세요.", 404);
+  if (!collection && !remembering && !route) return error("주소를 다시 확인해 주세요.", 404);
   const [, code, view = "state"] = route || [];
   const { method } = request;
-  const allowed = creating || view === "posts" ? ["POST"]
+  const allowed = collection ? ["GET", "POST"]
+    : remembering || view === "posts" ? ["POST"]
     : view === "manage" ? ["GET", "PATCH"]
     : view === "image" ? ["GET", "PUT"]
     : ["GET"];
@@ -109,18 +113,59 @@ export async function handleLive(request, env, url) {
     return error("이 페이지에서 다시 시도해 주세요.", 403);
   }
 
-  if (creating || view === "manage" || (view === "image" && method === "PUT")) {
+  if (collection || remembering || view === "manage" || (view === "image" && method === "PUT")) {
     const denial = await adminAccess(request, env, url.origin);
     if (denial) return denial;
   }
 
-  if (creating) {
+  if (collection && method === "GET") {
+    const after = url.searchParams.get("after");
+    if (after !== null && !/^[a-f0-9]{64}$/.test(after)) return error("행사 목록을 다시 열어 주세요.", 400);
+    try {
+      const page = new URL("/list", url.origin);
+      if (after) page.searchParams.set("after", after);
+      const { ids, next } = await (await roomDirectory(env).fetch(page)).json();
+      const rooms = [];
+      for (let start = 0; start < ids.length; start += 5) {
+        const summaries = await Promise.all(ids.slice(start, start + 5)
+          .map((id) => readRoomSummary(env, url.origin, env.LIVE_ROOMS.idFromString(id))));
+        rooms.push(...summaries.filter(Boolean));
+      }
+      return json({ rooms, next });
+    } catch {
+      return error("행사 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.", 503);
+    }
+  }
+
+  if (remembering) {
+    const input = await readInput(request);
+    if (typeof input?.code !== "string" || !new RegExp(`^${roomCode}$`).test(input.code)) {
+      return error("행사 링크나 10자리 코드를 확인해 주세요.", 400);
+    }
+    const object = env.LIVE_ROOMS.idFromName(input.code);
+    try {
+      const room = await readRoomSummary(env, url.origin, object);
+      if (!room) return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
+      if (!(await trackRoom(env, url.origin, object)).ok) throw new Error("Directory write failed.");
+      return json({ room });
+    } catch {
+      return error("행사를 목록에 추가하지 못했어요. 잠시 후 다시 시도해 주세요.", 503);
+    }
+  }
+
+  if (collection) {
     const input = await readInput(request);
     const title = typeof input?.title === "string" ? input.title.trim() : "";
     if (!title || title.length > 80) return error("행사 이름을 1~80자로 입력해 주세요.", 400);
     for (let attempt = 0; attempt < 3; attempt++) {
       const id = crypto.randomUUID().replaceAll("-", "").slice(0, 10);
-      const room = env.LIVE_ROOMS.get(env.LIVE_ROOMS.idFromName(id));
+      const object = env.LIVE_ROOMS.idFromName(id);
+      try {
+        if (!(await trackRoom(env, url.origin, object)).ok) throw new Error("Directory write failed.");
+      } catch {
+        return error("행사 목록에 저장하지 못했어요. 잠시 후 다시 시도해 주세요.", 503);
+      }
+      const room = env.LIVE_ROOMS.get(object);
       const response = await room.fetch(`${url.origin}/create`, {
         method: "POST",
         body: JSON.stringify({ code: id, title }),
@@ -200,6 +245,7 @@ export class LiveRoom {
       return json(this.snapshot(this.current(), true), 201);
     }
     if (!room) return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
+    if (path === "/summary") return json({ code: room.code, title: room.title, open: Boolean(room.open) });
     if (path === "/image") return this.eventImage(request);
     if (path === "/stream") {
       const [client, server] = Object.values(new WebSocketPair());

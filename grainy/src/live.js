@@ -18,6 +18,7 @@ const eventImage = byId("event-image");
 const eventImageFile = byId("event-image-file");
 const chooseEventImage = byId("choose-event-image");
 const postList = byId("posts");
+const newQuestions = byId("new-questions");
 let state;
 let sending = false;
 let managing = false;
@@ -31,6 +32,13 @@ if (view === "join") {
   intro.hidden = true;
   byId("live-footer").hidden = false;
   byId("typing-row").hidden = false;
+  postList.addEventListener("scroll", () => {
+    if (postList.scrollTop <= 4) newQuestions.hidden = true;
+  }, { passive: true });
+  newQuestions.addEventListener("click", () => {
+    postList.focus({ preventScroll: true });
+    postList.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  });
 }
 const closeComposer = view === "join" ? setupComposer(compose, composeSlot, text) : () => {};
 
@@ -149,12 +157,12 @@ function makePost(post) {
   return item;
 }
 
-function renderPosts(posts) {
+function renderPosts(posts, incoming) {
   const focusedAction = document.activeElement?.dataset.postAction;
   const focusedId = document.activeElement?.closest(".post")?.dataset.id;
   const scrollTop = postList.scrollTop;
   const listTop = scrollTop > 1 ? postList.getBoundingClientRect().top : 0;
-  const anchor = view === "join" && scrollTop > 1
+  const anchor = view === "join" && scrollTop > 4
     ? Array.from(postList.children).find((item) => item.getBoundingClientRect().bottom > listTop)
     : null;
   const anchorOffset = anchor ? anchor.getBoundingClientRect().top - listTop : 0;
@@ -167,12 +175,22 @@ function renderPosts(posts) {
       const currentOffset = current && current.getBoundingClientRect().top - postList.getBoundingClientRect().top;
       postList.scrollTop = current ? postList.scrollTop + currentOffset - anchorOffset : scrollTop;
     }
+    if (incoming && scrollTop > 4 && postList.scrollTop > 4) newQuestions.hidden = false;
+    if (incoming && scrollTop <= 4) {
+      postList.scrollTop = 0;
+      postList.firstElementChild.classList.add("post-arriving");
+    }
+    if (postList.scrollTop <= 4) newQuestions.hidden = true;
   }
   if (focusedId && focusedAction) postAction(focusedId, focusedAction)?.focus({ preventScroll: true });
 }
 
 function render(next) {
   if (!next.room || next.room.version <= (state?.room.version ?? -1)) return;
+  const newest = next.posts[0];
+  const incoming = Boolean(view === "join" && state && newest &&
+    newest.createdAt >= (state.posts[0]?.createdAt ?? 0) &&
+    !state.posts.some(({ id }) => id === newest.id));
   state = next;
   const { room, posts, total } = state;
   document.title = `${room.title} | Serial Live`;
@@ -186,7 +204,7 @@ function render(next) {
   byId("feed-title").textContent = view === "manage" ? "들어온 글" : "올라온 글";
   byId("post-count").textContent = `${total}개`;
   byId("empty-feed").hidden = Boolean(posts.length);
-  renderPosts(posts);
+  renderPosts(posts, incoming);
 
   if (view === "manage") {
     byId("controls").hidden = false;
@@ -463,13 +481,64 @@ byId("create-form").addEventListener("submit", async (event) => {
   }
 });
 
-byId("open-form").addEventListener("submit", (event) => {
+byId("open-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
   const input = form.elements.code.value.trim().toLowerCase();
   const code = input.match(/\/live\/([a-f0-9]{10})(?:[/?#]|$)/)?.[1] ?? input;
-  if (roomCode.test(code)) location.assign(new URL(`/live/${code}/manage`, location.origin));
-  else feedback(form.querySelector(".feedback"), "행사 링크나 10자리 코드를 확인해 주세요.", true);
+  const status = form.querySelector(".feedback");
+  if (!roomCode.test(code)) return feedback(status, "행사 링크나 10자리 코드를 확인해 주세요.", true);
+  const button = form.querySelector("button");
+  button.disabled = true;
+  try {
+    await api("/api/live/rooms/remember", "POST", { code });
+    location.assign(new URL(`/live/${code}/manage`, location.origin));
+  } catch (error) {
+    if ([401, 403].includes(error.status)) showError(error);
+    feedback(status, error.message, true);
+    button.disabled = false;
+  }
+});
+
+async function loadRooms() {
+  const status = byId("event-directory-status");
+  const retry = byId("retry-event-directory");
+  const list = byId("event-directory-list");
+  retry.hidden = true;
+  feedback(status, "행사를 불러오는 중…");
+  try {
+    const rooms = [];
+    let after;
+    do {
+      const page = await api(`/api/live/rooms${after ? `?after=${after}` : ""}`);
+      rooms.push(...page.rooms);
+      after = page.next;
+    } while (after);
+    rooms.sort((a, b) => a.title.localeCompare(b.title, "ko") || a.code.localeCompare(b.code));
+    const items = rooms.map((room) => {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = `/live/${room.code}/manage`;
+      const title = document.createElement("strong");
+      title.textContent = room.title;
+      const meta = document.createElement("span");
+      meta.textContent = `${room.open ? "접수 중" : "접수 마감"} · ${room.code}`;
+      link.append(title, meta);
+      item.append(link);
+      return item;
+    });
+    list.replaceChildren(...items);
+    feedback(status, items.length ? "" : "아직 만든 행사가 없어요.");
+  } catch (error) {
+    if ([401, 403].includes(error.status)) return showError(error);
+    feedback(status, error.message, true);
+    retry.hidden = false;
+  }
+}
+
+byId("retry-event-directory").addEventListener("click", loadRooms);
+window.addEventListener("pageshow", (event) => {
+  if (view === "setup" && event.persisted && !byId("create").hidden) loadRooms();
 });
 
 async function start() {
@@ -479,6 +548,7 @@ async function start() {
     if (member?.role !== "admin") throw new Error("SERIAL 관리자만 사용할 수 있습니다.");
     eventTitle.textContent = "행사 운영";
     byId("create").hidden = false;
+    await loadRooms();
     return;
   }
   if (!roomCode.test(code)) throw Object.assign(new Error("참가 링크를 확인해 주세요."), { status: 404 });

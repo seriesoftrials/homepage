@@ -21,7 +21,13 @@
   },
   "services": [{ "binding": "BACKEND", "service": "serial" }],
   "durable_objects": {
-    "bindings": [{ "name": "LIVE_ROOMS", "class_name": "LiveRoom" }]
+    "bindings": [
+      { "name": "LIVE_ROOMS", "class_name": "LiveRoom" },
+      { "name": "LIVE_ROOM_DIRECTORY", "class_name": "LiveRoomDirectory" }
+    ]
   },
-  "migrations": [{ "tag": "live-rooms-v1", "new_sqlite_classes": ["LiveRoom"] }]
+  "migrations": [
+    { "tag": "live-rooms-v1", "new_sqlite_classes": ["LiveRoom"] },
+    { "tag": "live-room-directory-v1", "new_sqlite_classes": ["LiveRoomDirectory"] }
+  ]
 }

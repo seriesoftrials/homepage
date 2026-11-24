@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=auto" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#fafaf8" />
     <script src="/serial-page-theme.js"></script>
     <meta name="robots" content="noindex" />
@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="/action-button.css?v=3" />
     <link rel="stylesheet" href="/ver2.css?v=117" />
     <link rel="stylesheet" href="/serial-shell.css?v=3" />
-    <link rel="stylesheet" href="/live.css?v=22" />
-    <script type="module" src="/live.js?v=15"></script>
+    <link rel="stylesheet" href="/live.css?v=24" />
+    <script type="module" src="/live.js?v=16"></script>
   </head>
   <body class="serial-shell live-page">
     <header class="masthead">
@@ -43,12 +43,21 @@
           <button class="action-button" type="submit">행사 만들기</button>
           <p class="feedback" role="status"></p>
         </form>
-        <form id="open-form" class="panel">
-          <label for="event-code">기존 행사 열기</label>
-          <input id="event-code" name="code" placeholder="행사 링크 또는 코드" required />
-          <button class="action-button action-button--quiet" type="submit">운영 화면 열기</button>
-          <p class="feedback" role="status"></p>
-        </form>
+        <section class="panel event-directory" aria-labelledby="event-directory-title">
+          <h2 id="event-directory-title">만든 행사</h2>
+          <p id="event-directory-status" class="feedback" role="status">행사를 불러오는 중…</p>
+          <ol id="event-directory-list"></ol>
+          <button id="retry-event-directory" class="action-button action-button--quiet action-button--compact" type="button" hidden>다시 불러오기</button>
+          <details class="open-event">
+            <summary>행사 링크나 코드로 열기</summary>
+            <form id="open-form">
+              <label for="event-code">참가 링크 또는 10자리 코드</label>
+              <input id="event-code" name="code" placeholder="행사 링크 또는 코드" required />
+              <button class="action-button action-button--quiet" type="submit">운영 화면 열기</button>
+              <p class="feedback" role="status"></p>
+            </form>
+          </details>
+        </section>
       </div>
 
       <div id="workspace" class="workspace" hidden>
@@ -79,6 +88,7 @@
           </div>
           <p id="empty-feed" class="panel empty">아직 올라온 글이 없어요.</p>
           <ol id="posts" class="posts"></ol>
+          <button id="new-questions" class="action-button action-button--compact new-questions" type="button" hidden>새로운 질문</button>
           <div id="typing-row" class="typing-row" hidden>
             <span id="typing-dots" class="typing-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
             <span id="typing-status" role="status"></span>
