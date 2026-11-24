@@ -118,6 +118,7 @@ export class LiveRoom {
       sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, text TEXT NOT NULL,
       createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0
     )`);
+    this.sql.exec("CREATE TABLE IF NOT EXISTS deleted_posts (id TEXT PRIMARY KEY)");
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
   }
 
@@ -166,6 +167,7 @@ export class LiveRoom {
     }
     const existing = this.sql.exec("SELECT id, text FROM posts WHERE id = ?", id).toArray()[0];
     if (existing) return existing.text === message ? json({ id }) : error("다시 입력해 주세요.", 409);
+    if (this.wasDeleted(id)) return json({ id });
     if (!room.open) return error("이 행사의 글 접수가 마감되었습니다.", 409);
     const count = this.sql.exec("SELECT COUNT(*) AS count FROM posts").one().count;
     if (count >= postLimit) return error("이 행사에서 받을 수 있는 글이 모두 찼습니다.", 409);
@@ -177,7 +179,28 @@ export class LiveRoom {
     return json({ id }, 201);
   }
 
-  update({ open, id, hidden }) {
+  wasDeleted(id) {
+    return this.sql.exec("SELECT id FROM deleted_posts WHERE id = ?", id).toArray().length > 0;
+  }
+
+  deletePost(id) {
+    if (typeof id !== "string" || !/^[a-f0-9]{32}$/.test(id)) return error("입력 내용을 확인해 주세요.", 400);
+    const removed = this.ctx.storage.transactionSync(() => {
+      const post = this.sql.exec("DELETE FROM posts WHERE id = ? RETURNING id", id).toArray()[0];
+      if (!post) return false;
+      // Keep the receipt ID so a retry cannot bring the deleted post back.
+      this.sql.exec("INSERT INTO deleted_posts (id) VALUES (?)", id);
+      this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1");
+      return true;
+    });
+    if (!removed && !this.wasDeleted(id)) return error("글을 찾을 수 없습니다.", 404);
+    const room = this.current();
+    if (removed) this.broadcast(room);
+    return json(this.snapshot(room, true));
+  }
+
+  update({ open, id, hidden, remove }) {
+    if (remove === true) return this.deletePost(id);
     if (typeof open === "boolean") {
       this.sql.exec("UPDATE room SET open = ?, version = version + 1 WHERE singleton = 1", Number(open));
     } else if (typeof id === "string" && typeof hidden === "boolean") {
