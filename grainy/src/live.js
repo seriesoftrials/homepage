@@ -36,6 +36,7 @@ let postTimeTimer;
 
 document.body.dataset.view = view;
 if (publicView) document.addEventListener("visibilitychange", updatePostTimes);
+if (view === "setup" || view === "manage") byId("section-name").hidden = false;
 if (view === "join") {
   byId("section-name").replaceWith(eventTitle.parentElement);
   intro.hidden = true;
@@ -802,7 +803,6 @@ function setupDirectory() {
 
 async function start() {
   if (view === "setup") {
-    byId("section-name").textContent = "Serial Live 운영";
     const { member } = await api("/api/me");
     if (member?.role !== "admin") throw new Error("SERIAL 관리자만 사용할 수 있습니다.");
     eventTitle.textContent = "행사 운영";
@@ -811,7 +811,6 @@ async function start() {
     return;
   }
   if (!roomCode.test(code)) throw Object.assign(new Error("참가 링크를 확인해 주세요."), { status: 404 });
-  if (view !== "join") byId("section-name").textContent = view === "manage" ? "Serial Live 운영" : "Serial Live 발표";
   connection("connecting", "연결 중");
   if (view === "join") {
     voterHeaders = { "X-Live-Voter": viewerId() };
