@@ -4,9 +4,12 @@ import { setupTyping } from "./live-typing.js";
 const byId = (id) => document.getElementById(id);
 const [, , code, mode] = location.pathname.replace(/\/$/, "").split("/");
 const view = code === "manage" ? "setup" : mode || "join";
+const publicView = view === "join" || view === "screen";
 const endpoint = `/api/live/${code}`;
+const reactionEndpoint = `${endpoint}/reactions`;
 const roomCode = /^[a-f0-9]{10}$/;
 const clock = new Intl.DateTimeFormat("ko-KR", { hour: "numeric", minute: "2-digit" });
+const minute = 60_000;
 const compose = byId("compose");
 const composeSlot = byId("compose-slot");
 const text = byId("post-text");
@@ -19,18 +22,23 @@ const eventImageFile = byId("event-image-file");
 const chooseEventImage = byId("choose-event-image");
 const postList = byId("posts");
 const newQuestions = byId("new-questions");
+const pendingLikes = new Set();
+const reactionUpdates = new Map();
+let likedPosts = new Set();
+let voterHeaders;
 let state;
 let sending = false;
 let managing = false;
 let submission;
 let syncing = false;
 let requestedVersion = 0;
+let postTimeTimer;
 
 document.body.dataset.view = view;
+if (publicView) document.addEventListener("visibilitychange", updatePostTimes);
 if (view === "join") {
   byId("section-name").replaceWith(eventTitle.parentElement);
   intro.hidden = true;
-  byId("live-footer").hidden = false;
   byId("typing-row").hidden = false;
   postList.addEventListener("scroll", () => {
     if (postList.scrollTop <= 4) newQuestions.hidden = true;
@@ -42,11 +50,12 @@ if (view === "join") {
 }
 const closeComposer = view === "join" ? setupComposer(compose, composeSlot, text) : () => {};
 
-async function api(path, method = "GET", data) {
+async function api(path, method = "GET", data, headers) {
   const response = await fetch(path, {
     method,
     cache: "no-store",
-    ...(data && { headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
+    headers: data ? { ...headers, "Content-Type": "application/json" } : headers,
+    body: data && JSON.stringify(data),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -60,11 +69,29 @@ function feedback(node, message = "", error = false) {
   node.toggleAttribute("data-error", error);
 }
 
+function showRoomTitle(title) {
+  if (view !== "join" || !/^(?:awake|어웨이크)(?:\s+2026)?$/i.test(title)) {
+    eventTitle.classList.remove("live-marquee");
+    eventTitle.textContent = title;
+    return;
+  }
+  if (eventTitle.classList.contains("live-marquee")) return;
+  const track = document.createElement("span");
+  track.className = "live-marquee-track";
+  const headline = document.createElement("span");
+  headline.textContent = "Awake 2026 by Serial · Fireside Chat";
+  const repeat = headline.cloneNode(true);
+  repeat.setAttribute("aria-hidden", "true");
+  track.append(headline, repeat, repeat.cloneNode(true));
+  eventTitle.classList.add("live-marquee");
+  eventTitle.replaceChildren(track);
+}
+
 function showError(error) {
   closeComposer(false);
   intro.hidden = false;
   eventImage.hidden = true;
-  eventTitle.textContent = error.status === 404 ? "행사를 찾을 수 없어요" : "화면을 열 수 없어요";
+  showRoomTitle(error.status === 404 ? "행사를 찾을 수 없어요" : "화면을 열 수 없어요");
   byId("page-message").textContent = error.status === 401 ? "SERIAL 관리자 계정으로 로그인한 뒤 이 화면을 새로고침해 주세요." : error.message;
   byId("page-message").hidden = false;
   byId("login").hidden = error.status !== 401;
@@ -75,6 +102,7 @@ function showError(error) {
 }
 
 function connection(status, label) {
+  if (view === "join") return;
   const indicator = byId("connection");
   indicator.dataset.state = status;
   indicator.textContent = label;
@@ -83,6 +111,90 @@ function connection(status, label) {
 
 function postAction(id, action) {
   return postList.querySelector(`[data-id="${id}"] [data-post-action="${action}"]`);
+}
+
+function newAnonymousId() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function viewerId() {
+  const key = `serial-live-voter:${code}`;
+  const freshId = newAnonymousId();
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved && /^[a-f0-9]{32}$/.test(saved)) return saved;
+    localStorage.setItem(key, freshId);
+  } catch {
+    // A viewer with unavailable storage can still react for this page visit.
+  }
+  return freshId;
+}
+
+function setReactionCount(button, likes) {
+  button.lastElementChild.textContent = likes;
+  button.setAttribute("aria-label", `따봉 ${likes}개`);
+}
+
+function receiveReaction({ id, likes, version }) {
+  if (version <= (state?.room.version ?? -1) || version <= (reactionUpdates.get(id)?.version ?? -1)) return;
+  reactionUpdates.set(id, { likes, version });
+  const button = postAction(id, "reaction");
+  if (button) setReactionCount(button, likes);
+}
+
+function setReactionSelection(id, active) {
+  if (active) likedPosts.add(id);
+  else likedPosts.delete(id);
+  postAction(id, "reaction")?.setAttribute("aria-pressed", String(active));
+}
+
+function animateReaction(icon, active) {
+  if (!icon || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  icon.getAnimations().find(({ id }) => id === "reaction-tap")?.cancel();
+  icon.animate([
+    { scale: "1" },
+    { scale: active ? "1.18" : "1.08", offset: .35 },
+    { scale: "1" },
+  ], { id: "reaction-tap", duration: active ? 340 : 220, easing: "cubic-bezier(.2, .65, .25, 1)" });
+}
+
+async function toggleReaction(id) {
+  if (pendingLikes.has(id)) return;
+  const active = !likedPosts.has(id);
+  const button = postAction(id, "reaction");
+  animateReaction(button?.firstElementChild, active);
+  const status = byId("reaction-feedback");
+  pendingLikes.add(id);
+  button?.setAttribute("aria-disabled", "true");
+  feedback(status);
+  try {
+    const result = await api(reactionEndpoint, "PUT", { id, active }, voterHeaders);
+    setReactionSelection(id, result.active);
+    receiveReaction(result);
+  } catch (error) {
+    feedback(status, error.message, true);
+    if (error.status === 404) refresh().catch(() => {});
+  } finally {
+    pendingLikes.delete(id);
+    postAction(id, "reaction")?.removeAttribute("aria-disabled");
+  }
+}
+
+function makeReaction(post) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "action-button action-button--quiet action-button--compact reaction-pill";
+  button.dataset.postAction = "reaction";
+  button.setAttribute("aria-pressed", String(likedPosts.has(post.id)));
+  if (pendingLikes.has(post.id)) button.setAttribute("aria-disabled", "true");
+  const icon = document.createElement("span");
+  icon.textContent = "👍";
+  icon.setAttribute("aria-hidden", "true");
+  button.append(icon, document.createElement("span"));
+  setReactionCount(button, reactionUpdates.get(post.id)?.likes ?? post.likes ?? 0);
+  button.addEventListener("click", () => toggleReaction(post.id));
+  return button;
 }
 
 function showSpeakerOptions(speakers) {
@@ -111,6 +223,22 @@ function showSpeakerOptions(speakers) {
   questionTargets.hidden = false;
 }
 
+function updatePostTimes() {
+  clearTimeout(postTimeTimer);
+  const now = Date.now();
+  let nextUpdate = Infinity;
+  for (const time of postList.querySelectorAll(".post-meta time")) {
+    const createdAt = Date.parse(time.dateTime);
+    const minutes = Math.max(0, Math.floor((now - createdAt) / minute));
+    const label = minutes > 5 ? clock.format(createdAt) : minutes ? `${minutes}분 전` : "방금 전";
+    if (time.textContent !== label) time.textContent = label;
+    if (minutes <= 5) nextUpdate = Math.min(nextUpdate, createdAt + (minutes + 1) * minute);
+  }
+  if (Number.isFinite(nextUpdate) && !document.hidden) {
+    postTimeTimer = setTimeout(updatePostTimes, nextUpdate - now);
+  }
+}
+
 function makePost(post) {
   const item = document.createElement("li");
   item.className = "post";
@@ -121,16 +249,34 @@ function makePost(post) {
   meta.className = "post-meta";
   const speakers = state.room.speakers ?? [];
   const speaker = speakers.find(({ id }) => id === post.speaker);
-  const target = speakers.length ? `${speaker?.name ?? "전체"} · ` : "";
-  const time = clock.format(post.createdAt);
-  meta.textContent = view === "join"
-    ? `${speaker?.name ?? "전체"}에게 · ${time}`
-    : `${post.hidden ? "숨김 · " : ""}${target}익명 · ${time}`;
+  const name = speaker?.name ?? "전체";
+  const time = document.createElement("time");
+  time.dateTime = new Date(post.createdAt).toISOString();
+  time.textContent = clock.format(post.createdAt);
+  if (view === "screen") {
+    const recipient = document.createElement("span");
+    recipient.className = "screen-recipient";
+    if (speaker?.photo) {
+      const photo = document.createElement("img");
+      photo.src = speaker.photo;
+      photo.alt = "";
+      photo.width = photo.height = 44;
+      recipient.append(photo);
+    }
+    recipient.append(`${name}에게`);
+    meta.append(recipient, time);
+  } else {
+    const target = speakers.length ? `${name} · ` : "";
+    meta.append(view === "join"
+      ? `${name}에게 · `
+      : `${post.hidden ? "숨김 · " : ""}${target}익명 · `, time);
+  }
   const copy = document.createElement("p");
   copy.className = "post-text";
   copy.textContent = post.text;
   content.append(meta, copy);
   item.append(content);
+  if (view === "join") item.append(makeReaction(post));
   if (view === "manage") {
     const actions = document.createElement("div");
     actions.className = "post-actions";
@@ -168,6 +314,8 @@ function renderPosts(posts, incoming) {
   const anchorOffset = anchor ? anchor.getBoundingClientRect().top - listTop : 0;
 
   postList.replaceChildren(...(view === "screen" ? posts.slice(0, 5) : posts).map(makePost));
+  if (publicView) updatePostTimes();
+  if (view === "screen" && incoming) postList.firstElementChild.classList.add("post-arriving");
   if (view === "join") {
     postList.tabIndex = posts.length ? 0 : -1;
     if (anchor) {
@@ -188,13 +336,16 @@ function renderPosts(posts, incoming) {
 function render(next) {
   if (!next.room || next.room.version <= (state?.room.version ?? -1)) return;
   const newest = next.posts[0];
-  const incoming = Boolean(view === "join" && state && newest &&
+  const incoming = Boolean(publicView && state && newest &&
     newest.createdAt >= (state.posts[0]?.createdAt ?? 0) &&
     !state.posts.some(({ id }) => id === newest.id));
   state = next;
   const { room, posts, total } = state;
+  for (const [id, update] of reactionUpdates) {
+    if (update.version <= room.version) reactionUpdates.delete(id);
+  }
   document.title = `${room.title} | Live`;
-  eventTitle.textContent = room.title;
+  showRoomTitle(room.title);
   intro.hidden = view === "join";
   eventImage.hidden = !room.imageUrl;
   if (room.imageUrl && eventImage.getAttribute("src") !== room.imageUrl) eventImage.src = room.imageUrl;
@@ -279,7 +430,10 @@ function liveUpdates() {
     if (stopped) return;
     const url = new URL(`${endpoint}/stream`, location.href);
     url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-    if (typing) url.searchParams.set("typing", "1");
+    if (typing) {
+      url.searchParams.set("typing", "1");
+      url.searchParams.set("reactions", "1");
+    }
     socket = new WebSocket(url);
     let lastReceived = Date.now();
     socket.addEventListener("open", () => {
@@ -300,10 +454,14 @@ function liveUpdates() {
         if (state?.room.open) typing?.receive(next);
         return;
       }
+      if (next.type === "reaction") {
+        receiveReaction(next);
+        return;
+      }
       if (!next.room?.open) typing?.reset();
       if (view === "manage") syncManager(next.room.version).catch(handleError);
       else render(next);
-      connection("online", view === "join" ? "Live" : "실시간 연결");
+      connection("online", "실시간 연결");
     });
     socket.addEventListener("close", ({ code }) => {
       typing?.reset();
@@ -343,14 +501,14 @@ compose.addEventListener("submit", async (event) => {
   if (sending) return;
   if (!message) return feedback(status, "남길 글을 입력해 주세요.", true);
   if (submission?.message !== message || submission.speaker !== speaker) {
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    submission = { id: Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(""), message, speaker };
+    submission = { id: newAnonymousId(), message, speaker };
   }
   sending = button.disabled = questionTargets.disabled = true;
   success.textContent = "";
   feedback(status, "보내는 중…");
   try {
-    await api(`${endpoint}/posts`, "POST", { id: submission.id, text: message, speaker });
+    const receipt = await api(`${endpoint}/posts`, "POST", { id: submission.id, text: message, speaker }, voterHeaders);
+    if (receipt.liked) setReactionSelection(receipt.id, true);
     if (text.value.trim() === message) text.value = "";
     submission = null;
     charCount();
@@ -655,7 +813,17 @@ async function start() {
   if (!roomCode.test(code)) throw Object.assign(new Error("참가 링크를 확인해 주세요."), { status: 404 });
   if (view !== "join") byId("section-name").textContent = view === "manage" ? "Serial Live 운영" : "Serial Live 발표";
   connection("connecting", "연결 중");
-  await refresh();
+  if (view === "join") {
+    voterHeaders = { "X-Live-Voter": viewerId() };
+    const [snapshot, votes] = await Promise.all([
+      api(endpoint),
+      api(reactionEndpoint, "GET", undefined, voterHeaders).catch(() => ({ liked: [] })),
+    ]);
+    likedPosts = new Set(votes.liked);
+    render(snapshot);
+  } else {
+    await refresh();
+  }
   liveUpdates();
 }
 
