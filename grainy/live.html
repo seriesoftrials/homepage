@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=auto" />
+    <meta name="theme-color" content="#fafaf8" />
+    <script src="/serial-page-theme.js"></script>
+    <meta name="robots" content="noindex" />
+    <title>Serial Live</title>
+    <link rel="icon" href="/favicon.svg?v=8" type="image/svg+xml" />
+    <link rel="stylesheet" href="/action-button.css?v=3" />
+    <link rel="stylesheet" href="/ver2.css?v=117" />
+    <link rel="stylesheet" href="/serial-shell.css?v=2" />
+    <link rel="stylesheet" href="/live.css?v=3" />
+    <script type="module" src="/live.js?v=2"></script>
+  </head>
+  <body class="serial-shell live-page">
+    <header class="masthead">
+      <div class="masthead-brand">
+        <a class="brand" href="/" aria-label="SERIAL 홈"><img src="/nav-ribbon-rest.png" alt="" width="40" height="40" /></a>
+        <p id="section-name">Serial Live</p>
+      </div>
+      <div class="masthead-actions">
+        <span id="connection" class="connection" data-state="connecting" role="status" hidden>연결 중</span>
+        <button id="fullscreen" class="action-button action-button--quiet action-button--compact" type="button" hidden>전체 화면</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="intro">
+        <h1 id="title">행사 불러오는 중</h1>
+        <p id="page-message" role="status" hidden></p>
+        <a id="login" class="action-button" href="/login" target="_blank" rel="noopener" hidden>관리자 로그인 ↗</a>
+      </div>
+
+      <div id="create" class="setup" hidden>
+        <form id="create-form" class="panel">
+          <label for="event-name">행사 이름</label>
+          <input id="event-name" name="title" maxlength="80" placeholder="행사 이름을 입력해 주세요" required />
+          <button class="action-button" type="submit">행사 만들기</button>
+          <p class="feedback" role="status"></p>
+        </form>
+        <form id="open-form" class="panel">
+          <label for="event-code">기존 행사 열기</label>
+          <input id="event-code" name="code" placeholder="행사 링크 또는 코드" required />
+          <button class="action-button action-button--quiet" type="submit">운영 화면 열기</button>
+          <p class="feedback" role="status"></p>
+        </form>
+      </div>
+
+      <div id="workspace" class="workspace" hidden>
+        <aside id="controls" class="panel controls" hidden>
+          <div>
+            <h2>행사 운영</h2>
+            <p id="room-status" class="room-status"></p>
+          </div>
+          <div class="share">
+            <label for="join-link">참가 링크</label>
+            <div class="share-field">
+              <input id="join-link" readonly />
+              <button id="copy-link" class="action-button action-button--quiet action-button--compact" type="button">복사</button>
+            </div>
+          </div>
+          <a id="screen-link" class="action-button" target="_blank" rel="noopener">발표 화면 열기 ↗</a>
+          <button id="toggle-room" class="action-button action-button--quiet" type="button">접수 마감</button>
+          <p id="manage-feedback" class="feedback" role="status"></p>
+          <a class="switch-room" href="/live/manage">다른 행사 열기</a>
+        </aside>
+
+        <form id="compose" class="panel compose" hidden>
+          <label for="post-text">질문이나 의견을 남겨주세요</label>
+          <textarea id="post-text" name="text" rows="4" maxlength="280" placeholder="어떤 이야기를 나누고 싶으신가요?" aria-describedby="compose-hint" required></textarea>
+          <p id="compose-hint" class="hint">글은 익명으로 행사 화면에 공개됩니다.</p>
+          <div class="compose-actions">
+            <span id="char-count" class="count" aria-hidden="true">0 / 280</span>
+            <button class="action-button" type="submit">글 보내기</button>
+          </div>
+          <p class="feedback" role="status"></p>
+        </form>
+        <p id="closed" class="panel empty" hidden>글 접수가 마감되었습니다.</p>
+
+        <section class="feed" aria-labelledby="feed-title">
+          <div class="feed-heading">
+            <h2 id="feed-title">올라온 글</h2>
+            <span id="post-count" class="count"></span>
+          </div>
+          <p id="empty-feed" class="panel empty">아직 올라온 글이 없어요.</p>
+          <ol id="posts" class="posts"></ol>
+        </section>
+      </div>
+    </main>
+    <noscript>Serial Live를 사용하려면 JavaScript를 켜 주세요.</noscript>
+  </body>
+</html>
