@@ -12,8 +12,17 @@ const awakeSpeakers = [
   { id: "minseo", name: "김민서", photo: "/events/awake-speakers/minseo.webp" },
 ];
 
-function speakersFor(title) {
-  return /\bawake\b|어웨이크/i.test(title) ? awakeSpeakers : [];
+function speakerPreset(title) {
+  return /\bawake\b|어웨이크/i.test(title) ? "awake" : "";
+}
+
+function speakersFor(preset) {
+  return preset === "awake" ? awakeSpeakers : [];
+}
+
+function eventTitle(value) {
+  const title = typeof value === "string" ? value.trim() : "";
+  return title.length <= 80 ? title : "";
 }
 
 export function isLivePage(pathname) {
@@ -29,6 +38,10 @@ function json(body, status = 200) {
 
 function error(message, status) {
   return json({ error: message }, status);
+}
+
+function missingRoom() {
+  return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
 }
 
 async function readInput(request) {
@@ -105,7 +118,7 @@ export async function handleLive(request, env, url) {
   const { method } = request;
   const allowed = collection ? ["GET", "POST"]
     : remembering || view === "posts" ? ["POST"]
-    : view === "manage" ? ["GET", "PATCH"]
+    : view === "manage" ? ["GET", "PATCH", "DELETE"]
     : view === "image" ? ["GET", "PUT"]
     : ["GET"];
   if (!allowed.includes(method)) return error("지원하지 않는 요청입니다.", 405);
@@ -145,7 +158,7 @@ export async function handleLive(request, env, url) {
     const object = env.LIVE_ROOMS.idFromName(input.code);
     try {
       const room = await readRoomSummary(env, url.origin, object);
-      if (!room) return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
+      if (!room) return missingRoom();
       if (!(await trackRoom(env, url.origin, object)).ok) throw new Error("Directory write failed.");
       return json({ room });
     } catch {
@@ -155,8 +168,8 @@ export async function handleLive(request, env, url) {
 
   if (collection) {
     const input = await readInput(request);
-    const title = typeof input?.title === "string" ? input.title.trim() : "";
-    if (!title || title.length > 80) return error("행사 이름을 1~80자로 입력해 주세요.", 400);
+    const title = eventTitle(input?.title);
+    if (!title) return error("행사 이름을 1~80자로 입력해 주세요.", 400);
     for (let attempt = 0; attempt < 3; attempt++) {
       const id = crypto.randomUUID().replaceAll("-", "").slice(0, 10);
       const object = env.LIVE_ROOMS.idFromName(id);
@@ -184,7 +197,7 @@ export async function handleLive(request, env, url) {
     if (url.searchParams.get("typing") === "1") stream.searchParams.set("typing", "1");
     return room.fetch(stream, { headers: { upgrade: "websocket" } });
   }
-  if (method === "GET") return room.fetch(`${url.origin}/${view}`);
+  if (method === "GET" || method === "DELETE") return room.fetch(`${url.origin}/${view}`, { method });
   if (view === "image") {
     const body = await readImage(request);
     if (!body) return error("이미지를 처리할 수 없어요. 다른 사진을 선택해 주세요.", 400);
@@ -202,8 +215,20 @@ export class LiveRoom {
     this.sql = ctx.storage.sql;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS room (
       singleton INTEGER PRIMARY KEY CHECK (singleton = 1), code TEXT NOT NULL,
-      title TEXT NOT NULL, open INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 0
+      title TEXT NOT NULL, open INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 0,
+      speakerPreset TEXT NOT NULL DEFAULT '', deleted INTEGER NOT NULL DEFAULT 0
     )`);
+    const roomColumns = this.sql.exec("PRAGMA table_info(room)").toArray().map(({ name }) => name);
+    if (!roomColumns.includes("speakerPreset")) {
+      ctx.storage.transactionSync(() => {
+        this.sql.exec("ALTER TABLE room ADD COLUMN speakerPreset TEXT NOT NULL DEFAULT ''");
+        const existing = this.sql.exec("SELECT title FROM room WHERE singleton = 1").toArray()[0];
+        if (existing) this.sql.exec("UPDATE room SET speakerPreset = ? WHERE singleton = 1", speakerPreset(existing.title));
+      });
+    }
+    if (!roomColumns.includes("deleted")) {
+      this.sql.exec("ALTER TABLE room ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0");
+    }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS posts (
       sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, text TEXT NOT NULL,
       createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, speaker TEXT NOT NULL DEFAULT ''
@@ -219,18 +244,18 @@ export class LiveRoom {
   }
 
   current() {
-    return this.sql.exec("SELECT code, title, open, version FROM room WHERE singleton = 1").toArray()[0];
+    return this.sql.exec("SELECT code, title, open, version, speakerPreset, deleted FROM room WHERE singleton = 1").toArray()[0];
   }
 
-  snapshot(room, admin = false) {
+  snapshot({ code, title, open, version, speakerPreset }, admin = false) {
     const posts = admin
       ? this.sql.exec("SELECT id, text, createdAt, hidden, speaker FROM posts ORDER BY sequence DESC").toArray()
       : this.sql.exec("SELECT id, text, createdAt, speaker FROM posts WHERE hidden = 0 ORDER BY sequence DESC LIMIT 50").toArray();
     const total = this.sql.exec(admin ? "SELECT COUNT(*) AS count FROM posts" : "SELECT COUNT(*) AS count FROM posts WHERE hidden = 0").one().count;
-    const speakers = speakersFor(room.title);
+    const speakers = speakersFor(speakerPreset);
     const image = this.sql.exec("SELECT version FROM event_image WHERE singleton = 1").toArray()[0];
-    const imageUrl = image ? `/api/live/${room.code}/image?v=${image.version}` : speakers.length ? awakeImage : null;
-    return { room: { ...room, speakers, imageUrl }, posts, total };
+    const imageUrl = image ? `/api/live/${code}/image?v=${image.version}` : speakers.length ? awakeImage : null;
+    return { room: { code, title, open, version, speakers, imageUrl }, posts, total };
   }
 
   async fetch(request) {
@@ -240,11 +265,14 @@ export class LiveRoom {
     if (path === "/create") {
       if (room) return error("이미 사용 중인 행사 링크입니다.", 409);
       const { code, title } = await request.json();
-      const created = this.sql.exec("INSERT INTO room (singleton, code, title) VALUES (1, ?, ?) ON CONFLICT DO NOTHING RETURNING code", code, title).toArray()[0];
+      const created = this.sql.exec(`INSERT INTO room (singleton, code, title, speakerPreset) VALUES (1, ?, ?, ?)
+        ON CONFLICT DO NOTHING RETURNING code`, code, title, speakerPreset(title)).toArray()[0];
       if (!created) return error("이미 사용 중인 행사 링크입니다.", 409);
       return json(this.snapshot(this.current(), true), 201);
     }
-    if (!room) return error("행사를 찾을 수 없습니다. 참가 링크를 확인해 주세요.", 404);
+    if (!room) return missingRoom();
+    if (path === "/manage" && request.method === "DELETE") return this.deleteRoom();
+    if (room.deleted) return missingRoom();
     if (path === "/summary") return json({ code: room.code, title: room.title, open: Boolean(room.open) });
     if (path === "/image") return this.eventImage(request);
     if (path === "/stream") {
@@ -258,8 +286,10 @@ export class LiveRoom {
     if (request.method === "GET") return json(this.snapshot(room, path === "/manage"));
 
     const input = await request.json();
-    // Read after the body await so a concurrent pause takes effect before inserting.
-    if (path === "/posts") return this.submit(input, this.current());
+    // Read after the body await so a concurrent pause or deletion takes effect.
+    const latest = this.current();
+    if (latest.deleted) return missingRoom();
+    if (path === "/posts") return this.submit(input, latest);
     if (path === "/manage") return this.update(input);
     return error("주소를 다시 확인해 주세요.", 404);
   }
@@ -273,6 +303,7 @@ export class LiveRoom {
       });
     }
     const data = await request.arrayBuffer();
+    if (this.current().deleted) return missingRoom();
     this.ctx.storage.transactionSync(() => {
       const { version } = this.sql.exec("UPDATE room SET version = version + 1 WHERE singleton = 1 RETURNING version").one();
       this.sql.exec(`INSERT INTO event_image (singleton, version, data) VALUES (1, ?, ?)
@@ -288,7 +319,7 @@ export class LiveRoom {
     if (typeof id !== "string" || !/^[a-f0-9]{32}$/.test(id) || !message || message.length > 280) {
       return error("글을 1~280자로 입력해 주세요.", 400);
     }
-    if (speaker !== "" && !speakersFor(room.title).some(({ id }) => id === speaker)) {
+    if (speaker !== "" && !speakersFor(room.speakerPreset).some(({ id }) => id === speaker)) {
       return error("질문 대상을 다시 선택해 주세요.", 400);
     }
     const existing = this.sql.exec("SELECT text, speaker FROM posts WHERE id = ?", id).toArray()[0];
@@ -325,9 +356,22 @@ export class LiveRoom {
     return json(this.snapshot(room, true));
   }
 
-  update({ open, id, hidden, remove }) {
+  deleteRoom() {
+    // Keep the room code reserved so old links cannot open another event.
+    this.sql.exec("UPDATE room SET deleted = 1, open = 0, version = version + 1 WHERE singleton = 1 AND deleted = 0");
+    for (const socket of this.ctx.getWebSockets()) {
+      if (socket.readyState === WebSocket.OPEN) socket.close(4004, "Room deleted");
+    }
+    return json({ ok: true });
+  }
+
+  update({ title: name, open, id, hidden, remove }) {
     if (remove === true) return this.deletePost(id);
-    if (typeof open === "boolean") {
+    if (name !== undefined) {
+      const title = eventTitle(name);
+      if (!title) return error("행사 이름을 1~80자로 입력해 주세요.", 400);
+      this.sql.exec("UPDATE room SET title = ?, version = version + 1 WHERE singleton = 1 AND title <> ?", title, title);
+    } else if (typeof open === "boolean") {
       this.sql.exec("UPDATE room SET open = ?, version = version + 1 WHERE singleton = 1", Number(open));
     } else if (typeof id === "string" && typeof hidden === "boolean") {
       const changed = this.ctx.storage.transactionSync(() => {

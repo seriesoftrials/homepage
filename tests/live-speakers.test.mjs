@@ -41,14 +41,17 @@ test("an existing AWAKE room keeps its questions and accepts new speaker-specifi
   const db = new DatabaseSync(":memory:");
   try {
     db.exec(`
+      CREATE TABLE room (
+        singleton INTEGER PRIMARY KEY CHECK (singleton = 1), code TEXT NOT NULL,
+        title TEXT NOT NULL, open INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 0
+      );
+      INSERT INTO room (singleton, code, title) VALUES (1, '0123456789', 'AWAKE 2026');
       CREATE TABLE posts (
         sequence INTEGER PRIMARY KEY, id TEXT NOT NULL UNIQUE, text TEXT NOT NULL,
         createdAt INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0
       );
       INSERT INTO posts (id, text, createdAt) VALUES ('legacy', '기존 질문', 1);
     `);
-    const first = openRoom(db);
-    await request(first, "create", { code: "0123456789", title: "AWAKE 2026" });
     const room = openRoom(db);
     const initial = await (await request(room, "state")).json();
     assert.equal(initial.room.imageUrl, "/events/awake-2026-icon.png");
@@ -67,6 +70,57 @@ test("an existing AWAKE room keeps its questions and accepts new speaker-specifi
       assert.equal(snapshot.total, 3);
       assert.deepEqual(snapshot.posts.map(({ speaker }) => speaker), ["", "ichel", ""]);
     }
+  } finally {
+    db.close();
+  }
+});
+
+test("event actions require an administrator and preserve room identity until deletion", async () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const room = openRoom(db);
+    const code = "0123456789";
+    await request(room, "create", { code, title: "AWAKE 2026" });
+    const original = { id: "a".repeat(32), text: "기존 발표 질문", speaker: "minseo" };
+    assert.equal((await request(room, "posts", original)).status, 201);
+    const env = {
+      BACKEND: { fetch: (req) => Response.json({ member: { role: req.headers.get("cookie").split("=")[1] } }) },
+      LIVE_ROOMS: {
+        idFromName: (name) => name,
+        get: () => ({ fetch: (url, init) => room.fetch(new Request(url, init)) }),
+      },
+    };
+    const url = new URL(`https://example.test/api/live/${code}/manage`);
+    const action = (method, role, body, origin = url.origin) => handleLive(new Request(url, {
+      method,
+      headers: { origin, "content-type": "application/json", ...(role && { cookie: `session=${role}` }) },
+      body: body && JSON.stringify(body),
+    }), env, url);
+
+    assert.equal((await action("PATCH", "member", { title: "새 이름" })).status, 403);
+    assert.equal((await action("PATCH", "admin", { title: " " })).status, 400);
+    assert.equal((await action("DELETE")).status, 401);
+    assert.equal((await action("DELETE", "member")).status, 403);
+    assert.equal((await action("DELETE", "admin", undefined, "https://other.test")).status, 403);
+    const renamed = await (await action("PATCH", "admin", { title: "  새 이름  " })).json();
+    assert.equal(renamed.room.code, code);
+    assert.equal(renamed.room.title, "새 이름");
+    assert.equal(renamed.room.open, 1);
+    assert.equal(renamed.room.imageUrl, "/events/awake-2026-icon.png");
+    assert.equal(renamed.room.speakers.length, 3);
+    assert.equal(renamed.posts[0].id, original.id);
+    const persisted = openRoom(db);
+    assert.deepEqual(await (await request(persisted, "summary")).json(), { code, title: "새 이름", open: true });
+    assert.equal((await request(persisted, "posts", { ...original, id: "b".repeat(32) })).status, 201);
+
+    assert.equal((await action("DELETE", "admin")).status, 200);
+    assert.equal((await action("DELETE", "admin")).status, 200);
+    for (const path of ["state", "summary", "manage", "stream", "image"]) {
+      assert.equal((await request(persisted, path)).status, 404);
+    }
+    assert.equal((await request(persisted, "posts", original)).status, 404);
+    assert.equal((await action("PATCH", "admin", { title: "다시 열기" })).status, 404);
+    assert.equal((await request(persisted, "create", { code, title: "다른 행사" })).status, 409);
   } finally {
     db.close();
   }

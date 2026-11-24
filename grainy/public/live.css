@@ -1,4 +1,7 @@
 [hidden] { display: none !important; }
+:root.live-document { --page-edge: var(--visual-paper); }
+:root.live-document[data-theme="dark"] { --page-edge: var(--surround); }
+.live-page { background-color: var(--page-edge); }
 input:not([type="radio"]), textarea { font: inherit; }
 input:not([type="radio"]):focus-visible, textarea:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 h1, h2, p { margin: 0; }
@@ -47,10 +50,59 @@ h2 { font-size: 21px; font-weight: 600; letter-spacing: -.035em; }
 .event-directory { display: grid; gap: 12px; }
 .event-directory ol { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none; }
 .event-directory ol:empty { display: none; }
-.event-directory li a { display: grid; gap: 4px; padding: 12px; border-radius: 12px; background: var(--inset-surface); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
-.event-directory li a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.event-directory li { display: flex; align-items: center; padding-inline-end: 4px; border-radius: 12px; background: var(--inset-surface); }
+.event-directory li a { display: grid; flex: 1; min-width: 0; gap: 4px; padding: 12px; border-radius: 12px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.event-directory :is(li a, summary, button):focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .event-directory li a span { color: var(--body); font-size: 13px; }
 .event-directory > button { justify-self: start; }
+.event-options { position: relative; flex: none; }
+.event-options summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--body);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  list-style: none;
+}
+.event-options summary::-webkit-details-marker { display: none; }
+.event-options summary:is(:hover, [aria-expanded="true"]), .event-options[open] summary { background: var(--tile-surface); color: var(--ink); }
+.event-options-menu {
+  position: absolute;
+  z-index: 3;
+  inset: calc(100% + 4px) 0 auto auto;
+  display: grid;
+  width: max-content;
+  min-width: 124px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--tile-surface);
+  box-shadow: 0 4px 20px rgb(0 0 0 / .14);
+}
+.event-options-menu button {
+  padding: 10px 12px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  text-align: start;
+}
+.event-options-menu button:hover { background: var(--inset-surface); }
+.event-options-menu .event-delete { color: var(--form-error-color); }
+.event-action-dialog {
+  width: min(400px, calc(100% - 32px));
+  border: 0;
+  color: var(--ink);
+}
+.event-action-dialog::backdrop { background: rgb(0 0 0 / .3); }
+#event-action-form, #event-action-name-field { display: grid; gap: 12px; }
+.event-action-buttons { display: flex; justify-content: flex-end; gap: 8px; }
+#submit-event-action[data-delete] { --button-background: var(--form-error-color); --button-foreground: var(--tile-surface); }
 .open-event summary { width: fit-content; padding-block: 6px; color: var(--body); font-size: 14px; cursor: pointer; }
 .open-event form { margin-top: 8px; }
 .compose-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -252,7 +304,8 @@ body[data-view="join"] .post-text { font-size: 15px; font-weight: 500; }
   display: grid;
   justify-items: center;
   padding-bottom: var(--safe-bottom);
-  background: linear-gradient(transparent, var(--visual-paper));
+  /* A solid viewport-edge surface lets Safari extend the background into its chrome. */
+  background-color: var(--page-edge);
   pointer-events: none;
 }
 .live-footer a {
