@@ -28,7 +28,7 @@
     <link rel="preload" href="/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/brand-assets/pretendard-variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/action-button.css?v=3" />
-    <link rel="stylesheet" href="/ver2.css?v=135" />
+    <link rel="stylesheet" href="/ver2.css?v=138" />
     <link rel="stylesheet" href="/shadcn.css?v=5" />
     <link rel="stylesheet" href="/ver2-intro.css?v=4" />
     <script src="/image-protection.js" defer></script>
@@ -121,9 +121,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             <h2 class="about-statement" id="about-title" data-scroll-statement><span data-i18n="aboutUniversity">중앙대학교에서 불확실성에 도전하는</span> <span data-i18n="aboutPeople">기업가 정신을 확산하고,</span> <span data-i18n="aboutStart">스타트업 창업 생태계를 활성화합니다.</span></h2>
             <div class="about-connections">
                 <ul class="connection-list">
-                  <li class="launchpad-card"><span lang="en">Launchpad</span><p data-i18n="launchpadDescription">창업 동료를 만나 팀을 꾸리고, 첫 프로젝트를 시작합니다.</p></li>
-                  <li><span lang="en">Pay it forward</span><p data-i18n="payItForwardDescription">받은 도움과 배움을 다음 기수에 전합니다.</p></li>
-                  <li><span lang="en">Sandbox</span><p data-i18n="sandboxDescription">아이디어를 부담 없이 실험하고, 실패해도 다시 시도할 수 있는 공간입니다.</p></li>
+                  <li class="site-card"><span lang="en">Launchpad</span><p data-i18n="launchpadDescription">창업 동료를 만나 팀을 꾸리고, 첫 프로젝트를 시작합니다.</p></li>
+                  <li class="site-card"><span lang="en">Pay it forward</span><p data-i18n="payItForwardDescription">받은 도움과 배움을 다음 기수에 전합니다.</p></li>
+                  <li class="site-card"><span lang="en">Sandbox</span><p data-i18n="sandboxDescription">아이디어를 부담 없이 실험하고, 실패해도 다시 시도할 수 있는 공간입니다.</p></li>
                 </ul>
                 <a class="text-link" href="/intro" data-open-story aria-haspopup="dialog" aria-controls="origin-story"><span data-i18n="originLink">우리가 시작한 이유</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
             </div>
@@ -148,25 +148,19 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="content-shell">
             <div class="section-heading"><h2 id="benefits-title" data-i18n="benefitsTitle">SERIAL에서 얻는 것</h2></div>
             <ul class="benefit-grid" role="list">
-              <li>
-                <h3>
-                  <span class="benefit-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></span>
-                  <span data-i18n="benefitTeamTitle">함께 시작할 동료</span>
-                </h3>
+              <li class="site-card">
+                <svg class="benefit-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+                <h3 data-i18n="benefitTeamTitle">함께 시작할 동료</h3>
                 <p class="body-copy" data-i18n="benefitTeamBody">창업에 관심 있는 동료를 만나 팀을 꾸리고, 같은 문제를 함께 풀어봅니다.</p>
               </li>
-              <li>
-                <h3>
-                  <span class="benefit-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12m-8.71-5L12 12l8.71-5M7.5 4.27l9 5.15"/></svg></span>
-                  <span data-i18n="benefitSkillsTitle">제품을 만드는 역량</span>
-                </h3>
+              <li class="site-card">
+                <svg class="benefit-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12m-8.71-5L12 12l8.71-5M7.5 4.27l9 5.15"/></svg>
+                <h3 data-i18n="benefitSkillsTitle">제품을 만드는 역량</h3>
                 <p class="body-copy" data-i18n="benefitSkillsBody">고객 인터뷰로 문제를 파악하고, 해결책을 MVP로 만든 뒤 피드백을 반영합니다.</p>
               </li>
-              <li>
-                <h3>
-                  <span class="benefit-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"/><path d="m2 15 6 6m-1-1 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"/></svg></span>
-                  <span data-i18n="benefitSupportTitle">나를 도와줄 사람들</span>
-                </h3>
+              <li class="site-card">
+                <svg class="benefit-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"/><path d="m2 15 6 6m-1-1 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"/></svg>
+                <h3 data-i18n="benefitSupportTitle">나를 도와줄 사람들</h3>
                 <p class="body-copy" data-i18n="benefitSupportBody">먼저 도전한 창업가의 시행착오를 듣고, 프로젝트에 대한 피드백을 받아 다음 시도를 준비합니다.</p>
               </li>
             </ul>
@@ -182,7 +176,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
             </h2>
             <p class="body-copy curriculum-description" data-i18n="curriculumDescription">두 학기의 활동을 마치면 1년 과정을 수료합니다. 첫 번째 학기에는 팀을 꾸려 고객의 문제를 찾고 제품을 만듭니다. 두 번째 학기에는 각자 선택한 활동에서 그 경험을 이어갑니다.</p>
             <div class="curriculum-cards">
-              <button class="curriculum-card" type="button" data-open-curriculum aria-haspopup="dialog" aria-expanded="false" aria-controls="curriculum-dialog" aria-labelledby="curriculum-project-term curriculum-project" aria-describedby="curriculum-project-summary">
+              <button class="site-card curriculum-card" type="button" data-open-curriculum aria-haspopup="dialog" aria-expanded="false" aria-controls="curriculum-dialog" aria-labelledby="curriculum-project-term curriculum-project" aria-describedby="curriculum-project-summary">
                 <span>
                   <span class="curriculum-card-term" id="curriculum-project-term" data-i18n="curriculumFirstSemester">첫 번째 학기</span>
                   <span class="curriculum-card-title" id="curriculum-project" data-i18n="curriculumProjectTitle">실전 프로젝트</span>
@@ -190,7 +184,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
                 </span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </button>
-              <button class="curriculum-card" type="button" data-open-curriculum aria-haspopup="dialog" aria-expanded="false" aria-controls="curriculum-choice-dialog" aria-labelledby="curriculum-choice-term curriculum-choice" aria-describedby="curriculum-choice-summary">
+              <button class="site-card curriculum-card" type="button" data-open-curriculum aria-haspopup="dialog" aria-expanded="false" aria-controls="curriculum-choice-dialog" aria-labelledby="curriculum-choice-term curriculum-choice" aria-describedby="curriculum-choice-summary">
                 <span>
                   <span class="curriculum-card-term" id="curriculum-choice-term" data-i18n="curriculumSecondSemester">두 번째 학기</span>
                   <span class="curriculum-card-title" id="curriculum-choice" data-i18n="curriculumChoiceTitle">선택 활동</span>
@@ -221,7 +215,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="content-shell project-content">
             <div class="section-heading"><h2 id="projects-title" lang="ko" data-i18n="projects">프로젝트</h2></div>
             <ul class="project-grid">
-              <li class="project-card">
+              <li class="site-card project-card">
                 <span class="project-number" aria-hidden="true">01</span>
                 <div class="project-details">
                   <div class="project-brand"><img class="project-logo" src="/brand-assets/cauway-logo.svg" alt="" width="44" height="44" loading="lazy" decoding="async" /><h3 lang="en">cauway</h3></div>
@@ -236,7 +230,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. -->
           <div class="content-shell">
             <div class="section-heading"><h2 id="events-title" data-i18n="eventSectionTitle">행사</h2></div>
             <div class="past-event-grid">
-              <article class="past-event" aria-labelledby="awake-title">
+              <article class="site-card past-event" aria-labelledby="awake-title">
                 <img class="past-event-poster" src="/events/awake-2026-cover-v2.webp" alt="Awake 2026 행사 포스터" data-i18n-alt="eventPosterAlt" width="960" height="960" loading="lazy" decoding="async" />
                 <div class="past-event-copy">
                   <p class="past-event-status" data-i18n="eventHeld">개최 완료</p>

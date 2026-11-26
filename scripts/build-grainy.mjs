@@ -12,12 +12,13 @@ const output = resolve(root, "public/grainy");
 await mkdir(output, { recursive: true });
 execFileSync(process.execPath, [resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'), '-i', resolve(source, 'shadcn.css'), '-o', resolve(output, 'shadcn.css'), '--minify'], { cwd: root, stdio: 'inherit' });
 await cp(resolve(source, "public"), output, { recursive: true });
-const [template, intro, supportTemplate, live, japaneseFonts, css, sectionCaption] = await Promise.all([
+const [template, intro, supportTemplate, live, japaneseFonts, siteCardStyles, css, sectionCaption] = await Promise.all([
   readFile(resolve(source, "index.html"), "utf8"),
   readFile(resolve(source, "intro.html"), "utf8"),
   readFile(resolve(source, "support.html"), "utf8"),
   readFile(resolve(source, "live.html"), "utf8"),
   readFile(resolve(source, "public/fonts/pretendard-jp/font-face.css"), "utf8"),
+  readFile(resolve(source, "components/site-card.css"), "utf8"),
   readFile(resolve(source, "public/ver2.css"), "utf8"),
   readFile(resolve(source, "components/section-caption.html"), "utf8"),
 ]);
@@ -47,7 +48,7 @@ await Promise.all([
   writeFile(resolve(output, "intro.html"), story),
   writeFile(resolve(output, "support.html"), support),
   writeFile(resolve(output, "live.html"), live),
-  writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${css}`),
+  writeFile(resolve(output, "ver2.css"), `${japaneseFonts}\n${siteCardStyles}\n${css}`),
   build({
     entryPoints: [resolve(source, "src/ver2-hero.js"), resolve(source, "src/support.js"), resolve(source, "src/live.js")],
     outdir: output,
