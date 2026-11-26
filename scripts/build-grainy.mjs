@@ -12,19 +12,26 @@ const output = resolve(root, "public/grainy");
 await mkdir(output, { recursive: true });
 execFileSync(process.execPath, [resolve(root, 'node_modules/@tailwindcss/cli/dist/index.mjs'), '-i', resolve(source, 'shadcn.css'), '-o', resolve(output, 'shadcn.css'), '--minify'], { cwd: root, stdio: 'inherit' });
 await cp(resolve(source, "public"), output, { recursive: true });
-const [template, intro, supportTemplate, live, japaneseFonts, css] = await Promise.all([
+const [template, intro, supportTemplate, live, japaneseFonts, css, sectionCaption] = await Promise.all([
   readFile(resolve(source, "index.html"), "utf8"),
   readFile(resolve(source, "intro.html"), "utf8"),
   readFile(resolve(source, "support.html"), "utf8"),
   readFile(resolve(source, "live.html"), "utf8"),
   readFile(resolve(source, "public/fonts/pretendard-jp/font-face.css"), "utf8"),
   readFile(resolve(source, "public/ver2.css"), "utf8"),
+  readFile(resolve(source, "components/section-caption.html"), "utf8"),
 ]);
 const article = intro.match(/<article class="manifesto">[\s\S]*?<\/article>/)?.[0];
 if (!article || !template.includes("<!-- SPIRIT_ORIGIN_ARTICLE -->")) {
   throw new Error("The Spirit reader needs the original intro article.");
 }
-const html = template.replace("<!-- SPIRIT_ORIGIN_ARTICLE -->", article);
+const html = template
+  .replace(/<!-- SECTION_CAPTION ([a-zA-Z]+)( large)? \| ([^\r\n]+?) -->/g, (_, key, large, label) =>
+    sectionCaption.trim()
+      .replace("{{variant}}", large ? " section-caption--large" : "")
+      .replace("{{key}}", key)
+      .replace("{{label}}", () => label.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")))
+  .replace("<!-- SPIRIT_ORIGIN_ARTICLE -->", article);
 const story = buildStoryPage(html, intro);
 const header = template.match(/<header class="hero-header" data-page-nav>[\s\S]*?<\/header>/)?.[0];
 if (!header || !supportTemplate.includes("<!-- SUPPORT_SITE_HEADER -->")) {
