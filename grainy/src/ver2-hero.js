@@ -42,7 +42,16 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const theme = mountTheme();
 const preregistration = mountPreregistration();
 mountGrainMotion(reducedMotion);
-const eventMotion = mountEventMotion(document.querySelector('#events'), reducedMotion);
+mountMemberReveal(peopleGrid, reducedMotion);
+for (const card of document.querySelectorAll('.past-event, .project-card')) {
+  const copy = card.querySelector('.past-event-copy, .project-description');
+  mountViewportReveal(card, reducedMotion, () => [
+    animateReveal(card, 'translateY(18px)', 550),
+    animateReveal(copy, 'translateY(8px)', 360, 150),
+  ]);
+}
+mountPartnershipTicker(document.querySelector('[data-partnership-ticker]'));
+const eventMotion = mountEventMotion(document.querySelector('main > .event-section'), reducedMotion);
 const spiritLoops = [...document.querySelectorAll('[data-spirit-art]')].map(artwork => mountSpiritLoop(artwork, reducedMotion));
 let ribbon;
 let intro;
@@ -64,6 +73,86 @@ if (footer) {
   footerObserver.observe(footer);
 }
 
+function animateReveal(element, transform, duration, delay = 0) {
+  return element.animate([
+    { transform, opacity: 0 },
+    { transform: 'none', opacity: 1 },
+  ], { duration, delay, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+}
+
+function mountViewportReveal(element, preference, animate) {
+  if (!element || preference.matches || !Element.prototype.animate || !window.IntersectionObserver) return;
+  const visibleRatio = .12;
+  let animations = [];
+
+  function showWithoutMotion() {
+    observer.disconnect();
+    element.classList.remove('is-reveal-pending');
+    animations.forEach(animation => animation.cancel());
+  }
+
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.intersectionRatio < visibleRatio) return;
+    observer.disconnect();
+    element.classList.remove('is-reveal-pending');
+    if (preference.matches) return;
+
+    animations = animate();
+    Promise.allSettled(animations.map(animation => animation.finished))
+      .then(() => preference.removeEventListener('change', showWithoutMotion));
+  }, { threshold: visibleRatio });
+
+  element.classList.add('is-reveal-pending');
+  preference.addEventListener('change', showWithoutMotion, { once: true });
+  observer.observe(element);
+}
+
+function mountMemberReveal(grid, preference) {
+  mountViewportReveal(grid, preference, () => {
+    const bounds = grid.getBoundingClientRect();
+    const centerX = bounds.left + bounds.width / 2;
+    const centerY = bounds.top + bounds.height / 2;
+    const portraits = [...grid.querySelectorAll('.person-portrait')].map(portrait => {
+      const { left, top, width, height } = portrait.getBoundingClientRect();
+      const x = (centerX - left - width / 2) * .82;
+      const y = clamp((centerY - top - height / 2) * .16, -48, 48);
+      return { portrait, x, y, delay: Math.min(90, Math.abs(x) * .3) };
+    });
+
+    return portraits.flatMap(({ portrait, x, y, delay }) => [
+      animateReveal(portrait, `translate(${x}px, ${y}px) scale(.88)`, 640, delay),
+      animateReveal(portrait.nextElementSibling, 'translateY(8px)', 360, delay + 260),
+    ]);
+  });
+}
+
+function mountPartnershipTicker(ticker) {
+  if (!ticker || !window.IntersectionObserver) return;
+  const group = ticker.querySelector('.partnership-ticker-group');
+  const toggle = ticker.querySelector('.partnership-ticker-toggle');
+  const repeatedMessage = group.firstElementChild.cloneNode(true);
+  repeatedMessage.classList.add('ticker-repeat');
+  repeatedMessage.setAttribute('aria-hidden', 'true');
+  group.append(repeatedMessage);
+
+  const repeatedGroup = group.cloneNode(true);
+  repeatedGroup.classList.add('ticker-repeat');
+  repeatedGroup.setAttribute('aria-hidden', 'true');
+  group.after(repeatedGroup);
+  ticker.classList.add('is-ready');
+
+  const observer = new IntersectionObserver(([entry]) => {
+    ticker.classList.toggle('is-visible', entry.isIntersecting);
+  });
+  observer.observe(ticker);
+
+  toggle.hidden = false;
+  toggle.addEventListener('click', () => {
+    const paused = ticker.classList.toggle('is-paused');
+    toggle.setAttribute('aria-pressed', String(paused));
+  });
+}
+
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
@@ -79,7 +168,7 @@ function updateNavigation() {
 
   let current = '';
   for (const section of sections) {
-    if (section.getBoundingClientRect().top <= window.innerHeight * .38) current = section.id;
+    if (section.getBoundingClientRect().top <= window.innerHeight * .38) current = section.dataset.navSection || section.id;
   }
   if (current !== activeSection) {
     activeSection = current;
