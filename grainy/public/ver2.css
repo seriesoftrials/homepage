@@ -240,7 +240,7 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 .hero-ribbon.is-ready .hero-ribbon-canvas { opacity: 1; }
 .hero-ribbon.is-ready .hero-ribbon-poster { opacity: 0; }
 
-.site-sections { display: grid; gap: var(--frame); margin-top: var(--frame); }
+.site-sections { --content-width: 1080px; display: grid; gap: var(--frame); margin-top: var(--frame); }
 .section-tile { position: relative; isolation: isolate; overflow: hidden; min-width: 0; padding: var(--section-inset); border: 1px solid var(--line); border-radius: 18px; background: var(--tile-surface); scroll-margin-top: calc(110px + var(--safe-top)); }
 .hero, .section-tile {
   border-color: var(--tile-line);
@@ -248,6 +248,9 @@ html[lang="zh-Hans"] { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans
 }
 .hero::before { content: ""; position: absolute; z-index: 0; inset: 38% 0 0; background: radial-gradient(ellipse 78% 95% at 10% 100%, rgb(129 151 173 / .22), rgb(129 151 173 / .08) 46%, transparent 78%), radial-gradient(ellipse 74% 100% at 100% 100%, rgb(179 151 127 / .20), rgb(179 151 127 / .07) 48%, transparent 80%); pointer-events: none; }
 .section-tile > .content-shell { position: relative; z-index: 1; }
+@media (min-width: 701px) {
+  .site-sections > .section-tile > .content-shell { width: calc(100% - 24px); }
+}
 .section-caption { display: flex; align-items: center; gap: 10px; margin: 0 0 26px; color: var(--body); font-size: 12px; font-weight: 500; letter-spacing: .02em; }
 .section-caption--large { font-size: 14px; }
 .event-section { --event-motion-room: 160px; --event-motion-duration: 680ms; --event-overlap: clamp(112px, calc(100svh - max(380px, var(--event-hero-clearance, 380px)) - 32px), 480px); position: relative; z-index: 2; width: min(calc(100% - 2 * var(--inset)), 1120px); margin: calc(-1 * var(--event-overlap)) auto max(var(--frame), calc(var(--event-overlap) - var(--event-height, 380px) + var(--frame))); padding: 32px clamp(24px, 3vw, 40px); border-radius: 32px; background: var(--tile-surface); box-shadow: 0 18px 48px -28px rgb(0 0 0 / .32), 0 3px 12px -5px rgb(0 0 0 / .12); }
@@ -343,7 +346,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .past-event-copy .body-copy { margin-top: 10px; font-size: 14px; line-height: 1.55; }
 .benefit-grid > .site-card { position: relative; isolation: isolate; overflow: hidden; }
 .benefit-grid h3 { margin: 0 0 8px; font-size: clamp(17px, 2vw, 23px); font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; word-break: keep-all; }
-.benefit-icon { position: absolute; z-index: -1; right: -18px; bottom: -27px; width: clamp(112px, 14vw, 168px); height: auto; color: var(--ink); opacity: .075; pointer-events: none; }
+.benefit-icon { position: absolute; z-index: -1; right: -18px; bottom: -27px; width: clamp(102px, 12.5vw, 150px); height: auto; color: var(--ink); opacity: .06; pointer-events: none; }
 .benefit-grid .body-copy { font-size: 14px; line-height: 1.75; }
 .partnership-section .section-heading { margin-bottom: clamp(18px, 2.5vw, 28px); }
 .partnership-ticker { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--inset-surface); }
