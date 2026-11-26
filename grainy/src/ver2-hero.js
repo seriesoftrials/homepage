@@ -39,6 +39,7 @@ if (peopleGrid) {
   peopleGrid.append(...cards);
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const touchInput = matchMedia('(pointer: coarse)');
 const theme = mountTheme();
 const preregistration = mountPreregistration();
 mountGrainMotion(reducedMotion);
@@ -59,6 +60,8 @@ let navRibbon;
 let elapsed = SEQUENCE_DURATION;
 let scheduledFrame = 0;
 let activeSection;
+let navigationLayout;
+let progressTransform;
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -156,19 +159,35 @@ function mountPartnershipTicker(ticker) {
 function updateNavigation() {
   scheduledFrame = 0;
   if (document.documentElement.classList.contains('has-card-dialog')) return;
+
+  const scrollY = window.scrollY;
+  const scrollTop = Math.max(0, scrollY);
+  const viewportHeight = window.innerHeight;
+  // Section geometry only changes when the document reflows, even as the fixed
+  // header and the mobile browser bars move during a scroll.
+  const layout = navigationLayout ??= {
+    sectionTops: sections.map(section => section.getBoundingClientRect().top + scrollY),
+    statementTop: statement ? statement.getBoundingClientRect().top + scrollY : undefined,
+    documentHeight: document.documentElement.scrollHeight,
+  };
   eventMotion?.refresh();
-  const statementTop = statement?.getBoundingClientRect().top;
   spiritLoops.forEach(loop => loop?.refresh());
-  const y = Math.max(0, window.scrollY);
-  const compact = y > (header.classList.contains('is-compact') ? 32 : 80);
+
+  const compact = scrollTop > (header.classList.contains('is-compact') ? 32 : 80);
   header.classList.toggle('is-compact', compact);
 
-  const distance = document.documentElement.scrollHeight - window.innerHeight;
-  progressBar.style.transform = `scaleX(${distance > 0 ? clamp(y / distance) : 0})`;
+  const distance = layout.documentHeight - viewportHeight;
+  const transform = `scaleX(${distance > 0 ? clamp(scrollTop / distance) : 0})`;
+  if (transform !== progressTransform) {
+    progressTransform = transform;
+    progressBar.style.transform = transform;
+  }
 
   let current = '';
-  for (const section of sections) {
-    if (section.getBoundingClientRect().top <= window.innerHeight * .38) current = section.dataset.navSection || section.id;
+  for (const [index, section] of sections.entries()) {
+    if (layout.sectionTops[index] - scrollY <= viewportHeight * .38) {
+      current = section.dataset.navSection || section.id;
+    }
   }
   if (current !== activeSection) {
     activeSection = current;
@@ -178,9 +197,9 @@ function updateNavigation() {
     }
   }
 
-  if (statementTop !== undefined) {
+  if (layout.statementTop !== undefined) {
     const readingProgress = reducedMotion.matches ? 1 : clamp(
-      (window.innerHeight * .8 - statementTop) / (window.innerHeight * .6),
+      (viewportHeight * .8 - layout.statementTop + scrollY) / (viewportHeight * .6),
     );
     phrases.forEach((phrase, index) => {
       phrase.classList.toggle('is-read', reducedMotion.matches || readingProgress > index / phrases.length);
@@ -192,11 +211,16 @@ function scheduleNavigation() {
   if (!scheduledFrame) scheduledFrame = requestAnimationFrame(updateNavigation);
 }
 
+function invalidateNavigationLayout() {
+  navigationLayout = undefined;
+  scheduleNavigation();
+}
+
 function mountPage() {
   navRibbon ??= mountNavRibbon(header.querySelector('.brand'), reducedMotion);
   try {
     if (holder && !ribbon) {
-      ribbon = mountRibbon(holder, { initialElapsed: elapsed });
+      ribbon = mountRibbon(holder, { initialElapsed: elapsed, maxPixelRatio: touchInput.matches ? 2 : 3 });
       intro = mountIntro({ holder, header, hero: holder.closest('.hero'), preference: reducedMotion, ribbon });
     }
   } catch (error) {
@@ -215,7 +239,7 @@ function changeLanguage(value, save = false) {
   if (save) {
     try { localStorage.setItem(LANGUAGE_STORAGE_KEY, language); } catch {}
   }
-  scheduleNavigation();
+  invalidateNavigationLayout();
 }
 
 function setDropdown(root, open, instant = false) {
@@ -290,7 +314,11 @@ window.addEventListener('pageshow', event => {
     mountPage();
   }
 });
-document.fonts.ready.then(scheduleNavigation);
+const navigationResize = new ResizeObserver(invalidateNavigationLayout);
+for (const element of [document.body, holder?.closest('.hero'), statement, ...sections]) {
+  if (element) navigationResize.observe(element, { box: 'border-box' });
+}
+document.fonts.ready.then(invalidateNavigationLayout);
 changeLanguage(preferredLanguage());
 mountCardDialogs(reducedMotion);
 mountStoryShare();
