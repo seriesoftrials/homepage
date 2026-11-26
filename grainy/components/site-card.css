@@ -1,0 +1,13 @@
+.site-card {
+  min-width: 0;
+  padding: 24px;
+  border-radius: 14px;
+  background-color: color-mix(in srgb, var(--inset-surface) 80%, transparent);
+  transition: background-color var(--theme-duration) ease;
+}
+
+@media (max-width: 700px) {
+  .site-card {
+    padding: 20px;
+  }
+}
