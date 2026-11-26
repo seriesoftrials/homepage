@@ -485,6 +485,12 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
   .language-toggle:hover, .language-menu button:hover, .theme-toggle:hover { background: rgb(var(--ink-rgb) / .1); }
   .text-link:hover svg, .story-row:hover > svg { transform: translateX(4px); }
 }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .curriculum-card > svg { transition: transform 180ms var(--nav-ease); }
+  .curriculum-card:hover > svg { transform: translateX(2px); }
+  .benefit-icon { transform-origin: right bottom; transition: transform 280ms ease-in-out; }
+  .benefit-grid > .site-card:hover > .benefit-icon { transform: scale(1.05); }
+}
 @media (max-width: 900px) {
   .hero-nav { gap: 17px; }
   .people-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
