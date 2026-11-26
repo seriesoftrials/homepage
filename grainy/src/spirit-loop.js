@@ -16,6 +16,7 @@ export function mountSpiritLoop(artwork, preference) {
   const urls = artwork.dataset.spiritFrames?.split(',').filter(Boolean) ?? [];
   const frames = [];
   let nearViewport = false;
+  let visible = false;
   let loaded = false;
   let loading = false;
 
@@ -42,32 +43,44 @@ export function mountSpiritLoop(artwork, preference) {
       // Preserve the original picture if any frame is unavailable.
       artwork.dataset.sequence = 'unavailable';
     }
-    sync();
+    refresh();
   }
 
-  function sync() {
+  function refresh() {
+    if (!visible || !loaded) return;
     const bounds = artwork.getBoundingClientRect();
-    const visible = bounds.bottom > 0 && bounds.top < window.innerHeight;
-    artwork.dataset.motion = visible && !preference.matches && !document.hidden ? 'running' : 'paused';
-    if (nearViewport && !preference.matches) void loadFrames();
-    if (!loaded) return;
     const position = preference.matches ? 0 : Math.round(spiritFramePosition(bounds.top, bounds.height, window.innerHeight, frames.length + 1));
+    if (artwork.dataset.frame === String(position)) return;
     const opacities = spiritFrameOpacities(position, frames.length + 1);
     frames.forEach((image, index) => {
       const opacity = opacities[index + 1].toFixed(3);
       if (image.style.opacity !== opacity) image.style.opacity = opacity;
     });
-    artwork.dataset.frame = String(Math.floor(position));
+    artwork.dataset.frame = String(position);
   }
 
-  const observer = new IntersectionObserver(entries => {
-    nearViewport = entries[0].isIntersecting;
-    sync();
-  }, { rootMargin: '500px 0px' });
-  observer.observe(artwork);
-  preference.addEventListener('change', sync);
-  document.addEventListener('visibilitychange', sync);
-  sync();
+  function syncMotion() {
+    const motion = visible && !preference.matches && !document.hidden ? 'running' : 'paused';
+    if (artwork.dataset.motion !== motion) artwork.dataset.motion = motion;
+    if (nearViewport && !preference.matches) void loadFrames();
+    refresh();
+  }
 
-  return { refresh: sync };
+  const visibility = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    syncMotion();
+  });
+  visibility.observe(artwork);
+  if (urls.length) {
+    const preload = new IntersectionObserver(([entry]) => {
+      nearViewport = entry.isIntersecting;
+      if (nearViewport) void loadFrames();
+    }, { rootMargin: '500px 0px' });
+    preload.observe(artwork);
+  }
+  preference.addEventListener('change', syncMotion);
+  document.addEventListener('visibilitychange', syncMotion);
+  syncMotion();
+
+  return { refresh };
 }

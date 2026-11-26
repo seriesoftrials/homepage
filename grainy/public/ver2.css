@@ -492,8 +492,15 @@ html[lang="ja"] .about-statement { line-height: 1.45; }
 }
 @media (max-width: 700px) {
   :root { --section-inset: 25px; }
+  .grain-running body::before, .spirit-art::after { animation: none; }
+  .hero-header::before {
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .hero, .section-tile { border-radius: 16px; }
   .hero-header { grid-template-columns: 1fr auto auto; gap: 8px; padding: 7px 10px; }
+  .hero-header.nav-ready { transition-property: transform; }
   .hero-header.nav-ready .brand { transition: transform 620ms var(--nav-ease); }
   .hero-header.is-compact .brand { transform: translateX(8px); }
   .hero-nav { display: none; }
