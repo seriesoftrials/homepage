@@ -343,7 +343,7 @@ html[lang="ja"] .about-statement, html[lang="zh-Hans"] .about-statement { word-b
 .past-event-copy .body-copy { margin-top: 10px; font-size: 14px; line-height: 1.55; }
 .benefit-grid > .site-card { position: relative; isolation: isolate; overflow: hidden; }
 .benefit-grid h3 { margin: 0 0 8px; font-size: clamp(17px, 2vw, 23px); font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; word-break: keep-all; }
-.benefit-icon { position: absolute; z-index: -1; right: -18px; bottom: -27px; width: clamp(112px, 14vw, 168px); height: auto; color: var(--ink); opacity: .1; pointer-events: none; }
+.benefit-icon { position: absolute; z-index: -1; right: -18px; bottom: -27px; width: clamp(112px, 14vw, 168px); height: auto; color: var(--ink); opacity: .075; pointer-events: none; }
 .benefit-grid .body-copy { font-size: 14px; line-height: 1.75; }
 .partnership-section .section-heading { margin-bottom: clamp(18px, 2.5vw, 28px); }
 .partnership-ticker { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--inset-surface); }
