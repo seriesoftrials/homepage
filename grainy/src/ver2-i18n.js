@@ -15,7 +15,7 @@ export const translations = {
   "ko": {
     "preregistrationAction": "2027 1기 모집 알림 받기",
     "preregistrationLabel": "2027 1기 모집 알림",
-    "preregistrationTitle": "동료와 함께 창업에 도전할 기회.",
+    "preregistrationTitle": "불가능에 도전할 기회",
     "preregistrationDescription": "2027년 1기 접수 일정과 지원 자격은 추후 공지합니다.",
     "preregistrationName": "이름",
     "preregistrationEmail": "이메일",
@@ -162,7 +162,7 @@ export const translations = {
   "en": {
     "preregistrationAction": "Get notified when the first 2027 cohort opens",
     "preregistrationLabel": "First 2027 cohort",
-    "preregistrationTitle": "A chance to try entrepreneurship with your peers.",
+    "preregistrationTitle": "A chance to take on the impossible",
     "preregistrationDescription": "Application dates and eligibility for the 2027 cohort will be announced later.",
     "preregistrationName": "Name",
     "preregistrationEmail": "Email",
@@ -309,7 +309,7 @@ export const translations = {
   "ja": {
     "preregistrationAction": "2027年第1期の募集通知を受け取る",
     "preregistrationLabel": "2027年第1期の募集通知",
-    "preregistrationTitle": "仲間と一緒に起業に挑戦するチャンス。",
+    "preregistrationTitle": "不可能に挑むチャンス",
     "preregistrationDescription": "2027年第1期の応募期間と応募資格は、後日お知らせします。",
     "preregistrationName": "お名前",
     "preregistrationEmail": "メールアドレス",
@@ -456,7 +456,7 @@ export const translations = {
   "zh": {
     "preregistrationAction": "接收2027年首期招募通知",
     "preregistrationLabel": "2027年首期招募通知",
-    "preregistrationTitle": "与伙伴一起尝试创业的机会。",
+    "preregistrationTitle": "挑战不可能的机会",
     "preregistrationDescription": "2027年首期的申请时间和资格将另行公布。",
     "preregistrationName": "姓名",
     "preregistrationEmail": "邮箱",
